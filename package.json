@@ -4,6 +4,7 @@
   "description": "* [General info](#general-info)\r * [Technologies](#technologies)",
   "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node server.js"
   },
@@ -11,7 +12,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ejs": "^3.1.9",
+    "env": "^0.0.2",
     "express": "^4.19.2",
+    "express-flash": "^0.0.2",
+    "express-session": "^1.18.0",
+    "nodemon": "^3.1.0",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
     "pg": "^8.11.5",
     "swagger-autogen": "^2.23.7",
     "swagger-ui-express": "^5.0.0"
