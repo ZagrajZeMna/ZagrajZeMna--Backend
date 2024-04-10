@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "version": "1.0.0",
-    "title": "Nodejs Express + MySQL API",
+    "title": "Nodejs Express + PostgreSQL API",
     "description": "API oparte na Node.js Express obsługujące operacje związane z bazą danych PostgreSQL."
   },
   "servers": [
