@@ -3,7 +3,7 @@ const swaggerAutogen = require('swagger-autogen')({openapi: '3.0.0'});
 const doc = {
   info: {
     version: '1.0.0',        
-    title: 'Nodejs Express + PostgreSQL API',              
+    title: 'Nodejs Express + MySQL API',              
     description: 'API oparte na Node.js Express obsługujące operacje związane z bazą danych PostgreSQL.'         // by default: ''
   },
   servers: [
