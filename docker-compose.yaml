@@ -7,15 +7,13 @@ services:
     build: .
     restart: always
     ports:
-      - 3001:3000
+      - 4001:4000
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres_db
     depends_on:
       - db
-    volumes: 
-      - .:/app
     
   db:
     container_name: database

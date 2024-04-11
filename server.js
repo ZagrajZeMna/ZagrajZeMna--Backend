@@ -1,45 +1,41 @@
-const express = require('express');
-const pool = require('./db');
-const port = 3000;
-const session = require('express-session');
-const flash = require('express-flash');
-const passport = require('passport');
-
-
-const initializePassport = require("./passportConfig");
-
-initializePassport(passport);
-
-const app = express()
-app.use(express.json())
-
-
+const express = require("express");
+const cookieParser = require('cookie-parser');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger-output.json');
 
-//middleware
+const app = express();
+
+
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-app.set('view engine', 'ejs');
-app.use(express.urlencoded({extended: false}))
+//middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-//sesja logowania
-app.use(
-        session({
-        secret: 'secret',
-        resave: false,
-        saveUninitialized: false
-        })
-);
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-app.use(flash());
-
-
-app.get('/', (req, res) => {
-        res.send('Hello, World!');
+// database
+const db = require("./app/models");
+const Role = db.role;
+db.sequelize.sync().then(() => {
+  console.log('Database sequelized');
 });
-    
 
-app.listen(port, () => console.log(`Server has started on port: ${port}`))
+
+// main route
+app.get("/", (req, res) => {
+  res.json({ message: "Strona Główna" });
+});
+
+app.get("/login", (req, res) => {
+  res.json({ message: "Zaloguj się!" });
+});
+
+//Logging system routes
+require('./app/routes/auth.routes')(app);
+require('./app/routes/user.routes')(app);
+
+// set port, listen for requests
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}.`);
+});
+

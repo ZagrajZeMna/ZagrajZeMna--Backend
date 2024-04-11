@@ -2,25 +2,269 @@
   "openapi": "3.0.0",
   "info": {
     "version": "1.0.0",
-    "title": "Nodejs Express + PostgreSQL API",
-    "description": "API oparte na Node.js Express obsługujące operacje związane z bazą danych PostgreSQL."
+    "title": "Zagraj ze Mną",
+    "description": "API platrofmy Zagraj ze Mną"
   },
   "servers": [
     {
-      "url": "http://localhost:3000",
+      "url": "http://localhost:4001",
       "description": "",
       "schemes": [
         "http"
       ]
     }
   ],
+  "tags": [
+    {
+      "name": "Logowanie",
+      "description": "Operacje logowania i rejestracji"
+    },
+    {
+      "name": "Weryfikacja",
+      "description": "Weryfikacja dostępu dla użytkowników"
+    }
+  ],
   "paths": {
     "/": {
       "get": {
-        "description": "",
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Strona główna",
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/auth/signup":{
+      "post": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Rejestracja użytkownika",
+        "description": "Stworzenia konta użytkownika",
+        "operationId": "addUser",
+        "requestBody": {
+          "description": "Stwórz konto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/auth/signin":{
+      "post": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Logowanie",
+        "description": "Logowanie do systemu",
+        "operationId": "Login",
+        "requestBody": {
+          "description": "Zaloguj się",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/auth/confirm/:confirmationCode":{
+      "get": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Autoryzacja e-mail",
+        "description": "Potwierdzenie maila",
+        "operationId": "Autoryzacja",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Klucz autoryzacyjny wysłany w wiadomości email",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": "Zweryfikowano",
+              "enum": [
+                "pending"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "confirmationCode": {
+                  "type": "string",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbmJyemVzemN6b3Q5QGdtYWlsLmNvbSIsImlhdCI6MTcxMjg1MTY5N30.46bEOEU4oqn7sS0Bt30erT5Iifm0AIc38hmA-MJHeJo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/auth/signout":{
+      "get": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Wylogowanie",
+        "description": "Wylogowanie z systemu",
+        "operationId": "Logout",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Wyloguj się",
+            "required": false,
+            "explode": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "confirmationCode": {
+                  "type": "string",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbmJyemVzemN6b3Q5QGdtYWlsLmNvbSIsImlhdCI6MTcxMjg1MTY5N30.46bEOEU4oqn7sS0Bt30erT5Iifm0AIc38hmA-MJHeJo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/test/all":{
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Dostęp dla każdego",
+        "description": "Cześć strony do któej dostęp ma niezalogowany użytkownik",
+        "operationId": "verifyAll",
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/test/user":{
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Dostęp dla zalogowanych",
+        "description": "Cześć strony do któej dostęp ma tylko zalogowany użytkownik",
+        "operationId": "verifyUser",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    }
+  },  
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "Tiger"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@email.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "12345"
           }
         }
       }
