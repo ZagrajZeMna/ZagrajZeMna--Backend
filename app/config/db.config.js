@@ -4,13 +4,15 @@ module.exports = {
   USER: "postgres",
   PASSWORD: "postgres",
   DB: "postgres_db",
+  port: 5432,
   dialect: "postgres",
   pool: {
-    max: 5,
+    max: 100,
     min: 0,
-    acquire: 30000,
-    idle: 10000
-  }
+    acquire: 10000,
+    idle: 20000
+  },
+  logging: false
 };
 
 
