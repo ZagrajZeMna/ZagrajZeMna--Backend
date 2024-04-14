@@ -4,21 +4,23 @@ const db = require("../models");
 const User = db.user;
 
 verifyToken = (req, res, next) => {
-  const token = req.cookies.token;
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
+  console.log(token);
   if (!token) {
     return res.status(403).send({
       message: "No token provided!"
     });
   }
-  try {
-    const decoded = jwt.verify(token,config.key.secret);
-    req.userId = decoded.id;
+  jwt.verify(token,config.key.secret, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: 'Invalid token' });
+    }
+
+    // Add the decoded user information to the request object
+    req.user = decoded;
     next();
-  } 
-  catch (err) {
-    res.clearCookie("token");
-    res.status(401).json({ error: 'Invalid token' });
-  }
+  });
   };
 
 const authJwt = {

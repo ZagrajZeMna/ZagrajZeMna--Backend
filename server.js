@@ -2,10 +2,15 @@ const express = require("express");
 const cookieParser = require('cookie-parser');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger-output.json');
+//const cors = require('cors');
 
 const app = express();
 
+// var corsOptions = {
+//   origin: "http://localhost:4000"
+// };
 
+// app.use(cors(corsOptions));
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 //middleware
 app.use(express.json());
@@ -22,13 +27,23 @@ db.sequelize.sync().then(() => {
 
 // main route
 app.get("/", (req, res) => {
-  res.json({ message: "Strona Główna" });
+  res.json({ message: "/ (Strona główna)" });
 });
 
 app.get("/login", (req, res) => {
-  res.json({ message: "Zaloguj się!" });
+  //res.redirect("localhost:");
+  res.json("/login (Logowanie)")
 });
 
+app.get("/register", (req, res) => {
+  //res.redirect("localhost:");
+  res.json("/register (Rejestracja)")
+});
+
+app.get("/restartpassword", (req, res) => {
+  //res.redirect("localhost:");
+  res.json("/restartpassword (Reset hasła)")
+});
 //Logging system routes
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);

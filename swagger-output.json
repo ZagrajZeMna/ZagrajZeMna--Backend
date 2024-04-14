@@ -90,7 +90,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/User"
+                "$ref": "#/components/schemas/Remember"
               }
             }
           },
@@ -101,8 +101,11 @@
             "description": "Successful operation",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
+                "properties": {
+                  "JWT": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imh1YmVydC5rcmF1cy5vZmZpY2lhbEBnbWFpbC5jb20iLCJpYXQiOjE3MTMwOTM2MzV9.SGVZ_cpjrtDT-1waqyDAw05SG0I59Jg33MsM4dEfSxg"
+                  }
                 }
               }
             }
@@ -133,10 +136,7 @@
             "explode": true,
             "schema": {
               "type": "string",
-              "default": "Zweryfikowano",
-              "enum": [
-                "pending"
-              ]
+              "default": "Zweryfikowano"
             }
           }
         ],
@@ -247,6 +247,118 @@
           }
         }
       }
+    },
+    "/api/auth/remember":{
+      "post": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Przypominanie hasła",
+        "description": "Reset hasła za potwierdzeniem email",
+        "operationId": "rememberPass",
+        "requestBody": {
+          "description": "Zresetuj hasło!",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Remember"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Remember"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/auth/reset/:confirmationCode":{
+      "get": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Reset hasła e-mail",
+        "description": "Reset hasła e-mail",
+        "operationId": "resetPass",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Link do zresetowania hasła wysłany w wiadomości email",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": "Zresetowano"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/login": {
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Logowanie",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/register": {
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Rejestracja",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/restartpassword": {
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Restart hasła",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
     }
   },  
   "components": {
@@ -265,6 +377,19 @@
           "password": {
             "type": "string",
             "example": "12345"
+          }
+        }
+      },
+      "Remember": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "john@email.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "12345678"
           }
         }
       }

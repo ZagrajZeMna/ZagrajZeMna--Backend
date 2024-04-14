@@ -1,5 +1,6 @@
 const { verifySignUp } = require("../middleware");
 const controller = require("../controllers/auth.controller");
+const { authJwt } = require("../middleware");
 
 module.exports = function(app) {
   app.use(function(req, res, next) {
@@ -20,11 +21,15 @@ module.exports = function(app) {
 
   app.post("/api/auth/signin", controller.signin);
 
+  app.post("/api/auth/remember", controller.reset);
+
   app.get("/api/auth/signout",(req,res)=>{
-    res.clearCookie("token");
     res.redirect("/login")
   })
   app.get("/api/auth/confirm/:confirmationCode", controller.verifyUser,(req,res)=>{
     res.redirect("/login")
   })
+  app.get("/api/auth/reset/:confirmationCode", controller.verifyReset,(req,res)=>{
+    res.redirect("/login")
+  });
 };

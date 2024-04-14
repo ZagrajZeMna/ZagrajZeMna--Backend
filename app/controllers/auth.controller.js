@@ -54,7 +54,11 @@ exports.signin = (req, res) => {
           message: "Invalid Password!"
         });
       }
-
+      if (user.status === "Pending") {
+        return res.status(401).send({
+          message: "Please reset your password using link send via email!",
+        });
+      }
       if (user.status != "Active") {
         return res.status(401).send({
           message: "Pending Account. Please Verify Your Email!",
@@ -63,16 +67,10 @@ exports.signin = (req, res) => {
 
       const token = jwt.sign({ id: user.id },config.key.secret,
       {
-        algorithm: 'HS256',
-        allowInsecureKeySizes: true,
         expiresIn: 3600, // 1 hour
       });
       
-      res.cookie("token",token,{
-        httpOnly: true
-      })
-
-      res.redirect("/api/test/user");
+      res.send(token);
     })
     .catch(err => {
       res.status(500).send({ message: err.message });
@@ -90,7 +88,6 @@ exports.verifyUser = (req, res, next) => {
       if (!user) {
         return res.status(404).send({ message: "User Not found." });
       }
-      console.log("------------------------------????????????-----------------------")
       user.status = "Active";
       user.save((err) => {
         if (err) {
@@ -102,3 +99,64 @@ exports.verifyUser = (req, res, next) => {
     .catch((e) => console.log("error", e));
     next();
 };
+
+exports.verifyReset = (req, res, next) => {
+  User.findOne({
+    where: {
+      confirmationCode: req.params.confirmationCode,
+    }
+  })
+  .then((user) => {
+      console.log(user);
+      if (!user) {
+        return res.status(404).send({ message: "User Not found." });
+      }
+      user.status = "Active";
+      user.save((err) => {
+        if (err) {
+          res.status(500).send({ message: err });
+          return;
+        }
+      });
+      return new Promise((resolve) => {
+          resolve(req.status);
+      });
+    })
+    .catch((e) => console.log("error", e));
+    next();
+};
+
+
+exports.reset = (req,res) =>{
+  User.findOne({
+    where: {
+      email: req.body.email,     
+    }
+  }).then(async user => {
+      if (!user) {
+        return res.status(404).send({ message: "User Not found." });
+      }
+      user.status = "Pending";
+      user.save((err) => {
+        if (err) {
+          res.status(500).send({ message: err });
+          return;
+        }
+      });
+      nodemailer.sendResetEmail(
+        user.email,
+        user.confirmationCode
+      );
+      user.password = bcrypt.hashSync(req.body.password, 8);
+      user.save((err) => {
+        if (err) {
+          res.status(500).send({ message: err });
+          return;
+        }
+      });
+      res.json({ message: "Restart link send: please check your email" });
+    })
+    .catch(err => {
+      res.status(500).send({ message: err.message });
+    });
+}

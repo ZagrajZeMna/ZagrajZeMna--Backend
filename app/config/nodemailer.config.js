@@ -24,3 +24,15 @@ module.exports.sendConfirmationEmail = (name, email, confirmationCode) => {
           </div>`,
     }).catch(err => console.log(err));
   };
+
+  module.exports.sendResetEmail = (email, confirmationCode)=> {
+    transport.sendMail({
+      from: user,
+      to: email,
+      subject: "Resetowanie hasła: Zagraj ze mną",
+      html: `<h1>Resetowanie hasła</h1>
+          <p>Aby zresetować swoje hasło proszę kliknij poniższy link</p>
+          <a href=http://localhost:4001/api/auth/reset/${confirmationCode}>Zresetuj hasło</a>
+          </div>`,
+    }).catch(err => console.log(err));
+  }; 
