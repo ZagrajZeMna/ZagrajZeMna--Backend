@@ -7,14 +7,16 @@ services:
     build: .
     restart: always
     ports:
-      - 3001:3000
+      - 4001:4000
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres_db
     depends_on:
       - db
-    
+    volumes:
+      - ./uploads:/app/uploads
+
   db:
     container_name: database
     image: postgres:latest
@@ -37,7 +39,7 @@ services:
       PGADMIN_DEFAULT_PASSWORD: root
     ports:
       - "8081:80"
-  
 
 volumes:
   pgdata:
+  uploads:
