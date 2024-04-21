@@ -1,4 +1,4 @@
-FROM node:20
+FROM node:20-alpine
 
 WORKDIR /app
 
@@ -8,6 +8,8 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 3000
+RUN chown -R node:node /app
+
+EXPOSE 4000
 
 CMD ["node", "server.js", "&", "node", "swagger"]

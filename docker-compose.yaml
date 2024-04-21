@@ -7,15 +7,16 @@ services:
     build: .
     restart: always
     ports:
-      - 3001:3000
+      - 4001:4000
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres_db
     depends_on:
       - db
-    volumes: 
-      - .:/app
+    networks:
+      mynetwork:
+        ipv4_address: 172.20.0.2
     
   db:
     container_name: database
@@ -29,6 +30,9 @@ services:
       - 5434:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      mynetwork:
+        ipv4_address: 172.20.0.3
 
   pgadmin:
     image: dpage/pgadmin4
@@ -39,7 +43,17 @@ services:
       PGADMIN_DEFAULT_PASSWORD: root
     ports:
       - "8081:80"
+    networks:
+      mynetwork:
+        ipv4_address: 172.20.0.4
   
 
 volumes:
   pgdata:
+
+networks:
+ mynetwork:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

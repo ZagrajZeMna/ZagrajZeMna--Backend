@@ -1,20 +1,56 @@
-const express = require('express')
-const pool = require('./db')
-const port = 3000
-
-
-const app = express()
-app.use(express.json())
-
-
+const express = require("express");
+const cookieParser = require('cookie-parser');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger-output.json');
+//const cors = require('cors');
 
+const app = express();
+
+// var corsOptions = {
+//   origin: "http://localhost:4000"
+// };
+
+// app.use(cors(corsOptions));
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+//middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-app.get('/', (req, res) => {
-        res.send('Hello, World!');
+// database
+const db = require("./app/models");
+const Role = db.role;
+db.sequelize.sync().then(() => {
+  console.log('Database sequelized');
 });
-    
 
-app.listen(port, () => console.log(`Server has started on port: ${port}`))
+
+// main route
+app.get("/", (req, res) => {
+  res.json({ message: "/ (Strona główna)" });
+});
+
+app.get("/login", (req, res) => {
+  //res.redirect("localhost:");
+  res.json("/login (Logowanie)")
+});
+
+app.get("/register", (req, res) => {
+  //res.redirect("localhost:");
+  res.json("/register (Rejestracja)")
+});
+
+app.get("/restartpassword", (req, res) => {
+  //res.redirect("localhost:");
+  res.json("/restartpassword (Reset hasła)")
+});
+//Logging system routes
+require('./app/routes/auth.routes')(app);
+require('./app/routes/user.routes')(app);
+
+// set port, listen for requests
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}.`);
+});
+

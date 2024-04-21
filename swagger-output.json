@@ -2,25 +2,424 @@
   "openapi": "3.0.0",
   "info": {
     "version": "1.0.0",
-    "title": "Nodejs Express + PostgreSQL API",
-    "description": "API oparte na Node.js Express obsługujące operacje związane z bazą danych PostgreSQL."
+    "title": "Zagraj ze Mną",
+    "description": "API platrofmy Zagraj ze Mną"
   },
   "servers": [
     {
-      "url": "http://localhost:3000",
+      "url": "http://localhost:4001",
       "description": "",
       "schemes": [
         "http"
       ]
     }
   ],
+  "tags": [
+    {
+      "name": "Logowanie",
+      "description": "Operacje logowania i rejestracji"
+    },
+    {
+      "name": "Weryfikacja",
+      "description": "Weryfikacja dostępu dla użytkowników"
+    }
+  ],
   "paths": {
     "/": {
       "get": {
-        "description": "",
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Strona główna",
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/auth/signup":{
+      "post": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Rejestracja użytkownika",
+        "description": "Stworzenia konta użytkownika",
+        "operationId": "addUser",
+        "requestBody": {
+          "description": "Stwórz konto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/auth/signin":{
+      "post": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Logowanie",
+        "description": "Logowanie do systemu",
+        "operationId": "Login",
+        "requestBody": {
+          "description": "Zaloguj się",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Remember"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "properties": {
+                  "JWT": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imh1YmVydC5rcmF1cy5vZmZpY2lhbEBnbWFpbC5jb20iLCJpYXQiOjE3MTMwOTM2MzV9.SGVZ_cpjrtDT-1waqyDAw05SG0I59Jg33MsM4dEfSxg"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/auth/confirm/:confirmationCode":{
+      "get": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Autoryzacja e-mail",
+        "description": "Potwierdzenie maila",
+        "operationId": "Autoryzacja",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Klucz autoryzacyjny wysłany w wiadomości email",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": "Zweryfikowano"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "confirmationCode": {
+                  "type": "string",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbmJyemVzemN6b3Q5QGdtYWlsLmNvbSIsImlhdCI6MTcxMjg1MTY5N30.46bEOEU4oqn7sS0Bt30erT5Iifm0AIc38hmA-MJHeJo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/auth/signout":{
+      "get": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Wylogowanie",
+        "description": "Wylogowanie z systemu",
+        "operationId": "Logout",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Wyloguj się",
+            "required": false,
+            "explode": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "confirmationCode": {
+                  "type": "string",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbmJyemVzemN6b3Q5QGdtYWlsLmNvbSIsImlhdCI6MTcxMjg1MTY5N30.46bEOEU4oqn7sS0Bt30erT5Iifm0AIc38hmA-MJHeJo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/test/all":{
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Dostęp dla każdego",
+        "description": "Cześć strony do któej dostęp ma niezalogowany użytkownik",
+        "operationId": "verifyAll",
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/test/user":{
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Dostęp dla zalogowanych",
+        "description": "Część strony do której dostęp ma tylko zalogowany użytkownik",
+        "operationId": "verifyUser",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/test/admin":{
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Dostęp dla admina",
+        "description": "Część strony do której dostęp ma tylko administrator",
+        "operationId": "verifyUser",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Email konta administartora",
+            "required": true,
+            "explode": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/auth/remember":{
+      "post": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Przypominanie hasła",
+        "description": "Reset hasła za potwierdzeniem email",
+        "operationId": "rememberPass",
+        "requestBody": {
+          "description": "Zresetuj hasło!",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Remember"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Remember"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/auth/reset/:confirmationCode":{
+      "get": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Reset hasła e-mail",
+        "description": "Reset hasła e-mail",
+        "operationId": "resetPass",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Link do zresetowania hasła wysłany w wiadomości email",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": "Zresetowano"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/login": {
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Logowanie",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/register": {
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Rejestracja",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/restartpassword": {
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Restart hasła",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },  
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "Tiger"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@email.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "12345"
+          }
+        }
+      },
+      "Remember": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "john@email.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "12345678"
           }
         }
       }
