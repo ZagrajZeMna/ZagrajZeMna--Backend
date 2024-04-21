@@ -24,7 +24,13 @@ db.sequelize.sync().then(() => {
   console.log('Database sequelized');
 });
 
+const User = db.User;
 
+User.findAll().then(data => {
+ console.log(data);
+});
+
+/*
 // main route
 app.get("/", (req, res) => {
   res.json({ message: "/ (Strona główna)" });
@@ -47,7 +53,7 @@ app.get("/restartpassword", (req, res) => {
 //Logging system routes
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
-
+*/
 // set port, listen for requests
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
