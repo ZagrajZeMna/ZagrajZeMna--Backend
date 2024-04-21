@@ -1,5 +1,6 @@
 exports.key = {
-  secret: "ugabugaaaa34",
+  secret: "SuperSekretneHaslo",
+  admin: "administrator",
   user: "playwithme.corporation@gmail.com", 
   pass: "xlnhsiwgjfgblztx",
 };

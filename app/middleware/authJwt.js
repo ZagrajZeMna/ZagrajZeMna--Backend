@@ -9,7 +9,7 @@ verifyToken = (req, res, next) => {
   console.log(token);
   if (!token) {
     return res.status(403).send({
-      message: "No token provided!"
+      message: "Please log in!"
     });
   }
   jwt.verify(token,config.key.secret, (err, decoded) => {

@@ -10,12 +10,21 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING
     },
     status:{
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      defaultValue: 'Created'
     },
     confirmationCode:{
       type: Sequelize.STRING,
       unique: true
-    }     
+    },
+    IsAdmin:{
+      type: Sequelize.STRING,
+      defaultValue: 'No',
+    },
+    IsBanned:{
+      type: Sequelize.STRING,
+      defaultValue: 'No',
+    }         
   },
   {
     timestamps: false

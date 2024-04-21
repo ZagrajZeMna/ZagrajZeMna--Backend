@@ -1,5 +1,6 @@
 const { authJwt } = require("../middleware");
 const controller = require("../controllers/user.controller");
+const authAcc = require("../middleware/authAcc");
 
 module.exports = function(app) {
   app.use(function(req, res, next) {
@@ -16,5 +17,11 @@ module.exports = function(app) {
     "/api/test/user",
     [authJwt.verifyToken],
     controller.userBoard
+  );
+
+  app.get(
+    "/api/test/admin",
+    [authAcc.verifyAdmin],
+    controller.adminBoard
   );
 };
