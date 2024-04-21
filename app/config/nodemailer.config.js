@@ -31,7 +31,7 @@ module.exports.sendConfirmationEmail = (name, email, confirmationCode) => {
       to: email,
       subject: "Resetowanie hasła: Zagraj ze mną",
       html: `<h1>Resetowanie hasła</h1>
-          <p>Aby zresetować swoje hasło proszę kliknij poniższy link</p>
+          <p>Aby dokończyć resetowanie hasła kliknij w link i zaloguj się</p>
           <a href=http://localhost:4001/api/auth/reset/${confirmationCode}>Zresetuj hasło</a>
           </div>`,
     }).catch(err => console.log(err));
