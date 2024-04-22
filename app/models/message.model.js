@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
-    const UserInLobby = sequelize.define("UserInLobby", {
-        ID_UIL: {
+    const Message = sequelize.define("message", {
+        ID_MESSAGE: {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true
@@ -15,27 +15,34 @@ module.exports = (sequelize, Sequelize) => {
         },
         ID_LOBBY: {
             type: Sequelize.INTEGER,
-            allowNull: false
+            allowNull: false,
+            references: {
+                model: 'lobbies',
+                key: 'ID_LOBBY'
+            }
         },
-        Accepted: {
-            type: Sequelize.BOOLEAN,
-            defaultValue: false
-        },
-        Description: {
+        Message: {
             type: Sequelize.TEXT
+        },
+        Date: {
+            type: Sequelize.DATEONLY
+        },
+        Time: {
+            type: Sequelize.TIME
         }
     });
 
-    UserInLobby.associate = function(models) {
-        UserInLobby.belongsTo(models.User, {
+
+    Message.associate = function(models) {
+        Message.belongsTo(models.User, {
             foreignKey: 'ID_USER',
             as: 'user'
         });
-        UserInLobby.belongsTo(models.Lobby, {
+        Message.belongsTo(models.Lobby, {
             foreignKey: 'ID_LOBBY',
             as: 'lobby'
         });
     };
-
-    return UserInLobby;
+    
+    return Message;
 };

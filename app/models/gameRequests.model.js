@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
-    const UserInLobby = sequelize.define("UserInLobby", {
-        ID_UIL: {
+    const GameRequests = sequelize.define("gameRequests", {
+        ID_REQUEST: {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true
@@ -13,29 +13,33 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'ID_USER'
             }
         },
-        ID_LOBBY: {
+        ID_SENDER: {
             type: Sequelize.INTEGER,
-            allowNull: false
+            allowNull: false,
+            references: {
+                model: 'users',
+                key: 'ID_USER'
+            }
         },
-        Accepted: {
-            type: Sequelize.BOOLEAN,
-            defaultValue: false
+        GameName: {
+            type: Sequelize.STRING
         },
         Description: {
             type: Sequelize.TEXT
         }
     });
 
-    UserInLobby.associate = function(models) {
-        UserInLobby.belongsTo(models.User, {
+
+    GameRequests.associate = function(models) {
+        GameRequests.belongsTo(models.User, {
             foreignKey: 'ID_USER',
             as: 'user'
         });
-        UserInLobby.belongsTo(models.Lobby, {
-            foreignKey: 'ID_LOBBY',
-            as: 'lobby'
+        GameRequests.belongsTo(models.User, {
+            foreignKey: 'ID_SENDER',
+            as: 'sender'
         });
     };
-
-    return UserInLobby;
+    
+    return GameRequests;
 };

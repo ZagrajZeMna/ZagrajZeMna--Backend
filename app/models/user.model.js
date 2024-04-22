@@ -1,24 +1,19 @@
 module.exports = (sequelize, Sequelize) => {
-    const User = sequelize.define("user", {
+    const User = sequelize.define("users", {
     ID_USER: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true
     },
-
     email: {
         type: Sequelize.STRING,
-        allowNull: false,
-        unique: true
-    },
 
+    },
     password: {
         type: Sequelize.STRING,
-        allowNull: false
     },
     username: {
         type: Sequelize.STRING,
-        allowNull: false
     },
     about: {
         type: Sequelize.TEXT
@@ -44,16 +39,60 @@ module.exports = (sequelize, Sequelize) => {
         defaultValue: false
     },
     status: {
-        type: Sequelize.BOOLEAN,
-        defaultValue: false
+        type: Sequelize.STRING,
+        defaultValue: 'Created'
     },
     confirmationCode: {
         type: Sequelize.STRING,
         unique: true
     }
+    },
+    {
+    timestamps: false
     });
-    
-    
+
+    User.associate = function(models) {
+        User.hasMany(models.UserInLobby, {
+            foreignKey: 'ID_USER',
+            as: 'userInLobbies'
+        });
+    };
+
+
+    User.associate = function(models) {
+        User.hasMany(models.Shelf, {
+            foreignKey: 'ID_USER',
+            as: 'shelves'
+        });
+    };
+
+
+    User.associate = function(models) {
+        User.hasMany(models.Lobby, {
+            foreignKey: 'ID_OWNER',
+            as: 'lobbies'
+        });
+    };
+
+    User.associate = function(models) {
+        User.hasMany(models.Message, {
+            foreignKey: 'ID_USER',
+            as: 'messages'
+        });
+        User.hasMany(models.GameRequests, {
+            foreignKey: 'ID_USER',
+            as: 'gameRequests'
+        });
+        User.hasMany(models.UserReview, {
+            foreignKey: 'ID_REVIEWER',
+            as: 'reviewsGiven'
+        });
+        User.hasMany(models.UserReview, {
+            foreignKey: 'ID_ABOUT',
+            as: 'reviewsReceived'
+        });
+    };
+
 
     return User;
   };
