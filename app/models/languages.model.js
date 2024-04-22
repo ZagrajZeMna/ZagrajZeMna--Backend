@@ -19,6 +19,10 @@ module.exports = (sequelize, Sequelize) => {
             foreignKey: 'ID_LANGUAGE',
             as: 'lobbies'
         });
+        Languages.hasMany(models.User, {
+            foreignKey: 'ID_LANGUAGE',
+            as: 'users'
+        });
     }
     
     return Languages;

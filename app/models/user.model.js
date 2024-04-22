@@ -45,18 +45,19 @@ module.exports = (sequelize, Sequelize) => {
     confirmationCode: {
         type: Sequelize.STRING,
         unique: true
+    },
+    ID_LANGUAGE: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'languages',
+            key: 'ID_LANGUAGE'
+        }
     }
     },
     {
     timestamps: false
     });
-
-    User.associate = function(models) {
-        User.hasMany(models.UserInLobby, {
-            foreignKey: 'ID_USER',
-            as: 'userInLobbies'
-        });
-    };
 
 
     User.associate = function(models) {
@@ -64,17 +65,14 @@ module.exports = (sequelize, Sequelize) => {
             foreignKey: 'ID_USER',
             as: 'shelves'
         });
-    };
-
-
-    User.associate = function(models) {
+        User.hasMany(models.UserInLobby, {
+            foreignKey: 'ID_USER',
+            as: 'userInLobbies'
+        });
         User.hasMany(models.Lobby, {
             foreignKey: 'ID_OWNER',
             as: 'lobbies'
         });
-    };
-
-    User.associate = function(models) {
         User.hasMany(models.Message, {
             foreignKey: 'ID_USER',
             as: 'messages'
@@ -83,15 +81,20 @@ module.exports = (sequelize, Sequelize) => {
             foreignKey: 'ID_USER',
             as: 'gameRequests'
         });
+        User.belongsTo(models.Languages, {
+            foreignKey: 'ID_LANGUAGE',
+            as: 'languages'
+        });
         User.hasMany(models.UserReview, {
             foreignKey: 'ID_REVIEWER',
-            as: 'reviewsGiven'
+            as: 'reviewer'
         });
         User.hasMany(models.UserReview, {
             foreignKey: 'ID_ABOUT',
-            as: 'reviewsReceived'
+            as: 'aboutUser'
         });
     };
+
 
 
     return User;

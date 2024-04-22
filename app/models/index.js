@@ -30,8 +30,9 @@ db.UserInLobby = require('./userInLobby.model.js')(sequelize, Sequelize);
 db.Message = require('./message.model.js')(sequelize, Sequelize);
 db.GameRequests = require('./gameRequests.model.js')(sequelize, Sequelize);
 db.Shelf = require('./shelf.model.js')(sequelize, Sequelize);
-db.Message = require('./message.model.js')(sequelize, Sequelize);
-db.UserReviews = require('./userReviews.model.js')(sequelize, Sequelize);
+db.UserReview = require('./userReviews.model.js')(sequelize, Sequelize);
+db.DayLobby = require('./dayLobby.model.js')(sequelize, Sequelize);
+db.Day = require('./day.model.js')(sequelize, Sequelize);
 
 
 

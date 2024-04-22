@@ -1,4 +1,4 @@
-// lobby.model.js
+
 module.exports = (sequelize, Sequelize) => {
     const Lobby = sequelize.define("lobbies", {
         ID_LOBBY: {
@@ -49,6 +49,13 @@ module.exports = (sequelize, Sequelize) => {
         StillLooking: {
             type: Sequelize.BOOLEAN,
             defaultValue: true
+        },
+        PlayingFrequency: {
+            type: Sequelize.INTEGER,
+        },
+        IsFirstGame: {
+            type: Sequelize.BOOLEAN,
+            defaultValue: true
         }
     });
 
@@ -66,23 +73,20 @@ module.exports = (sequelize, Sequelize) => {
             foreignKey: 'ID_LANGUAGE',
             as: 'language'
         });
-    };
-
-
-    Lobby.associate = function(models) {
         Lobby.hasMany(models.UserInLobby, {
             foreignKey: 'ID_LOBBY',
             as: 'users'
         });
-    };
-
-
-    Lobby.associate = function(models) {
         Lobby.hasMany(models.Message, {
             foreignKey: 'ID_LOBBY',
             as: 'messages'
         });
+        Lobby.hasMany(models.DayLobby, {
+            foreignKey: 'ID_LOBBY',
+            as: 'daylobby'
+        })
     };
+
     
     return Lobby;
 };
