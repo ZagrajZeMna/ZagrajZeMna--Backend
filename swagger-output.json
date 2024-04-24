@@ -26,6 +26,10 @@
     {
       "name": "Profil",
       "description": "Profil użytkownika"
+    },
+    {
+      "name": "Admin",
+      "description": "Profil administratora (tylko do testów)"
     }
   ],
   "paths": {
@@ -43,54 +47,55 @@
       }
     },
 
-    "/api/profile/postUsername": {
-      "post": {
+    "/api/profile/getUserDetails": {
+      "get": {
         "tags": [
           "Profil"
         ],
-        "summary": "Aktualizacja nazwy użytkownika",
-        "description": "Pozwala zalogowanemu użytkownikowi aktualizować jego nazwę użytkownika.",
-        "operationId": "updateUsername",
+        "summary": "Pobranie szczegółów użytkownika",
+        "description": "Pozwala zalogowanemu użytkownikowi na pobranie szczegółów swojego profilu.",
+        "operationId": "getUserDetails",
         "security": [
           {
             "bearerAuth": []
           }
         ],
-        "requestBody": {
-          "description": "Żądanie aktualizacji nazwy użytkownika",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "username": {
-                    "type": "string",
-                    "description": "Nowa nazwa użytkownika"
-                  }
-                },
-                "required": [
-                  "username"
-                ]
-              }
-            }
-          }
-        },
         "responses": {
           "200": {
-            "description": "Nazwa użytkownika została pomyślnie zaktualizowana",
+            "description": "Szczegóły profilu użytkownika zostały pomyślnie pobrane",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "message": {
+                    "email": {
                       "type": "string",
-                      "example": "Nazwa użytkownika została pomyślnie zaktualizowana."
+                      "example": "jan_kowalski"
                     },
                     "username": {
                       "type": "string",
-                      "example": "nowy_nickname"
+                      "example": "Johnny"
+                    },
+                    "about": {
+                      "type": "string",
+                      "example": "Pasjonat gier i programowania."
+                    },
+                    "country": {
+                      "type": "string",
+                      "example": "Polska"
+                    },
+                    "city": {
+                      "type": "string",
+                      "example": "Warszawa"
+                    },
+                    "contact": {
+                      "type": "string",
+                      "example": "jan@example.com"
+                    },
+                    "IDlanguage": {
+                      "type": "integer",
+                      "example": 1,
+                      "description": "ID języka zgodnie z tabelą Languages"
                     }
                   }
                 }
@@ -98,13 +103,13 @@
             }
           },
           "400": {
-            "description": "Nieprawidłowe żądanie - brak nazwy użytkownika lub nazwa jest pusta."
+            "description": "Nieprawidłowe żądanie - problem z danymi użytkownika."
+          },
+          "401": {
+            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
           },
           "404": {
             "description": "Użytkownik nie znaleziony."
-          },
-          "409": {
-            "description": "Nazwa użytkownika jest już zajęta."
           },
           "500": {
             "description": "Wewnętrzny błąd serwera"
@@ -181,6 +186,455 @@
           },
           "404": {
             "description": "Użytkownik nie został znaleziony"
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/profile/postUsername": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Aktualizacja nazwy użytkownika",
+        "description": "Pozwala zalogowanemu użytkownikowi aktualizować jego nazwę użytkownika.",
+        "operationId": "updateUsername",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Żądanie aktualizacji nazwy użytkownika",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "Nowa nazwa użytkownika"
+                  }
+                },
+                "required": [
+                  "username"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Nazwa użytkownika została pomyślnie zaktualizowana",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Nazwa użytkownika została pomyślnie zaktualizowana."
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "nowy_nickname"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - brak nazwy użytkownika lub nazwa jest pusta."
+          },
+          "404": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "409": {
+            "description": "Nazwa użytkownika jest już zajęta."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/profile/updateAbout": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Aktualizacja informacji o użytkowniku",
+        "description": "Pozwala zalogowanemu użytkownikowi aktualizować informacje o sobie w profilu.",
+        "operationId": "updateAbout",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Żądanie aktualizacji informacji o użytkowniku",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "about": {
+                    "type": "string",
+                    "description": "Informacje o użytkowniku do aktualizacji",
+                    "example": "Pasjonat gier komputerowych i programowania."
+                  }
+                },
+                "required": [
+                  "about"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Informacje o użytkowniku zostały pomyślnie zaktualizowane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "About information updated successfully."
+                    },
+                    "about": {
+                      "type": "string",
+                      "example": "Pasjonat gier komputerowych i programowania."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - brak wymaganego pola 'about' lub pole jest puste."
+          },
+          "401": {
+            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+          },
+          "404": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+    
+    "/api/profile/updateCountry": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Aktualizacja kraju użytkownika",
+        "description": "Pozwala zalogowanemu użytkownikowi aktualizować kraj w jego profilu.",
+        "operationId": "updateCountry",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Żądanie aktualizacji kraju użytkownika",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "country": {
+                    "type": "string",
+                    "description": "Nazwa kraju do zapisania w profilu użytkownika",
+                    "example": "Polska"
+                  }
+                },
+                "required": [
+                  "country"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kraj użytkownika został pomyślnie zaktualizowany",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Country updated successfully."
+                    },
+                    "country": {
+                      "type": "string",
+                      "example": "Polska"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - brak wymaganego pola 'country' lub pole jest puste."
+          },
+          "401": {
+            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+          },
+          "404": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/profile/updateCity": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Aktualizacja miasta użytkownika",
+        "description": "Pozwala zalogowanemu użytkownikowi aktualizować miasto w jego profilu.",
+        "operationId": "updateCity",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Żądanie aktualizacji miasta użytkownika",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "city": {
+                    "type": "string",
+                    "description": "Nazwa miasta do zapisania w profilu użytkownika",
+                    "example": "Warszawa"
+                  }
+                },
+                "required": [
+                  "city"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Miasto użytkownika zostało pomyślnie zaktualizowane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "City updated successfully."
+                    },
+                    "city": {
+                      "type": "string",
+                      "example": "Warszawa"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - brak wymaganego pola 'city' lub pole jest puste."
+          },
+          "401": {
+            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+          },
+          "404": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+    
+    "/api/profile/updateContact": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Aktualizacja informacji kontaktowej użytkownika",
+        "description": "Pozwala zalogowanemu użytkownikowi aktualizować jego informacje kontaktowe w profilu.",
+        "operationId": "updateContact",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Żądanie aktualizacji informacji kontaktowej użytkownika",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contact": {
+                    "type": "string",
+                    "description": "Nowe informacje kontaktowe użytkownika",
+                    "example": "jankowalski#1234"
+                  }
+                },
+                "required": [
+                  "contact"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Informacje kontaktowe użytkownika zostały pomyślnie zaktualizowane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Contact information updated successfully."
+                    },
+                    "contact": {
+                      "type": "string",
+                      "example": "jan.kowalski@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - brak wymaganego pola 'contact' lub pole jest puste."
+          },
+          "401": {
+            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+          },
+          "404": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+    
+    "/api/profile/getAllLanguages": {
+      "get": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Pobiera wszystkie języki",
+        "description": "Zwraca listę wszystkich języków wraz z ich ID i nazwą.",
+        "operationId": "getAllLanguages",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista języków",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "language": {
+                        "type": "string",
+                        "example": "English"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nie znaleziono języków"
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/profile/setUserLanguage": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Ustawienie języka użytkownika",
+        "description": "Zezwala zalogowanemu użytkownikowi na wybór języka.",
+        "operationId": "setUserLanguage",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "ID języka do ustawienia dla użytkownika",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "languageId": {
+                    "type": "integer",
+                    "description": "ID języka, który ma zostać przypisany do użytkownika",
+                    "example": 2
+                  }
+                },
+                "required": [
+                  "languageId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Język użytkownika został zaktualizowany"
+          },
+          "404": {
+            "description": "Nie znaleziono języka lub użytkownika"
           },
           "500": {
             "description": "Wewnętrzny błąd serwera"
@@ -533,45 +987,8 @@
         }
       }
     },
-    "/api/auth/remember":{
-      "post": {
-        "tags": [
-          "Logowanie"
-        ],
-        "summary": "Przypominanie hasła",
-        "description": "Reset hasła za potwierdzeniem email",
-        "operationId": "rememberPass",
-        "requestBody": {
-          "description": "Zresetuj hasło!",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Remember"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Remember"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          }
-        }
-      }
-    },
+
+    
     "/api/auth/reset/:confirmationCode":{
       "get": {
         "tags": [
@@ -606,6 +1023,75 @@
         }
       }
     },
+
+    "/api/admin/addLanguage": {
+      "post": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Dodawanie nowego języka",
+        "description": "Pozwala administratorowi dodać nowy język do bazy danych.",
+        "operationId": "addLanguage",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Nazwa języka do dodania",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "language": {
+                    "type": "string",
+                    "description": "Nazwa nowego języka",
+                    "example": "Polski"
+                  }
+                },
+                "required": [
+                  "language"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Język został pomyślnie dodany",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Language added successfully."
+                    },
+                    "language": {
+                      "$ref": "#/components/schemas/Language"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - brak pola 'language' lub pole jest puste."
+          },
+          "409": {
+            "description": "Konflikt - język już istnieje."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+    
+
     "/login": {
       "get": {
         "tags": [
@@ -655,6 +1141,20 @@
     }
   },
     "schemas": {
+      "Language": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "language": {
+            "type": "string",
+            "example": "English"
+          }
+        }
+      },
+      
       "User": {
         "type": "object",
         "properties": {

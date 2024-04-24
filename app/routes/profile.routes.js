@@ -11,8 +11,15 @@ module.exports = function(app) {
     next();
   });
   
+  app.get("/api/profile/getUserDetails", [authJwt.verifyToken], controller.getUserDetails);
   app.post("/api/profile/postAvatarlink", [authJwt.verifyToken], controller.postAvatarLink);
   app.post("/api/profile/postAvatarFile", [authJwt.verifyToken], controller.postAvatarFile);
   app.post("/api/profile/postUsername", [authJwt.verifyToken], controller.postUsername);
   app.post("/api/profile/changePassword", [authJwt.verifyToken], controller.changePassword);
+  app.post("/api/profile/updateAbout", [authJwt.verifyToken], controller.updateAbout);
+  app.post("/api/profile/updateCountry", [authJwt.verifyToken], controller.updateCountry);
+  app.post("/api/profile/updateCity", [authJwt.verifyToken], controller.updateCity);
+  app.post("/api/profile/updateContact", [authJwt.verifyToken], controller.updateContact);
+  app.get("/api/profile/getAllLanguages", [authJwt.verifyToken], controller.getAllLanguages);
+  app.post("/api/profile/setUserLanguage", [authJwt.verifyToken], controller.setUserLanguage);
 };

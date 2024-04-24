@@ -2,6 +2,7 @@ const db = require("../models");
 const config = require("../config/auth.config");
 const nodemailer = require("../config/nodemailer.config");
 const User = db.user;
+const Language = db.language;
 const Role = db.role;
 
 const axios = require('axios');
@@ -13,6 +14,32 @@ const Op = db.Sequelize.Op;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+
+exports.getUserDetails = async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const user = await User.findByPk(userId, {
+      attributes: ['email', 'username', 'about', 'country', 'city', 'contact', 'ID_LANGUAGE']
+    });
+
+    if (!user) {
+      return res.status(404).send({ message: "User not found." });
+    }
+
+    // Konwersja ID_LANGUAGE na nazwę języka
+    const language = await db.language.findByPk(user.ID_LANGUAGE);
+    const userWithLanguage = {
+      ...user.get({ plain: true }),
+      language: language ? language.LANGUAGE : null
+    };
+
+    res.status(200).send(userWithLanguage);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
 
 exports.changePassword = async (req, res) => {
   const userId = req.user.id;
@@ -52,8 +79,8 @@ exports.changePassword = async (req, res) => {
 };
 
 exports.postUsername = (req, res) => {
-  const userId = req.user.id; // Pobranie ID użytkownika z dekodowanego tokena JWT
-  const newUsername = req.body.username; // Pobranie nowego username z ciała żądania
+  const userId = req.user.id;
+  const newUsername = req.body.username;
 
   if (!newUsername) {
       return res.status(400).send({ message: "Username cannot be empty." });
@@ -92,6 +119,96 @@ exports.postUsername = (req, res) => {
           res.status(500).send({ message: err.message });
       });
 };
+
+exports.updateAbout = async (req, res) => {
+  const userId = req.user.id;
+  const { about } = req.body;
+
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).send({ message: "User not found." });
+    }
+
+    // Aktualizacja pola about
+    await user.update({ about });
+
+    res.status(200).send({
+      message: "About information updated successfully.",
+      about: about
+    });
+  } catch (error) {
+    res.status(500).send({ message: "Error updating about information: " + error.message });
+  }
+};
+
+exports.updateCountry = async (req, res) => {
+  const userId = req.user.id;
+  const { country } = req.body;
+
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).send({ message: "User not found." });
+    }
+
+    // Aktualizacja kraju użytkownika
+    await user.update({ country });
+
+    res.status(200).send({
+      message: "Country updated successfully.",
+      country: country
+    });
+  } catch (error) {
+    res.status(500).send({ message: "Error updating country: " + error.message });
+  }
+};
+
+
+exports.updateCity = async (req, res) => {
+  const userId = req.user.id;
+  const { city } = req.body; 
+
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).send({ message: "User not found." });
+    }
+
+    // Aktualizacja miasta użytkownika
+    await user.update({ city });
+
+    res.status(200).send({
+      message: "City updated successfully.",
+      city: city
+    });
+  } catch (error) {
+    res.status(500).send({ message: "Error updating city: " + error.message });
+  }
+};
+
+exports.updateContact = async (req, res) => {
+  const userId = req.user.id; 
+  const { contact } = req.body;
+
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      return res.status(404).send({ message: "User not found." });
+    }
+
+    // Aktualizacja informacji kontaktowej użytkownika
+    await user.update({ contact });
+
+    res.status(200).send({
+      message: "Contact information updated successfully.",
+      contact: contact
+    });
+  } catch (error) {
+    res.status(500).send({ message: "Error updating contact information: " + error.message });
+  }
+};
+
 
 exports.postAvatarLink = async (req, res) => {
   const userId = req.user.id;
@@ -222,4 +339,44 @@ exports.postAvatarFile = (req, res) => {
       res.status(500).send({ message: error.message });
     }
   });
+};
+
+exports.getAllLanguages = async (req, res) => {
+  try {
+    const languages = await Language.findAll({
+      attributes: ['id', 'language']
+    });
+    
+    if (!languages) {
+      return res.status(404).send({ message: "Languages not found." });
+    }
+
+    res.status(200).send(languages);
+  } catch (error) {
+    res.status(500).send({ message: "Error retrieving languages: " + error.message });
+  }
+};
+
+exports.setUserLanguage = async (req, res) => {
+  const userId = req.user.id;
+  const { languageId } = req.body;
+
+  try {
+    // Sprawdź, czy wybrany język istnieje w bazie danych
+    const languageExists = await Language.findByPk(languageId);
+    if (!languageExists) {
+      return res.status(404).send({ message: "Language not found." });
+    }
+
+    // Znajdź i zaktualizuj użytkownika
+    const user = await User.findByPk(userId);
+    if (user) {
+      await user.update({ ID_LANGUAGE: languageId });
+      res.status(200).send({ message: "User language updated successfully." });
+    } else {
+      res.status(404).send({ message: "User not found." });
+    }
+  } catch (error) {
+    res.status(500).send({ message: "Error updating user language: " + error.message });
+  }
 };

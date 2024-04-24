@@ -8,6 +8,7 @@ const sequelize = new Sequelize(
   {
     host: config.HOST,
     dialect: config.dialect,
+    operatorsAliases: false,
     pool: {
       max: config.pool.max,
       min: config.pool.min,
@@ -22,5 +23,15 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+// Importowanie modeli
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
+db.language = require("../models/language.model.js")(sequelize, Sequelize);
+
+// Definiowanie relacji
+db.language.hasMany(db.user, { as: "users", foreignKey: "ID_LANGUAGE" });
+db.user.belongsTo(db.language, {
+  foreignKey: "ID_LANGUAGE",
+  as: "language"
+});
+
 module.exports = db;
