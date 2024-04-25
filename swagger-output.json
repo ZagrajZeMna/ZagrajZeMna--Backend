@@ -30,6 +30,10 @@
     {
       "name": "Admin",
       "description": "Profil administratora (tylko do testów)"
+    },
+    {
+      "name": "IkonyGier",
+      "description": "Wysyłanie nazw i ścieżek obrazów"
     }
   ],
   "paths": {
@@ -1090,7 +1094,45 @@
         }
       }
     },
-    
+    "/api/mainGame/getGame": {
+      "get": {
+        "tags": [
+          "IkonyGier"
+        ],
+        "summary": "Pobranie danych o grach na strone główną.",
+        "description": "Pobiera nazwe i ścieżke do gier na stronę główną.",
+        "operationId": "getImageData",
+        "responses": {
+          "200": {
+            "description": "Dane gier zostały pomyślnie wysłane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "nazwa": {
+                      "type": "string",
+                      "example": "Minecraft"
+                    },
+                    "image": {
+                      "type": "string",
+                      "example": "./folder/minecraft.jpg"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nie znaleziono gier."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+  
 
     "/login": {
       "get": {

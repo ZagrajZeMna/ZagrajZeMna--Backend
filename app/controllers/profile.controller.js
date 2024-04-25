@@ -347,7 +347,7 @@ exports.getAllLanguages = async (req, res) => {
       attributes: ['id', 'language']
     });
     
-    if (!languages) {
+    if (languages.length==0) {
       return res.status(404).send({ message: "Languages not found." });
     }
 

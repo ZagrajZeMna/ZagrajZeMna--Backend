@@ -50,6 +50,7 @@ require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 require('./app/routes/profile.routes')(app);
 require('./app/routes/admin.routes')(app);
+require('./app/routes/mainGame.routes')(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 4000;

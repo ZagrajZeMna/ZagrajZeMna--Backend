@@ -26,6 +26,7 @@ db.sequelize = sequelize;
 // Importowanie modeli
 db.user = require("../models/user.model.js")(sequelize, Sequelize);
 db.language = require("../models/language.model.js")(sequelize, Sequelize);
+db.game = require("../models/game.model.js")(sequelize, Sequelize);
 
 // Definiowanie relacji
 db.language.hasMany(db.user, { as: "users", foreignKey: "ID_LANGUAGE" });
