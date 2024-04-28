@@ -24,6 +24,9 @@ module.exports = (sequelize, Sequelize) => {
         Description: {
             type: Sequelize.TEXT
         }
+    },{
+        timestamps: false,
+        freezeTableName: true
     });
 
     UserInLobby.associate = function(models) {

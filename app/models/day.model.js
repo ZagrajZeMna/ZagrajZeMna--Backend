@@ -8,6 +8,9 @@ module.exports = (sequelize, Sequelize) => {
         DayName: {
             type: Sequelize.STRING,
         }
+    },{
+        timestamps: false,
+        freezeTableName: true
     });
 
     Day.associate = function(models){

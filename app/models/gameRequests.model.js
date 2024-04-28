@@ -27,6 +27,9 @@ module.exports = (sequelize, Sequelize) => {
         Description: {
             type: Sequelize.TEXT
         }
+    },{
+        timestamps: false,
+        freezeTableName: true
     });
 
 

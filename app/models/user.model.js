@@ -48,7 +48,7 @@ module.exports = (sequelize, Sequelize) => {
     },
     ID_LANGUAGE: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
             model: 'languages',
             key: 'ID_LANGUAGE'
@@ -56,7 +56,8 @@ module.exports = (sequelize, Sequelize) => {
     }
     },
     {
-    timestamps: false
+    timestamps: false,
+    freezeTableName: true
     });
 
 

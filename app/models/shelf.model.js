@@ -21,6 +21,9 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'ID_GAME'
             }
         }
+    },{
+        timestamps: false,
+        freezeTableName: true
     });
 
 

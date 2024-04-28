@@ -13,6 +13,9 @@ module.exports = (sequelize, Sequelize) => {
         TimeInThisDay: {
             type: Sequelize.TIME,
         }
+    },{
+        timestamps: false,
+        freezeTableName: true
     });
 
     DayLobby.associate = function(models){
