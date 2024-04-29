@@ -32,10 +32,10 @@ verifyBan = (req, res, next) => {
         if (!user) {
             return res.status(404).send({ message: "User Not found." });
         }        
-        if(user.IsBanned === "Yes"){
+        if(user.isBanned === true){
             res.status(403).send({message: "You are banned"});
         }
-        if(user.IsBanned === "No"){
+        if(user.isBanned === false){
             next();
         }
     }).catch(err => {
