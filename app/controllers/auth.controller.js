@@ -19,7 +19,8 @@ exports.signup = (req, res) => {
     username: req.body.username,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
-    confirmationCode: token
+    confirmationCode: token,
+    ID_LANGUAGE: 1
   })
   .then((user)=>{
     console.log("----------------MAIL SEND-----------------")
