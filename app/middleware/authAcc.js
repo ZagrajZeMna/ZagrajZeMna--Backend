@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
 const controller = require("../controllers/auth.controller");
 const db = require("../models");
-const User = db.user;
+const User = db.User;
 var bcrypt = require("bcryptjs");
 
 verifyAdmin = (req,res,next) => {
