@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
 const controller = require("../controllers/auth.controller");
 const db = require("../models");
-const User = db.user;
+const User = db.User;
 var bcrypt = require("bcryptjs");
 
 verifyAdmin = (req,res,next) => {
@@ -32,10 +32,10 @@ verifyBan = (req, res, next) => {
         if (!user) {
             return res.status(404).send({ message: "User Not found." });
         }        
-        if(user.IsBanned === "Yes"){
+        if(user.isBanned === true){
             res.status(403).send({message: "You are banned"});
         }
-        if(user.IsBanned === "No"){
+        if(user.isBanned === false){
             next();
         }
     }).catch(err => {
