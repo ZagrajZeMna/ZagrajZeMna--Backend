@@ -1,7 +1,9 @@
 const db = require("../models");
 const config = require("../config/auth.config");
 const nodemailer = require("../config/nodemailer.config");
+
 const User = db.User;
+
 const Role = db.role;
 
 const Op = db.Sequelize.Op;
@@ -47,11 +49,15 @@ exports.signin = (req, res) => {
         req.body.password,
         user.password
       );
-
       if (!passwordIsValid) {
         return res.status(401).send({
           accessToken: null,
           message: "Invalid Password!"
+        });
+      }
+      if (user.status === "Created") {
+        return res.status(401).send({
+          message: "Pending Account. Please Verify Your Email!",
         });
       }
       if (user.status === "Pending") {
@@ -67,15 +73,25 @@ exports.signin = (req, res) => {
 
       const token = jwt.sign({ id: user.id },config.key.secret,
       {
-        expiresIn: 3600, // 1 hour
+        expiresIn: 1800, // 30minutes
       });
       
+      const admin = jwt.sign({ id: user.id },config.key.admin,
+      {
+          expiresIn: 1800, // 1 hour
+      });
+
+      if(user.IsAdmin === 'Yes'){
+        res.send(admin)
+      }
+
       res.send(token);
     })
     .catch(err => {
       res.status(500).send({ message: err.message });
     });
 };
+
 
 exports.verifyUser = (req, res, next) => {
   User.findOne({
