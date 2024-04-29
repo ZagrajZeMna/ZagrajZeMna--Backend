@@ -1,8 +1,9 @@
 const db = require("../models");
 const config = require("../config/auth.config");
 const nodemailer = require("../config/nodemailer.config");
-const admin = require("../middleware/authAcc")
-const User = db.user;
+
+const User = db.User;
+
 const Role = db.role;
 
 const Op = db.Sequelize.Op;
