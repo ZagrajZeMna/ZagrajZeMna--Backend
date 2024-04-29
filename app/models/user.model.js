@@ -1,25 +1,25 @@
 module.exports = (sequelize, Sequelize) => {
-    const User = sequelize.define("users", {
-    ID_USER: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+  const User = sequelize.define("users", {
+    username: {
+      type: Sequelize.STRING
     },
     email: {
-        type: Sequelize.STRING,
-
+      type: Sequelize.STRING
     },
     password: {
-        type: Sequelize.STRING,
+      type: Sequelize.STRING
     },
-    username: {
-        type: Sequelize.STRING,
+    status:{
+      type: Sequelize.STRING,
+      defaultValue: 'Created'
     },
-    about: {
-        type: Sequelize.TEXT
+    confirmationCode:{
+      type: Sequelize.STRING,
+      unique: true
     },
-    avatar: {
-        type: Sequelize.STRING
+    IsAdmin:{
+      type: Sequelize.STRING,
+      defaultValue: 'No',
     },
     country: {
         type: Sequelize.STRING
@@ -60,41 +60,5 @@ module.exports = (sequelize, Sequelize) => {
     freezeTableName: true
     });
 
-
-    User.associate = function(models) {
-        User.hasMany(models.Shelf, {
-            foreignKey: 'ID_USER',
-            as: 'shelves'
-        });
-        User.hasMany(models.UserInLobby, {
-            foreignKey: 'ID_USER',
-            as: 'userInLobbies'
-        });
-        User.hasMany(models.Lobby, {
-            foreignKey: 'ID_OWNER',
-            as: 'lobbies'
-        });
-        User.hasMany(models.Message, {
-            foreignKey: 'ID_USER',
-            as: 'messages'
-        });
-        User.hasMany(models.GameRequests, {
-            foreignKey: 'ID_USER',
-            as: 'gameRequests'
-        });
-        User.belongsTo(models.Languages, {
-            foreignKey: 'ID_LANGUAGE',
-            as: 'languages'
-        });
-        User.hasMany(models.UserReview, {
-            foreignKey: 'ID_REVIEWER',
-            as: 'reviewer'
-        });
-        User.hasMany(models.UserReview, {
-            foreignKey: 'ID_ABOUT',
-            as: 'aboutUser'
-        });
-    };
-
-    return User;
-  };
+  return User;
+};
