@@ -1,27 +1,31 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
 const db = require("../models");
-const User = db.User;
+const User = db.user;
 
 verifyToken = (req, res, next) => {
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1]
-  console.log(token);
-  if (!token) {
-    return res.status(403).send({
-      message: "Please log in!"
-    });
-  }
-  jwt.verify(token,config.key.secret, (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ message: 'Invalid token' });
-    }
+  const authHeader = req.headers['authorization'];
+  console.log(req.headers['authorization']);
+  const token = authHeader && authHeader.split(' ')[1];
 
-    // Add the decoded user information to the request object
-    req.user = decoded;
-    next();
+  if (!token) {
+      return res.status(403).send({
+          message: "Please log in!"
+      });
+  }
+
+  jwt.verify(token,config.key.secret, function(err, decoded){
+      if (err) {
+          return res.status(403).json({ message: 'Invalid token' });
+      }
+      // Retrieve user ID from decoded token
+      if (!decoded.ID_USER) {
+          return res.status(403).json({ message: 'User ID not found in token' });
+      }
+      req.userId = decoded.ID_USER;
+      next();
   });
-  };
+};
 
 const authJwt = {
   verifyToken: verifyToken,

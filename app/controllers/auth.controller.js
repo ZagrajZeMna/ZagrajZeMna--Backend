@@ -47,12 +47,10 @@ exports.signin = (req, res) => {
       if (!user) {
         return res.status(404).send({ message: "User Not found." });
       }
-      console.log("test number 1 jabadabadujabddiasbd");
       var passwordIsValid = bcrypt.compareSync(
         req.body.password,
         user.password
       );
-      console.log("test number 2 jegshawjsiafahwofbawofbawbfoawbfojawfoanwofnawonfoawnfoawnofnaowfn");
       if (!passwordIsValid) {
         return res.status(401).send({
           accessToken: null,
@@ -74,12 +72,10 @@ exports.signin = (req, res) => {
           message: "Pending Account. Please Verify Your Email!",
         });
       }
-      console.log("JJJJDDDDDDD");
-      const token = jwt.sign({ id: user.id },config.key.secret,
-      {
-        expiresIn: 1800, // 30minutes
-      });
-      console.log("HHHHHHHHHHAAAAAAAAHHHHHHAAAAAAA");
+      const token = jwt.sign({ID_USER: user.ID_USER},config.key.secret, {
+        algorithm: "HS256",
+        expiresIn: 1800, // 30 minutes
+    });
       const admin = jwt.sign({ id: user.id },config.key.admin,
       {
           expiresIn: 1800, // 1 hour
