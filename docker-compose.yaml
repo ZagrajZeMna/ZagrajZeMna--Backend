@@ -14,9 +14,18 @@ services:
       POSTGRES_DB: postgres_db
     depends_on:
       - db
+<<<<<<< Updated upstream
     volumes:
       - ./uploads:/app/uploads
 
+=======
+    networks:
+      mynetwork:
+        ipv4_address: 172.20.0.2
+    volumes:
+      - ./uploads:/app/uploads
+    
+>>>>>>> Stashed changes
   db:
     container_name: database
     image: postgres:latest
@@ -29,6 +38,13 @@ services:
       - 5434:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
+<<<<<<< Updated upstream
+=======
+    networks:
+      mynetwork:
+        ipv4_address: 172.20.0.3
+    
+>>>>>>> Stashed changes
 
   pgadmin:
     image: dpage/pgadmin4

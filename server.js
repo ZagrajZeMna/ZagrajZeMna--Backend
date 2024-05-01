@@ -49,7 +49,10 @@ app.get("/restartpassword", (req, res) => {
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 require('./app/routes/profile.routes')(app);
+<<<<<<< Updated upstream
 require('./app/routes/admin.routes')(app);
+=======
+>>>>>>> Stashed changes
 require('./app/routes/mainGame.routes')(app);
 
 // set port, listen for requests
