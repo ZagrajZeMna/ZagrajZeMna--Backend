@@ -1,13 +1,8 @@
 const db = require("../models");
 const config = require("../config/auth.config");
 const nodemailer = require("../config/nodemailer.config");
-<<<<<<< Updated upstream
-const User = db.user;
-const Language = db.language;
-=======
 const User = db.User;
 const Languages = db.Languages;
->>>>>>> Stashed changes
 const Role = db.role;
 
 const axios = require('axios');
@@ -21,11 +16,7 @@ var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
 exports.getUserDetails = async (req, res) => {
-<<<<<<< Updated upstream
-  const userId = req.user.id;
-=======
   const userId = req.userId;
->>>>>>> Stashed changes
 
   try {
     const user = await User.findByPk(userId, {
@@ -37,11 +28,7 @@ exports.getUserDetails = async (req, res) => {
     }
 
     // Konwersja ID_LANGUAGE na nazwę języka
-<<<<<<< Updated upstream
-    const language = await db.language.findByPk(user.ID_LANGUAGE);
-=======
     const language = await Languages.findByPk(user.ID_LANGUAGE);
->>>>>>> Stashed changes
     const userWithLanguage = {
       ...user.get({ plain: true }),
       language: language ? language.LANGUAGE : null
@@ -53,15 +40,8 @@ exports.getUserDetails = async (req, res) => {
   }
 };
 
-
-<<<<<<< Updated upstream
-exports.changePassword = async (req, res) => {
-  const userId = req.user.id;
-=======
-
 exports.changePassword = async (req, res) => {
   const userId = req.userId;
->>>>>>> Stashed changes
   const { oldPassword, newPassword, confirmPassword } = req.body;
 
   if (!oldPassword || !newPassword || !confirmPassword) {
@@ -98,11 +78,7 @@ exports.changePassword = async (req, res) => {
 };
 
 exports.postUsername = (req, res) => {
-<<<<<<< Updated upstream
-  const userId = req.user.id;
-=======
   const userId = req.userId;
->>>>>>> Stashed changes
   const newUsername = req.body.username;
 
   if (!newUsername) {
@@ -144,11 +120,7 @@ exports.postUsername = (req, res) => {
 };
 
 exports.updateAbout = async (req, res) => {
-<<<<<<< Updated upstream
-  const userId = req.user.id;
-=======
   const userId = req.userId;
->>>>>>> Stashed changes
   const { about } = req.body;
 
   try {
@@ -170,11 +142,7 @@ exports.updateAbout = async (req, res) => {
 };
 
 exports.updateCountry = async (req, res) => {
-<<<<<<< Updated upstream
-  const userId = req.user.id;
-=======
   const userId = req.userId;
->>>>>>> Stashed changes
   const { country } = req.body;
 
   try {
@@ -197,11 +165,7 @@ exports.updateCountry = async (req, res) => {
 
 
 exports.updateCity = async (req, res) => {
-<<<<<<< Updated upstream
-  const userId = req.user.id;
-=======
   const userId = req.userId;
->>>>>>> Stashed changes
   const { city } = req.body; 
 
   try {
@@ -223,11 +187,7 @@ exports.updateCity = async (req, res) => {
 };
 
 exports.updateContact = async (req, res) => {
-<<<<<<< Updated upstream
-  const userId = req.user.id; 
-=======
   const userId = req.userId;
->>>>>>> Stashed changes
   const { contact } = req.body;
 
   try {
@@ -250,11 +210,7 @@ exports.updateContact = async (req, res) => {
 
 
 exports.postAvatarLink = async (req, res) => {
-<<<<<<< Updated upstream
-  const userId = req.user.id;
-=======
   const userId = req.userId;
->>>>>>> Stashed changes
   const avatarLink = req.body.avatarLink;
 
   const isValidUrl = (string) => {
@@ -351,11 +307,7 @@ exports.postAvatarFile = (req, res) => {
     }
 
     try {
-<<<<<<< Updated upstream
-      const userId = req.user.id;
-=======
       const userId = req.userId;
->>>>>>> Stashed changes
       const user = await User.findByPk(userId);
       if (!user) {
         fs.unlinkSync(req.file.path);
@@ -390,19 +342,11 @@ exports.postAvatarFile = (req, res) => {
 
 exports.getAllLanguages = async (req, res) => {
   try {
-<<<<<<< Updated upstream
-    const languages = await Language.findAll({
-      attributes: ['id', 'language']
-    });
-    
-    if (languages.length==0) {
-=======
     const languages = await Languages.findAll({
       attributes: ['ID_LANGUAGE', 'LANGUAGE']
     });
     
     if (languages.length === 0) {
->>>>>>> Stashed changes
       return res.status(404).send({ message: "Languages not found." });
     }
 
@@ -413,20 +357,12 @@ exports.getAllLanguages = async (req, res) => {
 };
 
 exports.setUserLanguage = async (req, res) => {
-<<<<<<< Updated upstream
-  const userId = req.user.id;
-=======
   const userId = req.userId;
->>>>>>> Stashed changes
   const { languageId } = req.body;
 
   try {
     // Sprawdź, czy wybrany język istnieje w bazie danych
-<<<<<<< Updated upstream
-    const languageExists = await Language.findByPk(languageId);
-=======
     const languageExists = await Languages.findByPk(languageId);
->>>>>>> Stashed changes
     if (!languageExists) {
       return res.status(404).send({ message: "Language not found." });
     }

@@ -8,7 +8,6 @@ const sequelize = new Sequelize(
   {
     host: config.HOST,
     dialect: config.dialect,
-    operatorsAliases: false,
     pool: {
       max: config.pool.max,
       min: config.pool.min,
@@ -23,16 +22,25 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-// Importowanie modeli
-db.user = require("../models/user.model.js")(sequelize, Sequelize);
-db.language = require("../models/language.model.js")(sequelize, Sequelize);
-db.game = require("../models/game.model.js")(sequelize, Sequelize);
+db.User = require('./user.model.js')(sequelize, Sequelize);
+db.Game = require('./game.model.js')(sequelize, Sequelize);
+db.Languages = require('./languages.model.js')(sequelize, Sequelize);
+db.Lobby = require('./lobby.model.js')(sequelize, Sequelize);
+db.UserInLobby = require('./userInLobby.model.js')(sequelize, Sequelize);
+db.Message = require('./message.model.js')(sequelize, Sequelize);
+db.GameRequests = require('./gameRequests.model.js')(sequelize, Sequelize);
+db.Shelf = require('./shelf.model.js')(sequelize, Sequelize);
+db.UserReview = require('./userReviews.model.js')(sequelize, Sequelize);
+db.DayLobby = require('./dayLobby.model.js')(sequelize, Sequelize);
+db.Day = require('./day.model.js')(sequelize, Sequelize);
 
-// Definiowanie relacji
-db.language.hasMany(db.user, { as: "users", foreignKey: "ID_LANGUAGE" });
-db.user.belongsTo(db.language, {
-  foreignKey: "ID_LANGUAGE",
-  as: "language"
+
+
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+      db[modelName].associate(db);
+  }
 });
+
 
 module.exports = db;

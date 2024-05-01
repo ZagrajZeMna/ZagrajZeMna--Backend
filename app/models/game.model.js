@@ -1,16 +1,37 @@
 module.exports = (sequelize, Sequelize) => {
     const Game = sequelize.define("games", {
-      name: {
-        type: Sequelize.STRING
-      },
-      image:{
-        type: Sequelize.STRING
-      }
-
-    }, {
-      timestamps: false
+        ID_GAME: {
+            type: Sequelize.INTEGER,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        name: {
+            type: Sequelize.STRING,
+        },
+        description: {
+            type: Sequelize.TEXT,
+        },
+        image: {
+            type: Sequelize.STRING,
+        }
+    },
+    {
+        timestamps: false,
+        freezeTableName: true
     });
-  
+
+    Game.associate = function(models) {
+        Game.hasMany(models.Shelf, {
+            foreignKey: 'ID_GAME',
+            as: 'shelves'
+        });
+        Game.hasMany(models.Lobby, {
+            foreignKey: 'ID_GAME',
+            as: 'lobbies'
+        });
+    };
+
+
+    
     return Game;
-  };
-  
+};

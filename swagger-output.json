@@ -28,13 +28,6 @@
       "description": "Profil użytkownika"
     },
     {
-<<<<<<< Updated upstream
-      "name": "Admin",
-      "description": "Profil administratora (tylko do testów)"
-    },
-    {
-=======
->>>>>>> Stashed changes
       "name": "IkonyGier",
       "description": "Wysyłanie nazw i ścieżek obrazów"
     }
@@ -782,9 +775,6 @@
         }
       }
     },
-<<<<<<< Updated upstream
-    
-=======
 
     "/api/mainGame/getGame": {
       "get": {
@@ -824,7 +814,6 @@
         }
       }
     },
->>>>>>> Stashed changes
 
     "/api/auth/signup":{
       "post": {
@@ -1014,7 +1003,7 @@
           "Weryfikacja"
         ],
         "summary": "Dostęp dla zalogowanych",
-        "description": "Cześć strony do któej dostęp ma tylko zalogowany użytkownik",
+        "description": "Część strony do której dostęp ma tylko zalogowany użytkownik",
         "operationId": "verifyUser",
         "responses": {
           "200": {
@@ -1036,8 +1025,75 @@
         }
       }
     },
-
-    
+    "/api/test/admin":{
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Dostęp dla admina",
+        "description": "Część strony do której dostęp ma tylko administrator",
+        "operationId": "verifyUser",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Email konta administartora",
+            "required": true,
+            "explode": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/auth/remember":{
+      "post": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Przypominanie hasła",
+        "description": "Reset hasła za potwierdzeniem email",
+        "operationId": "rememberPass",
+        "requestBody": {
+          "description": "Zresetuj hasło!",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Remember"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Remember"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
     "/api/auth/reset/:confirmationCode":{
       "get": {
         "tags": [
@@ -1072,113 +1128,6 @@
         }
       }
     },
-
-    "/api/admin/addLanguage": {
-      "post": {
-        "tags": [
-          "Admin"
-        ],
-        "summary": "Dodawanie nowego języka",
-        "description": "Pozwala administratorowi dodać nowy język do bazy danych.",
-        "operationId": "addLanguage",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "description": "Nazwa języka do dodania",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "language": {
-                    "type": "string",
-                    "description": "Nazwa nowego języka",
-                    "example": "Polski"
-                  }
-                },
-                "required": [
-                  "language"
-                ]
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Język został pomyślnie dodany",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Language added successfully."
-                    },
-                    "language": {
-                      "$ref": "#/components/schemas/Language"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Nieprawidłowe żądanie - brak pola 'language' lub pole jest puste."
-          },
-          "409": {
-            "description": "Konflikt - język już istnieje."
-          },
-          "500": {
-            "description": "Wewnętrzny błąd serwera"
-          }
-        }
-      }
-    },
-    "/api/mainGame/getGame": {
-      "get": {
-        "tags": [
-          "IkonyGier"
-        ],
-        "summary": "Pobranie danych o grach na strone główną.",
-        "description": "Pobiera nazwe i ścieżke do gier na stronę główną.",
-        "operationId": "getImageData",
-        "responses": {
-          "200": {
-            "description": "Dane gier zostały pomyślnie wysłane",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "nazwa": {
-                      "type": "string",
-                      "example": "Minecraft"
-                    },
-                    "image": {
-                      "type": "string",
-                      "example": "./folder/minecraft.jpg"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nie znaleziono gier."
-          },
-          "500": {
-            "description": "Wewnętrzny błąd serwera"
-          }
-        }
-      }
-    },
-  
-
     "/login": {
       "get": {
         "tags": [
@@ -1220,15 +1169,6 @@
     }
   },  
   "components": {
-<<<<<<< Updated upstream
-  "securitySchemes": {
-    "bearerAuth": {
-      "type": "http",
-      "scheme": "bearer",
-      "bearerFormat": "JWT"
-    }
-  },
-=======
     "securitySchemes": {
       "bearerAuth": {
         "type": "http",
@@ -1236,7 +1176,6 @@
         "bearerFormat": "JWT"
       }
     },
->>>>>>> Stashed changes
     "schemas": {
       "Language": {
         "type": "object",
@@ -1251,10 +1190,7 @@
           }
         }
       },
-<<<<<<< Updated upstream
-      
-=======
->>>>>>> Stashed changes
+
       "User": {
         "type": "object",
         "properties": {

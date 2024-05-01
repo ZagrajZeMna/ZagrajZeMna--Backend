@@ -1,7 +1,10 @@
 const db = require("../models");
 const config = require("../config/auth.config");
 const nodemailer = require("../config/nodemailer.config");
-const User = db.user;
+const admin = require("../middleware/authAcc")
+
+const User = db.User;
+
 const Role = db.role;
 
 const Op = db.Sequelize.Op;
@@ -16,7 +19,8 @@ exports.signup = (req, res) => {
     username: req.body.username,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
-    confirmationCode: token
+    confirmationCode: token,
+    ID_LANGUAGE: 1
   })
   .then((user)=>{
     console.log("----------------MAIL SEND-----------------")
@@ -47,11 +51,15 @@ exports.signin = (req, res) => {
         req.body.password,
         user.password
       );
-
       if (!passwordIsValid) {
         return res.status(401).send({
           accessToken: null,
           message: "Invalid Password!"
+        });
+      }
+      if (user.status === "Created") {
+        return res.status(401).send({
+          message: "Pending Account. Please Verify Your Email!",
         });
       }
       if (user.status === "Pending") {
@@ -64,18 +72,26 @@ exports.signin = (req, res) => {
           message: "Pending Account. Please Verify Your Email!",
         });
       }
-
-      const token = jwt.sign({ id: user.id },config.key.secret,
+      const token = jwt.sign({ID_USER: user.ID_USER},config.key.secret, {
+        algorithm: "HS256",
+        expiresIn: 1800, // 30 minutes
+    });
+      const admin = jwt.sign({ id: user.id },config.key.admin,
       {
-        expiresIn: 3600, // 1 hour
+          expiresIn: 1800, // 1 hour
       });
-      
+
+      if(user.IsAdmin === 'Yes'){
+        res.send(admin)
+      }
+    
       res.send(token);
     })
     .catch(err => {
       res.status(500).send({ message: err.message });
     });
 };
+
 
 exports.verifyUser = (req, res, next) => {
   User.findOne({
