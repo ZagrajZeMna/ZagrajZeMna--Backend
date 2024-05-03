@@ -47,7 +47,7 @@ app.get("/restartpassword", (req, res) => {
 //Logging system routes
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
-
+require('./app/routes/lobby.routes')(app);
 require('./app/routes/profile.routes')(app);
 require('./app/routes/mainGame.routes')(app);
 
