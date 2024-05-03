@@ -22,6 +22,15 @@
     {
       "name": "Weryfikacja",
       "description": "Weryfikacja dostępu dla użytkowników"
+
+    },
+    {
+      "name": "Profil",
+      "description": "Profil użytkownika"
+    },
+    {
+      "name": "IkonyGier",
+      "description": "Wysyłanie nazw i ścieżek obrazów"
     }
   ],
   "paths": {
@@ -31,6 +40,7 @@
           "Weryfikacja"
         ],
         "summary": "Strona główna",
+
         "responses": {
           "200": {
             "description": "OK"
@@ -38,6 +48,1103 @@
         }
       }
     },
+    "/api/auth/signup":{
+      "post": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Rejestracja użytkownika",
+        "description": "Stworzenia konta użytkownika",
+        "operationId": "addUser",
+        "requestBody": {
+          "description": "Stwórz konto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/auth/signin":{
+      "post": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Logowanie",
+        "description": "Logowanie do systemu",
+        "operationId": "Login",
+        "requestBody": {
+          "description": "Zaloguj się",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Remember"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "properties": {
+                  "JWT": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imh1YmVydC5rcmF1cy5vZmZpY2lhbEBnbWFpbC5jb20iLCJpYXQiOjE3MTMwOTM2MzV9.SGVZ_cpjrtDT-1waqyDAw05SG0I59Jg33MsM4dEfSxg"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/auth/confirm/:confirmationCode":{
+      "get": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Autoryzacja e-mail",
+        "description": "Potwierdzenie maila",
+        "operationId": "Autoryzacja",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Klucz autoryzacyjny wysłany w wiadomości email",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": "Zweryfikowano"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "confirmationCode": {
+                  "type": "string",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbmJyemVzemN6b3Q5QGdtYWlsLmNvbSIsImlhdCI6MTcxMjg1MTY5N30.46bEOEU4oqn7sS0Bt30erT5Iifm0AIc38hmA-MJHeJo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/auth/signout":{
+      "get": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Wylogowanie",
+        "description": "Wylogowanie z systemu",
+        "operationId": "Logout",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Wyloguj się",
+            "required": false,
+            "explode": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "confirmationCode": {
+                  "type": "string",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbmJyemVzemN6b3Q5QGdtYWlsLmNvbSIsImlhdCI6MTcxMjg1MTY5N30.46bEOEU4oqn7sS0Bt30erT5Iifm0AIc38hmA-MJHeJo"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/test/all":{
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Dostęp dla każdego",
+        "description": "Cześć strony do któej dostęp ma niezalogowany użytkownik",
+        "operationId": "verifyAll",
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/test/user":{
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Dostęp dla zalogowanych",
+        "description": "Część strony do której dostęp ma tylko zalogowany użytkownik",
+        "operationId": "verifyUser",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/test/admin":{
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Dostęp dla admina",
+        "description": "Część strony do której dostęp ma tylko administrator",
+        "operationId": "verifyUser",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "description": "Email konta administartora",
+            "required": true,
+            "explode": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/auth/remember":{
+      "post": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Przypominanie hasła",
+        "description": "Reset hasła za potwierdzeniem email",
+        "operationId": "rememberPass",
+        "requestBody": {
+          "description": "Zresetuj hasło!",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Remember"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Remember"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/auth/reset/:confirmationCode":{
+      "get": {
+        "tags": [
+          "Logowanie"
+        ],
+        "summary": "Reset hasła e-mail",
+        "description": "Reset hasła e-mail",
+        "operationId": "resetPass",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Link do zresetowania hasła wysłany w wiadomości email",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": "Zresetowano"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/login": {
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Logowanie",
+
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+
+
+    "/api/profile/getUserDetails": {
+      "get": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Pobranie szczegółów użytkownika",
+        "description": "Pozwala zalogowanemu użytkownikowi na pobranie szczegółów swojego profilu.",
+        "operationId": "getUserDetails",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Szczegóły profilu użytkownika zostały pomyślnie pobrane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "example": "jan_kowalski"
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "Johnny"
+                    },
+                    "about": {
+                      "type": "string",
+                      "example": "Pasjonat gier i programowania."
+                    },
+                    "country": {
+                      "type": "string",
+                      "example": "Polska"
+                    },
+                    "city": {
+                      "type": "string",
+                      "example": "Warszawa"
+                    },
+                    "contact": {
+                      "type": "string",
+                      "example": "jan@example.com"
+                    },
+                    "IDlanguage": {
+                      "type": "integer",
+                      "example": 1,
+                      "description": "ID języka zgodnie z tabelą Languages"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - problem z danymi użytkownika."
+          },
+          "401": {
+            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+          },
+          "404": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+    
+    "/api/profile/changePassword": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Zmiana hasła użytkownika",
+        "description": "Pozwala zalogowanemu użytkownikowi na zmianę jego hasła.",
+        "operationId": "changePassword",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Dane wymagane do zmiany hasła",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "oldPassword": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "Aktualne hasło użytkownika"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "Nowe hasło użytkownika"
+                  },
+                  "confirmPassword": {
+                    "type": "string",
+                    "format": "password",
+                    "description": "Potwierdzenie nowego hasła"
+                  }
+                },
+                "required": [
+                  "oldPassword",
+                  "newPassword",
+                  "confirmPassword"
+                ]
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Hasło zostało pomyślnie zmienione",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Password successfully changed"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe dane wejściowe, hasła nie pasują do siebie lub nowe hasło jest takie samo jak stare"
+          },
+          "404": {
+            "description": "Użytkownik nie został znaleziony"
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/profile/postUsername": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Aktualizacja nazwy użytkownika",
+        "description": "Pozwala zalogowanemu użytkownikowi aktualizować jego nazwę użytkownika.",
+        "operationId": "updateUsername",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Żądanie aktualizacji nazwy użytkownika",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "Nowa nazwa użytkownika"
+                  }
+                },
+                "required": [
+                  "username"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Nazwa użytkownika została pomyślnie zaktualizowana",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Nazwa użytkownika została pomyślnie zaktualizowana."
+                    },
+                    "username": {
+                      "type": "string",
+                      "example": "nowy_nickname"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - brak nazwy użytkownika lub nazwa jest pusta."
+          },
+          "404": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "409": {
+            "description": "Nazwa użytkownika jest już zajęta."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/profile/updateAbout": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Aktualizacja informacji o użytkowniku",
+        "description": "Pozwala zalogowanemu użytkownikowi aktualizować informacje o sobie w profilu.",
+        "operationId": "updateAbout",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Żądanie aktualizacji informacji o użytkowniku",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "about": {
+                    "type": "string",
+                    "description": "Informacje o użytkowniku do aktualizacji",
+                    "example": "Pasjonat gier komputerowych i programowania."
+                  }
+                },
+                "required": [
+                  "about"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Informacje o użytkowniku zostały pomyślnie zaktualizowane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "About information updated successfully."
+                    },
+                    "about": {
+                      "type": "string",
+                      "example": "Pasjonat gier komputerowych i programowania."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - brak wymaganego pola 'about' lub pole jest puste."
+          },
+          "401": {
+            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+          },
+          "404": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+    
+    "/api/profile/updateCountry": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Aktualizacja kraju użytkownika",
+        "description": "Pozwala zalogowanemu użytkownikowi aktualizować kraj w jego profilu.",
+        "operationId": "updateCountry",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Żądanie aktualizacji kraju użytkownika",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "country": {
+                    "type": "string",
+                    "description": "Nazwa kraju do zapisania w profilu użytkownika",
+                    "example": "Polska"
+                  }
+                },
+                "required": [
+                  "country"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kraj użytkownika został pomyślnie zaktualizowany",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Country updated successfully."
+                    },
+                    "country": {
+                      "type": "string",
+                      "example": "Polska"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - brak wymaganego pola 'country' lub pole jest puste."
+          },
+          "401": {
+            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+          },
+          "404": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/profile/updateCity": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Aktualizacja miasta użytkownika",
+        "description": "Pozwala zalogowanemu użytkownikowi aktualizować miasto w jego profilu.",
+        "operationId": "updateCity",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Żądanie aktualizacji miasta użytkownika",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "city": {
+                    "type": "string",
+                    "description": "Nazwa miasta do zapisania w profilu użytkownika",
+                    "example": "Warszawa"
+                  }
+                },
+                "required": [
+                  "city"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Miasto użytkownika zostało pomyślnie zaktualizowane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "City updated successfully."
+                    },
+                    "city": {
+                      "type": "string",
+                      "example": "Warszawa"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - brak wymaganego pola 'city' lub pole jest puste."
+          },
+          "401": {
+            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+          },
+          "404": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+    
+    "/api/profile/updateContact": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Aktualizacja informacji kontaktowej użytkownika",
+        "description": "Pozwala zalogowanemu użytkownikowi aktualizować jego informacje kontaktowe w profilu.",
+        "operationId": "updateContact",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Żądanie aktualizacji informacji kontaktowej użytkownika",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contact": {
+                    "type": "string",
+                    "description": "Nowe informacje kontaktowe użytkownika",
+                    "example": "jankowalski#1234"
+                  }
+                },
+                "required": [
+                  "contact"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Informacje kontaktowe użytkownika zostały pomyślnie zaktualizowane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Contact information updated successfully."
+                    },
+                    "contact": {
+                      "type": "string",
+                      "example": "jan.kowalski@example.com"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - brak wymaganego pola 'contact' lub pole jest puste."
+          },
+          "401": {
+            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+          },
+          "404": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+    
+    "/api/profile/getAllLanguages": {
+      "get": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Pobiera wszystkie języki",
+        "description": "Zwraca listę wszystkich języków wraz z ich ID i nazwą.",
+        "operationId": "getAllLanguages",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista języków",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "language": {
+                        "type": "string",
+                        "example": "English"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nie znaleziono języków"
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/profile/setUserLanguage": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Ustawienie języka użytkownika",
+        "description": "Zezwala zalogowanemu użytkownikowi na wybór języka.",
+        "operationId": "setUserLanguage",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "ID języka do ustawienia dla użytkownika",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "languageId": {
+                    "type": "integer",
+                    "description": "ID języka, który ma zostać przypisany do użytkownika",
+                    "example": 2
+                  }
+                },
+                "required": [
+                  "languageId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Język użytkownika został zaktualizowany"
+          },
+          "404": {
+            "description": "Nie znaleziono języka lub użytkownika"
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+    
+    "/api/profile/postAvatarlink": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Ustaw link do awatara",
+        "description": "Pozwala zalogowanemu użytkownikowi ustawić link do swojego awatara.",
+        "operationId": "setAvatarLink",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Dane awatara użytkownika",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "avatarLink": {
+                    "type": "string",
+                    "format": "uri",
+                    "description": "Link do awatara użytkownika"
+                  }
+                },
+                "required": [
+                  "avatarLink"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Avatar został pomyślnie zaktualizowany",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Avatar został pomyślnie zaktualizowany."
+                    },
+                    "avatarLink": {
+                      "type": "string",
+                      "example": "http://example.com/avatar/userId.png"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie"
+          },
+          "403": {
+            "description": "Brak dostępu - nie dostarczono tokena lub token jest nieprawidłowy."
+          }
+        }
+      }
+    },
+    
+    "/api/profile/postAvatarFile": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Aktualizacja awatara użytkownika",
+        "description": "Pozwala zalogowanemu użytkownikowi na przesłanie i aktualizację awatara.",
+        "operationId": "updateAvatar",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Plik awatara użytkownika do przesłania",
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "avatar": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Plik awatara użytkownika"
+                  }
+                },
+                "required": [
+                  "avatar"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Awatar został pomyślnie zaktualizowany",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Awatar został pomyślnie przesłany."
+                    },
+                    "avatarPath": {
+                      "type": "string",
+                      "example": "/uploads/avatar12345.png"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - problem z plikiem awatara (np. zbyt duży rozmiar pliku, nieprawidłowy format)."
+          },
+          "404": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera."
+          }
+        }
+      }
+    },
+
+    "/api/mainGame/getGame": {
+      "get": {
+        "tags": [
+          "IkonyGier"
+        ],
+        "summary": "Pobranie danych o grach na strone główną.",
+        "description": "Pobiera nazwe i ścieżke do gier na stronę główną.",
+        "operationId": "getImageData",
+        "responses": {
+          "200": {
+            "description": "Dane gier zostały pomyślnie wysłane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "nazwa": {
+                      "type": "string",
+                      "example": "Minecraft"
+                    },
+                    "image": {
+                      "type": "string",
+                      "example": "./folder/minecraft.jpg"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nie znaleziono gier."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
     "/api/auth/signup":{
       "post": {
         "tags": [
@@ -392,7 +1499,32 @@
     }
   },  
   "components": {
+
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
+      "Language": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "language": {
+            "type": "string",
+            "example": "English"
+          }
+        }
+      },
+
+
+    "schemas": {
+
       "User": {
         "type": "object",
         "properties": {
