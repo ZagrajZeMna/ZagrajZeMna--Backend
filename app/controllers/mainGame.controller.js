@@ -1,7 +1,7 @@
 const db = require("../models");
 const config = require("../config/auth.config");
 const nodemailer = require("../config/nodemailer.config");
-const Game = db.game;
+const Game = db.Game;
 
 //pobranie tokena json
 var jwt = require("jsonwebtoken");
