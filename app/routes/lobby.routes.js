@@ -12,7 +12,7 @@ module.exports = function(app) {
     next();
   });
 
-  app.post("/api/lobby/show",controller.show);
+  app.get("/api/lobby/show",controller.show);
   app.post("/api/lobby/add",[authJwt.verifyToken],controller.add);
   app.get("/api/lobby/data",controller.data);
 };

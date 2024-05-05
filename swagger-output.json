@@ -1108,7 +1108,7 @@
       }
     },
     "/api/lobby/show":{
-      "post": {
+      "get": {
         "tags": [
           "Lobby"
         ],
@@ -1183,17 +1183,6 @@
             }
           }
         ],
-        "requestBody": {
-          "description": "Wyświetl lobby!",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DisplayLobbies"
-              }
-            }
-          },
-          "required": true
-        },
         "responses": {
           "200": {
             "description": "Successful operation",
