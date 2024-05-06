@@ -22,4 +22,8 @@ module.exports = function(app) {
   app.post("/api/profile/updateContact", [authJwt.verifyToken], controller.updateContact);
   app.get("/api/profile/getAllLanguages", [authJwt.verifyToken], controller.getAllLanguages);
   app.post("/api/profile/setUserLanguage", [authJwt.verifyToken], controller.setUserLanguage);
+  app.get("/api/profile/getAllGames", controller.getAllGames);
+  app.get("/api/profile/getUserShelf",  [authJwt.verifyToken], controller.getUserShelf);
+  app.post("/api/profile/addGameToShelf",  [authJwt.verifyToken], controller.addGameToShelf);
+  app.delete("/api/profile/removeGameFromShelf", [authJwt.verifyToken], controller.removeGameFromShelf);
 };

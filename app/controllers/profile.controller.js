@@ -4,6 +4,8 @@ const nodemailer = require("../config/nodemailer.config");
 const User = db.User;
 const Languages = db.Languages;
 const Role = db.role;
+const Shelf = db.Shelf;
+const Game = db.Game;
 
 const axios = require('axios');
 const multer = require('multer');
@@ -269,18 +271,15 @@ exports.postAvatarLink = async (req, res) => {
 };
 
 exports.postAvatarFile = (req, res) => {
-  // Konfiguracja przechowywania plików multer
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, 'uploads/');
     },
     filename: (req, file, cb) => {
-      // Tworzenie unikalnej nazwy pliku
       cb(null, Date.now() + path.extname(file.originalname));
     }
   });
 
-  // Filtr plików multer, który akceptuje tylko określone typy obrazów
   const fileFilter = (req, file, cb) => {
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (allowedTypes.includes(file.mimetype)) {
@@ -290,11 +289,10 @@ exports.postAvatarFile = (req, res) => {
     }
   };
 
-  // Konfiguracja multer
   const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5 MB
+    limits: { fileSize: 5 * 1024 * 1024 }
   }).single('avatar');
 
   upload(req, res, async (err) => {
@@ -315,23 +313,28 @@ exports.postAvatarFile = (req, res) => {
       }
 
       if (user.avatar) {
-        // Usuń poprzedni plik awatara
-        const oldAvatarPath = path.join(__dirname, '..', 'uploads', user.avatar);
-        if (fs.existsSync(oldAvatarPath)) {
-          fs.unlinkSync(oldAvatarPath);
-        }
+        const oldAvatarPath = path.join('uploads', user.avatar);
+
+        fs.unlink(oldAvatarPath, (err) => {
+          if (err) {
+            if (err.code === 'ENOENT') {
+              onsole.log('File does not exist, cannot delete:', oldAvatarPath);
+            } else {
+              console.error('Failed to delete old avatar:', err);
+            }
+          } else {
+            console.log('Old avatar successfully deleted');
+          }
+        });
       }
 
-      // Zaktualizuj użytkownika z nową ścieżką awatara
       const updatedUser = await user.update({ avatar: req.file.filename });
-
       res.status(200).send({
         message: "Avatar successfully uploaded.",
         avatar: req.file.filename
       });
 
     } catch (error) {
-      // Usuń nowy plik, jeśli nie można zaktualizować użytkownika
       if (req.file) {
         fs.unlinkSync(req.file.path);
       }
@@ -339,6 +342,7 @@ exports.postAvatarFile = (req, res) => {
     }
   });
 };
+
 
 exports.getAllLanguages = async (req, res) => {
   try {
@@ -377,5 +381,108 @@ exports.setUserLanguage = async (req, res) => {
     }
   } catch (error) {
     res.status(500).send({ message: "Error updating user language: " + error.message });
+  }
+};
+
+exports.getAllGames = async (req, res) => {
+  try {
+    const games = await Game.findAll({
+      attributes: ['ID_GAME', 'name']
+    });
+
+    if (games.length === 0) {
+      return res.status(404).send({ message: "Nie znaleziono gier w bazie danych." });
+    }
+
+    res.status(200).send(games);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
+
+exports.getUserShelf = async (req, res) => {
+  const userId = req.userId; 
+
+  try {
+    const shelves = await Shelf.findAll({
+      where: { ID_USER: userId },
+      attributes: ['ID_SHELF', 'ID_GAME']
+    });
+
+    if (shelves.length === 0) {
+      return res.status(404).send({ message: "Nie znaleziono gier na półce użytkownika." });
+    }
+
+    res.status(200).send(shelves);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+};
+
+exports.addGameToShelf = async (req, res) => {
+  const userId = req.userId;
+  const { ID_GAME } = req.body;
+
+  try {
+    const existingShelf = await Shelf.findOne({
+      where: {
+        ID_USER: userId,
+        ID_GAME: ID_GAME
+      }
+    });
+
+    if (existingShelf) {
+      return res.status(409).send({
+        message: "Ta gra jest już na twojej półce."
+      });
+    }
+
+    const newShelf = await Shelf.create({
+      ID_USER: userId,
+      ID_GAME: ID_GAME
+    });
+
+    res.status(201).send({
+      message: "Gra została dodana do półki.",
+      shelfDetails: {
+        ID_SHELF: newShelf.ID_SHELF,
+        ID_USER: newShelf.ID_USER,
+        ID_GAME: newShelf.ID_GAME
+      }
+    });
+  } catch (error) {
+    console.error("Error during creating shelf: ", error);
+    res.status(500).send({ message: "Validation error" });
+  }
+};
+
+exports.removeGameFromShelf = async (req, res) => {
+  const userId = req.userId;
+  const { ID_GAME } = req.body; 
+
+  try {
+    const shelf = await Shelf.findOne({
+      where: {
+        ID_USER: userId,
+        ID_GAME: ID_GAME
+      }
+    });
+
+    if (!shelf) {
+      return res.status(404).send({
+        message: "Nie znaleziono gry na półce tego użytkownika."
+      });
+    }
+
+    // Usunięcie znalezionego rekordu
+    await shelf.destroy();
+
+    res.status(200).send({
+      message: "Gra została usunięta z półki."
+    });
+  } catch (error) {
+    console.error("Error during removing game from shelf: ", error);
+    res.status(500).send({ message: "Internal server error" });
   }
 };
