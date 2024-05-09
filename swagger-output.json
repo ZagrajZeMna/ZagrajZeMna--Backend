@@ -31,6 +31,10 @@
     {
       "name": "IkonyGier",
       "description": "Wysyłanie nazw i ścieżek obrazów"
+    },
+    {
+      "name": "WnętrzeLobby",
+      "description": "Obsługa pojedyńczego lobby"
     }
   ],
   "paths": {
@@ -1145,6 +1149,87 @@
       }
     },
 
+    "/api/lobbyInside/getUserList": {
+      "get": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Pobranie nazwy i awatary graczy przypisanych do lobby.",
+        "description": "Pobiera nazwe i ścieżke do użytkowników wewnątrz lobby.",
+        "operationId": "getLobbyUserData",
+        "responses": {
+          "200": {
+            "description": "Dane zostały pomyślnie wysłane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "nickname": {
+                      "type": "string",
+                      "example": "Tomasz_NN"
+                    },
+                    "avatar": {
+                      "type": "string",
+                      "example": "./folder/minecraft.jpg"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nie znaleziono danych."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/lobbyInside/getOwnerLobbyData": {
+      "get": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Pobranie id i nazwy właściciela przypisanego do lobby.",
+        "description": "Pobiera danych właściciela lobby.",
+        "operationId": "getLobbyOwnerData",
+        "responses": {
+          "200": {
+            "description": "Dane zostały pomyślnie wysłane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id_owner": {
+                      "type": "integer",
+                      "example": "1"
+                    },
+                    "nickname": {
+                      "type": "string",
+                      "example": "Tomasz_NN"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Nie znaleziono właściciela."
+          },
+          "404": {
+            "description": "Nie znaleziono danych właściciela."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
     "/api/auth/signup":{
       "post": {
         "tags": [
@@ -1557,4 +1642,5 @@
       }
     }
   }
+}
 }
