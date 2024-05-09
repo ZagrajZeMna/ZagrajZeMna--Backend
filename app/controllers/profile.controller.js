@@ -464,7 +464,7 @@ exports.usersLobby = async (req,res) =>{
 
   const numberOfPages = Math.round(alllobbies / lobbies.length);
   res.status(200).json({Lobby: lobbyData,pages: numberOfPages});
-}
+};
 
 exports.usersGames = async (req,res) =>{
   //pagination
@@ -508,7 +508,7 @@ exports.usersGames = async (req,res) =>{
   }).catch(err => {
       res.status(500).send({ message: err.message });
   });
-}
+};
 
 exports.addGameToShelf = async (req, res) => {
   const userId = req.userId;

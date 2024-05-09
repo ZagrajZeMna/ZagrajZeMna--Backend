@@ -1125,6 +1125,7 @@
             "schema": {
               "type": "string",
               "default": "0"
+
             }
           },
           {
@@ -1192,6 +1193,7 @@
                   "$ref": "#/components/schemas/DisplayedLobby"
                 }
               }
+
             }
           },
           "400": {
@@ -1207,6 +1209,7 @@
       "get": {
         "tags": [
           "Lobby"
+
         ],
         "summary": "Pobranie danych",
         "description": "Pobranie danych o grach i językach",
@@ -1217,7 +1220,9 @@
             "content": {
               "application/json": {
                 "schema": {
+
                   "$ref": "#/components/schemas/LobbyData"
+
                 }
               }
             }
@@ -1231,6 +1236,7 @@
         }
       }
     },
+
     "/api/profile/usersLobby":{
       "post": {
         "tags": [
@@ -1255,13 +1261,16 @@
           },
           "required": true
         },
+
         "responses": {
           "200": {
             "description": "Successful operation",
             "content": {
               "application/json": {
                 "schema": {
+
                   "$ref": "#/components/schemas/DisplayedLobby"
+
                 }
               }
             }
@@ -1275,13 +1284,17 @@
         }
       }
     },
+
     "/api/profile/usersGames":{
+
       "post": {
         "tags": [
           "Profil"
         ],
+
         "summary": "Pobranie danych o grach",
         "description": "Pobranie danych o grach",
+
         "operationId": "Pobranie danych",
         "security": [
           {
@@ -1289,7 +1302,9 @@
           }
         ],
         "requestBody": {
+
           "description": "Wyświetl gry!",
+
           "content": {
             "application/json": {
               "schema": {
@@ -1305,6 +1320,7 @@
             "content": {
               "application/json": {
                 "schema": {
+
                   "type": "object",
                   "properties": {
                     "shotname": {
@@ -1316,6 +1332,7 @@
                       "example": "./folder/minecraft.jpg"
                     }
                   }
+
                 }
               }
             }
@@ -1329,12 +1346,15 @@
         }
       }
     },
+
     
     "/api/profile/addGameToShelf": {
+
       "post": {
         "tags": [
           "Profil"
         ],
+
         "summary": "Dodaj grę do półki użytkownika",
         "description": "Umożliwia zalogowanemu użytkownikowi dodanie nowej gry do swojej półki.",
         "operationId": "addGameToShelf",
@@ -1344,6 +1364,7 @@
           }
         ],
         "requestBody": {
+
           "description": "Dane potrzebne do dodania gry do półki",
           "required": true,
           "content": {
@@ -1364,11 +1385,13 @@
         "responses": {
           "201": {
             "description": "Gra została pomyślnie dodana do półki",
+
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
+
                     "message": {
                       "type": "string",
                       "example": "Gra została dodana do półki."
@@ -1392,6 +1415,7 @@
                           "description": "ID gry dodanej do półki"
                         }
                       }
+
                     }
                   }
                 }
@@ -1412,6 +1436,7 @@
           }
         }
       }
+
     },
     
     "/api/profile/removeGameFromShelf": {
@@ -1475,6 +1500,7 @@
           }
         }
       }
+
     }
 
   },  
