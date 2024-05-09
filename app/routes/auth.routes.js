@@ -23,9 +23,6 @@ module.exports = function(app) {
 
   app.post("/api/auth/remember",controller.reset);
 
-  app.get("/api/auth/signout",(req,res)=>{
-    res.redirect("/login")
-  })
   app.get("/api/auth/confirm/:confirmationCode", controller.verifyUser,(req,res)=>{
     res.redirect("/login")
   })

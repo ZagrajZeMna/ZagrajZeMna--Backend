@@ -3,7 +3,10 @@ const config = require("../config/auth.config");
 const nodemailer = require("../config/nodemailer.config");
 const User = db.User;
 const Languages = db.Languages;
-const Role = db.role;
+const Game = db.Game;
+const Lobby = db.Lobby;
+const Shelf = db.Shelf;
+const UIL = db.UserInLobby;
 
 const axios = require('axios');
 const multer = require('multer');
@@ -315,11 +318,19 @@ exports.postAvatarFile = (req, res) => {
       }
 
       if (user.avatar) {
-        // Usuń poprzedni plik awatara
-        const oldAvatarPath = path.join(__dirname, '..', 'uploads', user.avatar);
-        if (fs.existsSync(oldAvatarPath)) {
-          fs.unlinkSync(oldAvatarPath);
-        }
+        const oldAvatarPath = path.join('uploads', user.avatar);
+
+        fs.unlink(oldAvatarPath, (err) => {
+          if (err) {
+            if (err.code === 'ENOENT') {
+              onsole.log('File does not exist, cannot delete:', oldAvatarPath);
+            } else {
+              console.error('Failed to delete old avatar:', err);
+            }
+          } else {
+            console.log('Old avatar successfully deleted');
+          }
+        });
       }
 
       // Zaktualizuj użytkownika z nową ścieżką awatara
@@ -377,5 +388,191 @@ exports.setUserLanguage = async (req, res) => {
     }
   } catch (error) {
     res.status(500).send({ message: "Error updating user language: " + error.message });
+  }
+};
+
+const getPagination = (page, size) => {
+  const limit = size ? +size : 10;
+  const offset = page ? page * limit : 0;
+  return { limit, offset };
+};
+
+exports.usersLobby = async (req,res) =>{
+  //pagination
+  const page = req.body.page;
+  const size = req.body.size;
+  const { limit, offset } = getPagination(page, size);
+
+  const alllobbies = await UIL.count({
+      where: {
+          ID_USER: req.userId
+      },
+  });
+
+  const userslobbies = await UIL.findAll({
+      where: {
+          ID_USER: req.userId
+      },
+      limit,
+      offset,
+      attributes: ['ID_LOBBY', [db.sequelize.fn('COUNT', 'ID_USER'), 'playerCount']],
+      group: 'ID_LOBBY'
+  });
+
+  const lobbyIds = userslobbies.map(lobby => lobby.ID_LOBBY);
+
+  const lobbies = await Lobby.findAll({
+      where: {
+          Active: true,
+          ID_LOBBY: {
+              [Op.in]: lobbyIds
+          }
+      },
+      order: [
+          ['ID_LOBBY', 'DESC'],
+      ],
+      attributes: ['ID_LOBBY','ID_OWNER','Name', 'Description','NeedUsers']
+  });
+  
+  if (lobbies.length == 0) {
+      return res.status(404).send({ message: "Lobby not found!" });
+  }
+
+  const ownerIds = lobbies.map(lobby => lobby.ID_OWNER);
+
+  const userAvatar = await User.findAll({
+      where: {
+          ID_USER: {
+              [Op.in]: ownerIds
+          }
+      },
+      attributes: ['ID_USER','avatar'],
+  });
+  
+  const lobbyData = lobbies.map(lobby => {
+      const counter = userslobbies.find(c => c.ID_LOBBY === lobby.ID_LOBBY);
+      const png = userAvatar.find(p => p.ID_USER === lobby.ID_OWNER);
+      return {
+          ID_LOBBY: lobby.ID_LOBBY,
+          Name: lobby.Name,
+          Description: lobby.Description,
+          NeedUsers: lobby.NeedUsers,
+          ownerAvatar: png ? png.dataValues.avatar : "/img/default",
+          playerCount: counter ? counter.dataValues.playerCount : 0,
+      };
+  });
+
+  const numberOfPages = Math.round(alllobbies / lobbies.length);
+  res.status(200).json({Lobby: lobbyData,pages: numberOfPages});
+}
+
+exports.usersGames = async (req,res) =>{
+  //pagination
+  const page = req.body.page;
+  const size = req.body.size;
+  const { limit, offset } = getPagination(page, size);
+
+  const allGames = await Shelf.count({
+      where: {
+          ID_USER: req.userId
+      },
+  })
+
+  const shelfs = await Shelf.findAll({
+      where: {
+          ID_USER: req.userId
+      },
+      limit,
+      offset,
+      attributes: ['ID_GAME'],
+  }).catch(err => {
+      res.status(500).send({ message: err.message });
+  });
+
+  if (shelfs.length == 0) {
+      return res.status(404).send({ message: "Games not found!" });
+  }
+
+  const games = shelfs.map(Game => Game.ID_GAME);
+  const numberOfPages = Math.round(allGames / shelfs.length);
+
+  Game.findAll({
+      where:{
+          ID_GAME: {
+              [Op.in]: games
+          }
+      },
+      attributes: ['shortname','image']
+  }).then((games)=>{
+      res.json({Games: games, Pages: numberOfPages});
+  }).catch(err => {
+      res.status(500).send({ message: err.message });
+  });
+}
+
+exports.addGameToShelf = async (req, res) => {
+  const userId = req.userId;
+  const { ID_GAME } = req.body;
+
+  try {
+    const existingShelf = await Shelf.findOne({
+      where: {
+        ID_USER: userId,
+        ID_GAME: ID_GAME
+      }
+    });
+
+    if (existingShelf) {
+      return res.status(409).send({
+        message: "Ta gra jest już na twojej półce."
+      });
+    }
+
+    const newShelf = await Shelf.create({
+      ID_USER: userId,
+      ID_GAME: ID_GAME
+    });
+
+    res.status(201).send({
+      message: "Gra została dodana do półki.",
+      shelfDetails: {
+        ID_SHELF: newShelf.ID_SHELF,
+        ID_USER: newShelf.ID_USER,
+        ID_GAME: newShelf.ID_GAME
+      }
+    });
+  } catch (error) {
+    console.error("Error during creating shelf: ", error);
+    res.status(500).send({ message: "Validation error" });
+  }
+};
+
+exports.removeGameFromShelf = async (req, res) => {
+  const userId = req.userId;
+  const { ID_GAME } = req.body; 
+
+  try {
+    const shelf = await Shelf.findOne({
+      where: {
+        ID_USER: userId,
+        ID_GAME: ID_GAME
+      }
+    });
+
+    if (!shelf) {
+      return res.status(404).send({
+        message: "Nie znaleziono gry na półce tego użytkownika."
+      });
+    }
+
+    // Usunięcie znalezionego rekordu
+    await shelf.destroy();
+
+    res.status(200).send({
+      message: "Gra została usunięta z półki."
+    });
+  } catch (error) {
+    console.error("Error during removing game from shelf: ", error);
+    res.status(500).send({ message: "Internal server error" });
   }
 };
