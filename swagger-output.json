@@ -33,13 +33,13 @@
       "description": "Wysyłanie nazw i ścieżek obrazów"
     },
     {
-<<<<<<< HEAD
+
       "name": "WnętrzeLobby",
       "description": "Obsługa pojedyńczego lobby"
-=======
+    }, 
+    {
       "name": "Lobby",
       "description": "Wyświetlanie, tworzenie, dołączanie do lobby"
->>>>>>> 91933fb5eee4f42219aa71a5720eb8551d23c357
     }
   ],
   "paths": {
@@ -1036,15 +1036,14 @@
         }
       }
     },
-<<<<<<< HEAD
 
     "/api/lobbyInside/getUserList": {
       "get": {
         "tags": [
           "WnętrzeLobby"
         ],
-        "summary": "Pobranie nazwy i awatary graczy przypisanych do lobby.",
-        "description": "Pobiera nazwe i ścieżke do użytkowników wewnątrz lobby.",
+        "summary": "Pobranie id, nazwy i awatary graczy przypisanych do lobby.",
+        "description": "Pobiera id, nazwe i ścieżke do awatara użytkowników wewnątrz lobby.",
         "operationId": "getLobbyUserData",
         "responses": {
           "200": {
@@ -1054,6 +1053,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
                     "nickname": {
                       "type": "string",
                       "example": "Tomasz_NN"
@@ -1445,8 +1448,7 @@
         }
       }
     },
-=======
->>>>>>> 91933fb5eee4f42219aa71a5720eb8551d23c357
+
     "/register": {
       "get": {
         "tags": [
@@ -2042,5 +2044,4 @@
       }
   }
   }
-}
 }

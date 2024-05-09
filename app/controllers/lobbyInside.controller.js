@@ -16,46 +16,57 @@ exports.getUserList = async (req, res) => {
     const lobbyId = req.lobbyId;
 
     try{
-        const user_set = await UserIn.findOne({ where: { ID_LOBBY: lobbyId } }, {
+        const user_set = await UserIn.findAll({ where: { ID_LOBBY: Number(lobbyId) } }, {
             attributes: ['ID_USER']
         });
 
-        const name_user_set =await User.findByPk(user_set, {
-            attributes: ['username', 'avatar']
-        });
+        let name_user_set=[];
+        for(let i=0; i<user_set.length; i++)
+            name_user_set.push(await User.findOne({where: {ID_USER: user_set[i].ID_USER}}, {
+              attributes: ['username', 'avatar']
+        }));
 
         if(name_user_set.length==0){
             return res.status(404).send({message:"User in lobby not found!"});
         }
-        res.status(200).send(name_user_set);
+
+        let name_user = [];
+        for(let i=0; i<name_user_set.length; i++)
+            name_user.push([name_user_set[i].ID_USER, name_user_set[i].username, name_user_set[i].avatar]);
+        res.status(200).send(name_user);
+
     }catch(error){
-        res.status(500).send({message: "Error retrieving user in lobby: "+error.massage});
+        res.status(500).send({message: "Error retrieving user in lobby: "+error.message});
     }     
     
 };
 
 //Funkcja, która na podstawie id lobby zwraca id i nickname właściciela.
 exports.getOwnerLobbyData = async (req, res) => {
-    const lobbyId = 1;//req.lobbyId;
+    const lobbyId = req.lobbyId;
 
     try{
-        const lobbyOwnerId = await Lobby.findByPk(lobbyId, {
+        const lobbyOwner = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}}, {
             attributes: ['ID_OWNER']
         });
         
-        if(lobbyOwnerId.length==0){
+        if(lobbyOwner.length==0){
             return res.status(403).send({message:"Lobby owner not found!"});
         }
-        const lobbyOwnerData = await User.findByPk(lobbyOwnerId, {
-            attributes: ['ID_USER', 'nickname']
+        const lobbyOwnerId = lobbyOwner.ID_OWNER;
+
+        const lobbyOwnerData = await User.findOne({where: {ID_USER: lobbyOwnerId}}, {
+            attributes: ['ID_USER', 'username']
         });
 
         if(lobbyOwnerData.length==0){
             return res.status(404).send({message:"Data of lobby owner not found!"});
         }
-        res.status(200).send(lobbyOwnerData);
+        const lobbyOwnerDataSet = [lobbyOwnerData.ID_USER, lobbyOwnerData.username];
+
+        res.status(200).send(lobbyOwnerDataSet);
     }catch(error){
-        res.status(500).send({message: "Error retrieving lobby owner: "+error.massage});
+        res.status(500).send({message: "Error retrieving lobby owner: "+error.message});
     }     
     
 };
