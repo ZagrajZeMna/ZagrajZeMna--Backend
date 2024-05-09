@@ -318,11 +318,19 @@ exports.postAvatarFile = (req, res) => {
       }
 
       if (user.avatar) {
-        // Usuń poprzedni plik awatara
-        const oldAvatarPath = path.join(__dirname, '..', 'uploads', user.avatar);
-        if (fs.existsSync(oldAvatarPath)) {
-          fs.unlinkSync(oldAvatarPath);
-        }
+        const oldAvatarPath = path.join('uploads', user.avatar);
+
+        fs.unlink(oldAvatarPath, (err) => {
+          if (err) {
+            if (err.code === 'ENOENT') {
+              onsole.log('File does not exist, cannot delete:', oldAvatarPath);
+            } else {
+              console.error('Failed to delete old avatar:', err);
+            }
+          } else {
+            console.log('Old avatar successfully deleted');
+          }
+        });
       }
 
       // Zaktualizuj użytkownika z nową ścieżką awatara
@@ -456,7 +464,7 @@ exports.usersLobby = async (req,res) =>{
 
   const numberOfPages = Math.round(alllobbies / lobbies.length);
   res.status(200).json({Lobby: lobbyData,pages: numberOfPages});
-}
+};
 
 exports.usersGames = async (req,res) =>{
   //pagination
@@ -500,4 +508,71 @@ exports.usersGames = async (req,res) =>{
   }).catch(err => {
       res.status(500).send({ message: err.message });
   });
-}
+};
+
+exports.addGameToShelf = async (req, res) => {
+  const userId = req.userId;
+  const { ID_GAME } = req.body;
+
+  try {
+    const existingShelf = await Shelf.findOne({
+      where: {
+        ID_USER: userId,
+        ID_GAME: ID_GAME
+      }
+    });
+
+    if (existingShelf) {
+      return res.status(409).send({
+        message: "Ta gra jest już na twojej półce."
+      });
+    }
+
+    const newShelf = await Shelf.create({
+      ID_USER: userId,
+      ID_GAME: ID_GAME
+    });
+
+    res.status(201).send({
+      message: "Gra została dodana do półki.",
+      shelfDetails: {
+        ID_SHELF: newShelf.ID_SHELF,
+        ID_USER: newShelf.ID_USER,
+        ID_GAME: newShelf.ID_GAME
+      }
+    });
+  } catch (error) {
+    console.error("Error during creating shelf: ", error);
+    res.status(500).send({ message: "Validation error" });
+  }
+};
+
+exports.removeGameFromShelf = async (req, res) => {
+  const userId = req.userId;
+  const { ID_GAME } = req.body; 
+
+  try {
+    const shelf = await Shelf.findOne({
+      where: {
+        ID_USER: userId,
+        ID_GAME: ID_GAME
+      }
+    });
+
+    if (!shelf) {
+      return res.status(404).send({
+        message: "Nie znaleziono gry na półce tego użytkownika."
+      });
+    }
+
+    // Usunięcie znalezionego rekordu
+    await shelf.destroy();
+
+    res.status(200).send({
+      message: "Gra została usunięta z półki."
+    });
+  } catch (error) {
+    console.error("Error during removing game from shelf: ", error);
+    res.status(500).send({ message: "Internal server error" });
+  }
+};

@@ -1125,6 +1125,7 @@
             "schema": {
               "type": "string",
               "default": "0"
+
             }
           },
           {
@@ -1192,6 +1193,7 @@
                   "$ref": "#/components/schemas/DisplayedLobby"
                 }
               }
+
             }
           },
           "400": {
@@ -1207,6 +1209,7 @@
       "get": {
         "tags": [
           "Lobby"
+
         ],
         "summary": "Pobranie danych",
         "description": "Pobranie danych o grach i językach",
@@ -1217,7 +1220,9 @@
             "content": {
               "application/json": {
                 "schema": {
+
                   "$ref": "#/components/schemas/LobbyData"
+
                 }
               }
             }
@@ -1231,6 +1236,7 @@
         }
       }
     },
+
     "/api/profile/usersLobby":{
       "post": {
         "tags": [
@@ -1255,13 +1261,16 @@
           },
           "required": true
         },
+
         "responses": {
           "200": {
             "description": "Successful operation",
             "content": {
               "application/json": {
                 "schema": {
+
                   "$ref": "#/components/schemas/DisplayedLobby"
+
                 }
               }
             }
@@ -1275,13 +1284,17 @@
         }
       }
     },
+
     "/api/profile/usersGames":{
+
       "post": {
         "tags": [
           "Profil"
         ],
+
         "summary": "Pobranie danych o grach",
         "description": "Pobranie danych o grach",
+
         "operationId": "Pobranie danych",
         "security": [
           {
@@ -1289,7 +1302,9 @@
           }
         ],
         "requestBody": {
+
           "description": "Wyświetl gry!",
+
           "content": {
             "application/json": {
               "schema": {
@@ -1305,6 +1320,7 @@
             "content": {
               "application/json": {
                 "schema": {
+
                   "type": "object",
                   "properties": {
                     "shotname": {
@@ -1316,6 +1332,7 @@
                       "example": "./folder/minecraft.jpg"
                     }
                   }
+
                 }
               }
             }
@@ -1328,7 +1345,164 @@
           }
         }
       }
+    },
+
+    
+    "/api/profile/addGameToShelf": {
+
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+
+        "summary": "Dodaj grę do półki użytkownika",
+        "description": "Umożliwia zalogowanemu użytkownikowi dodanie nowej gry do swojej półki.",
+        "operationId": "addGameToShelf",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+
+          "description": "Dane potrzebne do dodania gry do półki",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ID_GAME": {
+                    "type": "integer",
+                    "example": 456,
+                    "description": "ID gry, która ma być dodana do półki"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Gra została pomyślnie dodana do półki",
+
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+
+                    "message": {
+                      "type": "string",
+                      "example": "Gra została dodana do półki."
+                    },
+                    "shelfDetails": {
+                      "type": "object",
+                      "properties": {
+                        "ID_SHELF": {
+                          "type": "integer",
+                          "example": 123,
+                          "description": "ID nowo utworzonej półki"
+                        },
+                        "ID_USER": {
+                          "type": "integer",
+                          "example": 789,
+                          "description": "ID użytkownika, który dodał grę"
+                        },
+                        "ID_GAME": {
+                          "type": "integer",
+                          "example": 456,
+                          "description": "ID gry dodanej do półki"
+                        }
+                      }
+
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - problem z przesłanymi danymi."
+          },
+          "403": {
+            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+          },
+          "404": {
+            "description": "Nie znaleziono żądanej gry."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera."
+          }
+        }
+      }
+
+    },
+    
+    "/api/profile/removeGameFromShelf": {
+      "delete": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Usuń grę z półki użytkownika",
+        "description": "Usunięcie gry z półki zalogowanego użytkownika na podstawie podanego ID_GAME.",
+        "operationId": "removeGameFromShelf",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ID_GAME": {
+                    "type": "integer",
+                    "example": 456,
+                    "description": "ID gry, która ma być usunięta z półki"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Gra została pomyślnie usunięta z półki",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Gra została usunięta z półki."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - problem z danymi wejściowymi"
+          },
+          "403": {
+            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy"
+          },
+          "404": {
+            "description": "Nie znaleziono gry na półce tego użytkownika"
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+
     }
+
   },  
   "components": {
 

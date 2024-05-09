@@ -24,4 +24,7 @@ module.exports = function(app) {
   app.post("/api/profile/setUserLanguage", [authJwt.verifyToken], controller.setUserLanguage);
   app.post("/api/profile/usersLobby",[authJwt.verifyToken],controller.usersLobby);
   app.post("/api/profile/usersGames",[authJwt.verifyToken],controller.usersGames);
+  app.post("/api/profile/addGameToShelf",  [authJwt.verifyToken], controller.addGameToShelf);
+  app.delete("/api/profile/removeGameFromShelf", [authJwt.verifyToken], controller.removeGameFromShelf);
+
 };
