@@ -29,8 +29,12 @@
       "description": "Profil użytkownika"
     },
     {
-      "name": "IkonyGier",
+      "name": "Strona Główna",
       "description": "Wysyłanie nazw i ścieżek obrazów"
+    },
+    {
+      "name": "Lobby",
+      "description": "Wyświetlanie, tworzenie, dołączanie do lobby"
     }
   ],
   "paths": {
@@ -161,123 +165,6 @@
                 }
               }
             }
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          }
-        }
-      }
-    },
-    "/api/auth/signout":{
-      "get": {
-        "tags": [
-          "Logowanie"
-        ],
-        "summary": "Wylogowanie",
-        "description": "Wylogowanie z systemu",
-        "operationId": "Logout",
-        "parameters": [
-          {
-            "name": "status",
-            "in": "query",
-            "description": "Wyloguj się",
-            "required": false,
-            "explode": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "confirmationCode": {
-                  "type": "string",
-                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbmJyemVzemN6b3Q5QGdtYWlsLmNvbSIsImlhdCI6MTcxMjg1MTY5N30.46bEOEU4oqn7sS0Bt30erT5Iifm0AIc38hmA-MJHeJo"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          }
-        }
-      }
-    },
-    "/api/test/all":{
-      "get": {
-        "tags": [
-          "Weryfikacja"
-        ],
-        "summary": "Dostęp dla każdego",
-        "description": "Cześć strony do któej dostęp ma niezalogowany użytkownik",
-        "operationId": "verifyAll",
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          }
-        }
-      }
-    },
-    "/api/test/user":{
-      "get": {
-        "tags": [
-          "Weryfikacja"
-        ],
-        "summary": "Dostęp dla zalogowanych",
-        "description": "Część strony do której dostęp ma tylko zalogowany użytkownik",
-        "operationId": "verifyUser",
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          }
-        }
-      }
-    },
-    "/api/test/admin":{
-      "get": {
-        "tags": [
-          "Weryfikacja"
-        ],
-        "summary": "Dostęp dla admina",
-        "description": "Część strony do której dostęp ma tylko administrator",
-        "operationId": "verifyUser",
-        "parameters": [
-          {
-            "name": "email",
-            "in": "query",
-            "description": "Email konta administartora",
-            "required": true,
-            "explode": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
           },
           "400": {
             "description": "Invalid input"
@@ -1106,48 +993,37 @@
       }
     },
 
-    "/api/profile/getAllGames": {
+    "/api/mainGame/getGame": {
       "get": {
         "tags": [
-          "Profil"
+          "Strona Główna"
         ],
-        "summary": "Pobranie listy wszystkich gier",
-        "description": "Zwraca kompletną listę gier dostępnych w bazie danych.",
-        "operationId": "getAllGames",
+        "summary": "Pobranie danych o grach na strone główną.",
+        "description": "Pobiera nazwe i ścieżke do gier na stronę główną.",
+        "operationId": "getImageData",
         "responses": {
           "200": {
-            "description": "Lista gier została pomyślnie pobrana",
+            "description": "Dane gier zostały pomyślnie wysłane",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "gameId": {
-                        "type": "integer",
-                        "example": 456,
-                        "description": "ID gry"
-                      },
-                      "gameName": {
-                        "type": "string",
-                        "example": "Chess",
-                        "description": "Nazwa gry"
-                      }
+                  "type": "object",
+                  "properties": {
+                    "nazwa": {
+                      "type": "string",
+                      "example": "Minecraft"
+                    },
+                    "image": {
+                      "type": "string",
+                      "example": "./folder/minecraft.jpg"
                     }
                   }
                 }
               }
             }
           },
-          "400": {
-            "description": "Nieprawidłowe żądanie - problem z danymi."
-          },
-          "403": {
-            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
-          },
           "404": {
-            "description": "Nie znaleziono gier w bazie danych."
+            "description": "Nie znaleziono gier."
           },
           "500": {
             "description": "Wewnętrzny błąd serwera"
@@ -1155,40 +1031,289 @@
         }
       }
     },
-
-    "/api/profile/getUserShelf": {
+    "/register": {
       "get": {
         "tags": [
-          "Profil"
+          "Weryfikacja"
         ],
-        "summary": "Pobranie listy gier użytkownika",
-        "description": "Zwraca listę gier znajdujących się na półce zalogowanego użytkownika, wraz z ich identyfikatorami.",
-        "operationId": "getUserShelf",
+        "summary": "Rejestracja",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/restartpassword": {
+      "get": {
+        "tags": [
+          "Weryfikacja"
+        ],
+        "summary": "Restart hasła",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/lobby/add":{
+      "post": {
+        "tags": [
+          "Lobby"
+        ],
+        "summary": "Tworzenie lobby",
+        "description": "Utworzenie lobby poprzez formularz",
+        "operationId": "createLobby",
         "security": [
           {
             "bearerAuth": []
           }
         ],
+        "requestBody": {
+          "description": "Stwórz lobby!",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Lobby"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
-            "description": "Lista gier na półce użytkownika została pomyślnie pobrana",
+            "description": "Lobby zostało pomyślnie stworzone",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "shelfId": {
-                        "type": "integer",
-                        "example": 123,
-                        "description": "ID półki na której znajduje się gra"
-                      },
-                      "gameId": {
-                        "type": "integer",
-                        "example": 456,
-                        "description": "ID gry znajdującej się na półce"
-                      }
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Lobby successfully created"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "nie został znaleziony"
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+    "/api/lobby/show":{
+      "get": {
+        "tags": [
+          "Lobby"
+        ],
+        "summary": "Wyświetlenie lobby",
+        "description": "Wyświetlenie lobby paginacja po stronie serwera",
+        "operationId": "displayLobby",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Strona do wyświeltenia",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": "0"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Ilość do wyświeltenia",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": "5"
+            }
+          },
+          {
+            "name": "game",
+            "in": "query",
+            "description": "Gra dla których wyświetlane są lobby",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": null
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "Fraza która jest szukana w nazwie i opisie lobby",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": null
+            }
+          },
+          {
+            "name": "sorting",
+            "in": "query",
+            "description": "Nazwa kolumny po której tabela będzie sortowana rosnąco, naprzykład 'NeedUsers' wyświetla lobby z najmniejszą liczbą szukanych graczy",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": null
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Nazwa języka jako filtr lobby",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": null
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisplayedLobby"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/lobby/data":{
+      "get": {
+        "tags": [
+          "Lobby"
+        ],
+        "summary": "Pobranie danych",
+        "description": "Pobranie danych o grach i językach",
+        "operationId": "Pobranie danych",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LobbyData"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/profile/usersLobby":{
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Pobranie danych o lobby",
+        "description": "Pobranie danych o lobby",
+        "operationId": "Pobranie danych",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Wyświetl lobby!",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Pagination"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisplayedLobby"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
+    "/api/profile/usersGames":{
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Pobranie danych o grach",
+        "description": "Pobranie danych o grach",
+        "operationId": "Pobranie danych",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Wyświetl gry!",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Pagination"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "shotname": {
+                      "type": "string",
+                      "example": "LOL"
+                    },
+                    "image": {
+                      "type": "string",
+                      "example": "./folder/minecraft.jpg"
                     }
                   }
                 }
@@ -1196,16 +1321,10 @@
             }
           },
           "400": {
-            "description": "Nieprawidłowe żądanie - problem z danymi użytkownika."
+            "description": "Invalid input"
           },
-          "403": {
-            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
-          },
-          "404": {
-            "description": "Gry na półce użytkownika nie znaleziono."
-          },
-          "500": {
-            "description": "Wewnętrzny błąd serwera"
+          "422": {
+            "description": "Validation exception"
           }
         }
       }
@@ -1356,75 +1475,11 @@
           }
         }
       }
-    },
-
-    "/api/mainGame/getGame": {
-      "get": {
-        "tags": [
-          "IkonyGier"
-        ],
-        "summary": "Pobranie danych o grach na strone główną.",
-        "description": "Pobiera nazwe i ścieżke do gier na stronę główną.",
-        "operationId": "getImageData",
-        "responses": {
-          "200": {
-            "description": "Dane gier zostały pomyślnie wysłane",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "nazwa": {
-                      "type": "string",
-                      "example": "Minecraft"
-                    },
-                    "image": {
-                      "type": "string",
-                      "example": "./folder/minecraft.jpg"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Nie znaleziono gier."
-          },
-          "500": {
-            "description": "Wewnętrzny błąd serwera"
-          }
-        }
-      }
-    },
-
-    "/register": {
-      "get": {
-        "tags": [
-          "Weryfikacja"
-        ],
-        "summary": "Rejestracja",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/restartpassword": {
-      "get": {
-        "tags": [
-          "Weryfikacja"
-        ],
-        "summary": "Restart hasła",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
     }
+
   },  
   "components": {
+
     "securitySchemes": {
       "bearerAuth": {
         "type": "http",
@@ -1433,6 +1488,19 @@
       }
     },
     "schemas": {
+      "Language": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "language": {
+            "type": "string",
+            "example": "English"
+          }
+        }
+      },
       "User": {
         "type": "object",
         "properties": {
@@ -1446,7 +1514,7 @@
           },
           "password": {
             "type": "string",
-            "example": "12345678"
+            "example": "12345"
           }
         }
       },
@@ -1462,7 +1530,100 @@
             "example": "12345678"
           }
         }
+      },
+      "LobbyData": {
+        "type": "object",
+        "properties": {
+          "Languages": {
+            "type": "string",
+            "example": "Polski"
+          },
+          "Games": {
+            "type": "string",
+            "example": "VALORANT"
+          }
+        }
+      },
+      "Lobby": {
+        "type": "object",
+        "properties": {
+          "gameName": {
+            "type": "string",
+            "example": "VALORANT"
+          },
+          "Name": {
+            "type": "string",
+            "example": "Mid i Top do Clasha"
+          },
+          "Description": {
+            "type": "string",
+            "example": "Potrzebnych 2 graczy do najbliższego clasha"
+          },
+          "language": {
+            "type": "string",
+            "example": "Polski"
+          },
+          "NeedUsers": {
+            "type": "string",
+            "example": "3"
+          }
+        }
+      },
+      "DisplayedLobby": {
+        "type": "object",
+        "properties": {
+          "ID_LOBBY": {
+            "type": "string",
+            "example": "1"
+          },
+          "Name": {
+            "type": "string",
+            "example": "Mid i Top do Clasha"
+          },
+          "Description": {
+            "type": "string",
+            "example": "Potrzebnych 2 graczy do najbliższego clasha"
+          },
+          "NeedUsers": {
+            "type": "string",
+            "example": "3"
+          },
+          "ownerAvatar": {
+            "type": "string",
+            "example": "/img/nickname"
+          },
+          "playerCount": {
+            "type": "string",
+            "example": "0"
+          },
+          "Pages": {
+            "type": "string",
+            "example": "12"
+          }
+        }
+      },
+      "DisplayLobbies": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "1"
+          }
+        }
+      },
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "string",
+            "example": "0"
+          },
+          "size": {
+            "type": "string",
+            "example": "20"
+          }
+        }
       }
-    }
+  }
   }
 }

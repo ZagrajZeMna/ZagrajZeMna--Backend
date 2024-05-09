@@ -8,6 +8,10 @@ module.exports = (sequelize, Sequelize) => {
         name: {
             type: Sequelize.STRING,
         },
+        shortname:
+        {
+            type: Sequelize.STRING,
+        },
         description: {
             type: Sequelize.TEXT,
         },

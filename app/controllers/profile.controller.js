@@ -3,9 +3,10 @@ const config = require("../config/auth.config");
 const nodemailer = require("../config/nodemailer.config");
 const User = db.User;
 const Languages = db.Languages;
-const Role = db.role;
-const Shelf = db.Shelf;
 const Game = db.Game;
+const Lobby = db.Lobby;
+const Shelf = db.Shelf;
+const UIL = db.UserInLobby;
 
 const axios = require('axios');
 const multer = require('multer');
@@ -271,15 +272,18 @@ exports.postAvatarLink = async (req, res) => {
 };
 
 exports.postAvatarFile = (req, res) => {
+  // Konfiguracja przechowywania plików multer
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, 'uploads/');
     },
     filename: (req, file, cb) => {
+      // Tworzenie unikalnej nazwy pliku
       cb(null, Date.now() + path.extname(file.originalname));
     }
   });
 
+  // Filtr plików multer, który akceptuje tylko określone typy obrazów
   const fileFilter = (req, file, cb) => {
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (allowedTypes.includes(file.mimetype)) {
@@ -289,10 +293,11 @@ exports.postAvatarFile = (req, res) => {
     }
   };
 
+  // Konfiguracja multer
   const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
-    limits: { fileSize: 5 * 1024 * 1024 }
+    limits: { fileSize: 5 * 1024 * 1024 } // 5 MB
   }).single('avatar');
 
   upload(req, res, async (err) => {
@@ -328,13 +333,16 @@ exports.postAvatarFile = (req, res) => {
         });
       }
 
+      // Zaktualizuj użytkownika z nową ścieżką awatara
       const updatedUser = await user.update({ avatar: req.file.filename });
+
       res.status(200).send({
         message: "Avatar successfully uploaded.",
         avatar: req.file.filename
       });
 
     } catch (error) {
+      // Usuń nowy plik, jeśli nie można zaktualizować użytkownika
       if (req.file) {
         fs.unlinkSync(req.file.path);
       }
@@ -342,7 +350,6 @@ exports.postAvatarFile = (req, res) => {
     }
   });
 };
-
 
 exports.getAllLanguages = async (req, res) => {
   try {
@@ -384,41 +391,124 @@ exports.setUserLanguage = async (req, res) => {
   }
 };
 
-exports.getAllGames = async (req, res) => {
-  try {
-    const games = await Game.findAll({
-      attributes: ['ID_GAME', 'name']
-    });
-
-    if (games.length === 0) {
-      return res.status(404).send({ message: "Nie znaleziono gier w bazie danych." });
-    }
-
-    res.status(200).send(games);
-  } catch (error) {
-    res.status(500).send({ message: error.message });
-  }
+const getPagination = (page, size) => {
+  const limit = size ? +size : 10;
+  const offset = page ? page * limit : 0;
+  return { limit, offset };
 };
 
+exports.usersLobby = async (req,res) =>{
+  //pagination
+  const page = req.body.page;
+  const size = req.body.size;
+  const { limit, offset } = getPagination(page, size);
 
-exports.getUserShelf = async (req, res) => {
-  const userId = req.userId; 
+  const alllobbies = await UIL.count({
+      where: {
+          ID_USER: req.userId
+      },
+  });
 
-  try {
-    const shelves = await Shelf.findAll({
-      where: { ID_USER: userId },
-      attributes: ['ID_SHELF', 'ID_GAME']
-    });
+  const userslobbies = await UIL.findAll({
+      where: {
+          ID_USER: req.userId
+      },
+      limit,
+      offset,
+      attributes: ['ID_LOBBY', [db.sequelize.fn('COUNT', 'ID_USER'), 'playerCount']],
+      group: 'ID_LOBBY'
+  });
 
-    if (shelves.length === 0) {
-      return res.status(404).send({ message: "Nie znaleziono gier na półce użytkownika." });
-    }
+  const lobbyIds = userslobbies.map(lobby => lobby.ID_LOBBY);
 
-    res.status(200).send(shelves);
-  } catch (error) {
-    res.status(500).send({ message: error.message });
+  const lobbies = await Lobby.findAll({
+      where: {
+          Active: true,
+          ID_LOBBY: {
+              [Op.in]: lobbyIds
+          }
+      },
+      order: [
+          ['ID_LOBBY', 'DESC'],
+      ],
+      attributes: ['ID_LOBBY','ID_OWNER','Name', 'Description','NeedUsers']
+  });
+  
+  if (lobbies.length == 0) {
+      return res.status(404).send({ message: "Lobby not found!" });
   }
-};
+
+  const ownerIds = lobbies.map(lobby => lobby.ID_OWNER);
+
+  const userAvatar = await User.findAll({
+      where: {
+          ID_USER: {
+              [Op.in]: ownerIds
+          }
+      },
+      attributes: ['ID_USER','avatar'],
+  });
+  
+  const lobbyData = lobbies.map(lobby => {
+      const counter = userslobbies.find(c => c.ID_LOBBY === lobby.ID_LOBBY);
+      const png = userAvatar.find(p => p.ID_USER === lobby.ID_OWNER);
+      return {
+          ID_LOBBY: lobby.ID_LOBBY,
+          Name: lobby.Name,
+          Description: lobby.Description,
+          NeedUsers: lobby.NeedUsers,
+          ownerAvatar: png ? png.dataValues.avatar : "/img/default",
+          playerCount: counter ? counter.dataValues.playerCount : 0,
+      };
+  });
+
+  const numberOfPages = Math.round(alllobbies / lobbies.length);
+  res.status(200).json({Lobby: lobbyData,pages: numberOfPages});
+}
+
+exports.usersGames = async (req,res) =>{
+  //pagination
+  const page = req.body.page;
+  const size = req.body.size;
+  const { limit, offset } = getPagination(page, size);
+
+  const allGames = await Shelf.count({
+      where: {
+          ID_USER: req.userId
+      },
+  })
+
+  const shelfs = await Shelf.findAll({
+      where: {
+          ID_USER: req.userId
+      },
+      limit,
+      offset,
+      attributes: ['ID_GAME'],
+  }).catch(err => {
+      res.status(500).send({ message: err.message });
+  });
+
+  if (shelfs.length == 0) {
+      return res.status(404).send({ message: "Games not found!" });
+  }
+
+  const games = shelfs.map(Game => Game.ID_GAME);
+  const numberOfPages = Math.round(allGames / shelfs.length);
+
+  Game.findAll({
+      where:{
+          ID_GAME: {
+              [Op.in]: games
+          }
+      },
+      attributes: ['shortname','image']
+  }).then((games)=>{
+      res.json({Games: games, Pages: numberOfPages});
+  }).catch(err => {
+      res.status(500).send({ message: err.message });
+  });
+}
 
 exports.addGameToShelf = async (req, res) => {
   const userId = req.userId;
