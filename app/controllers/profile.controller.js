@@ -462,7 +462,7 @@ exports.usersLobby = async (req,res) =>{
       };
   });
 
-  const numberOfPages = Math.round(alllobbies / lobbies.length);
+  const numberOfPages = Math.ceil(alllobbies / limit);
   res.status(200).json({Lobby: lobbyData,pages: numberOfPages});
 };
 
@@ -494,7 +494,7 @@ exports.usersGames = async (req,res) =>{
   }
 
   const games = shelfs.map(Game => Game.ID_GAME);
-  const numberOfPages = Math.round(allGames / shelfs.length);
+  const numberOfPages = Math.ceil(allGames / limit);
 
   Game.findAll({
       where:{

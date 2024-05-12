@@ -76,7 +76,7 @@ exports.show = async (req, res) => {
         if (lobbies.length == 0) {
             return res.status(404).send({ message: "Lobby not found!" });
         }
-    const numberOfPages = Math.round(allLobbies / lobbies.length);
+    const numberOfPages = Math.ceil(allLobbies / limit);
     const lobbyIds = lobbies.map(lobby => lobby.ID_LOBBY);
     const ownerIds = lobbies.map(lobby => lobby.ID_OWNER);
 
