@@ -13,6 +13,7 @@ module.exports = {
     idle: 10000
   }
 };
+
 // //docker setup
 // module.exports = {
 //   HOST: "db",
