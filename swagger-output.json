@@ -35,6 +35,10 @@
     {
       "name": "Lobby",
       "description": "Wyświetlanie, tworzenie, dołączanie do lobby"
+    },
+    {
+      "name": "Admin",
+      "description": "Obsługa administratora"
     }
   ],
   "paths": {
@@ -1027,6 +1031,45 @@
           },
           "500": {
             "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+    "/api/mainGame/addNewGame": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Dodawanie zaakceptowanych gier do bazy danych",
+        "description": "Pobiera nazwę, opis i obraz, a następnie wstawia nowy rekord do bazy danych",
+        "operationId": "getImageData",
+        "responses": {
+          "201": {
+            "description": "Gra pomyślnie dodana do bazy danych",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "nazwa": {
+                      "type": "string",
+                      "example": "Minecraft"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Open-world creative sandbox"
+                    },
+                    "image": {
+                      "type": "string",
+                      "example": "./folder/minecraft.jpg"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Nie udało się dodać nowej gry do bazy danych"
           }
         }
       }
