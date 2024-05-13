@@ -1,6 +1,7 @@
 const db = require("../models");
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config");
+const { all } = require("axios");
 const Lobby = db.Lobby;
 const User = db.User;
 const Game = db.Game;
@@ -25,20 +26,22 @@ exports.show = async (req, res) => {
     const sort = sorting ? [[sorting, 'ASC']]: defaultSorting;
 
     //language
-    var lang = language ? language : "Polski";
+    const lang = language ? language : [];
+
     const findLang = await Languages.findOne({
         where: {
             LANGUAGE: lang
         },
         attributes: ['ID_LANGUAGE']
-    })
+    });
+
 
     // title/desc serach
     var condition = {};
     if (name) {
         condition[Op.or] = [
-            { Name: { [Op.like]: `%${name}%` } },
-            { Description: { [Op.like]: `%${name}%` } }
+            { Name: { [Op.iLike]: `%${name}%` } }, 
+            { Description: { [Op.iLike]: `%${name}%` } }
         ];
     }
 
@@ -50,19 +53,19 @@ exports.show = async (req, res) => {
         }
     }).then( async(game)=>{
         try{
-        const allLobbies = await Lobby.count({
-            where: {
-                ...condition,
-                ID_LANGUAGE: findLang.ID_LANGUAGE,
-                ID_GAME: game.ID_GAME,
-                Active: true,
-                StillLooking: true
-            }
-        })
+            const allLobbies = await Lobby.count({
+                where: {
+                    ...condition,
+                    ID_LANGUAGE: findLang ? findLang.ID_LANGUAGE : { [Op.not]: null },
+                    ID_GAME: game.ID_GAME,
+                    Active: true,
+                    StillLooking: true
+                }
+            });
         const lobbies = await Lobby.findAll({
             where: {
                 ...condition,
-                ID_LANGUAGE: findLang.ID_LANGUAGE,
+                ID_LANGUAGE: findLang ? findLang.ID_LANGUAGE : { [Op.not]: null },
                 ID_GAME: game.ID_GAME,
                 Active: true,
                 StillLooking: true
