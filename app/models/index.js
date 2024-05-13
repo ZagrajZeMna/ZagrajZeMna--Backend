@@ -17,8 +17,8 @@ const sequelize = new Sequelize(
     },
     dialectOptions:{
       ssl:{
-        rejectUnauthorized: true,
-        ca: config.dialectOptions.ssl.ca
+        ca: config.dialectOptions.ssl.ca,
+        rejectUnauthorized: false
       }
     }
   }
