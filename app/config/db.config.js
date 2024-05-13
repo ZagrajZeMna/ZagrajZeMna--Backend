@@ -14,7 +14,6 @@ module.exports = {
   },
   dialectOptions: {
     ssl: {
-      rejectUnauthorized: false,
       ca: `-----BEGIN CERTIFICATE-----
           MIIEQTCCAqmgAwIBAgIUS0cYmXqYWgtiwZ2M2qThbqQSplIwDQYJKoZIhvcNAQEM
           BQAwOjE4MDYGA1UEAwwvYzdkNDkyOTMtNmZkNS00YzhmLTlmOTUtNmRiNThmOGEx
