@@ -14,6 +14,12 @@ const sequelize = new Sequelize(
       min: config.pool.min,
       acquire: config.pool.acquire,
       idle: config.pool.idle
+    },
+    dialectOptions:{
+      ssl:{
+        rejectUnauthorized: true,
+        ca: config.ssl.ca
+      }
     }
   }
 );
