@@ -26,5 +26,5 @@ module.exports = function(app) {
   app.post("/api/profile/usersGames",[authJwt.verifyToken],controller.usersGames);
   app.post("/api/profile/addGameToShelf",  [authJwt.verifyToken], controller.addGameToShelf);
   app.delete("/api/profile/removeGameFromShelf", [authJwt.verifyToken], controller.removeGameFromShelf);
-
+  app.get("/api/profile/getUserStats", [authJwt.verifyToken], controller.getUserStats);
 };

@@ -576,3 +576,26 @@ exports.removeGameFromShelf = async (req, res) => {
     res.status(500).send({ message: "Internal server error" });
   }
 };
+
+exports.getUserStats = async (req, res) => {
+  const userId = req.userId;
+
+  try {
+      // Liczenie gier na półce użytkownika
+      const gamesCount = await Shelf.count({
+          where: { ID_USER: userId }
+      });
+
+      // Liczenie lobby, do których użytkownik jest przypisany
+      const lobbiesCount = await UIL.count({
+          where: { ID_USER: userId }
+      });
+
+      res.status(200).send({
+          gamesOnShelf: gamesCount,
+          lobbiesJoined: lobbiesCount
+      });
+  } catch (error) {
+      res.status(500).send({ message: "Error retrieving user stats: " + error.message });
+  }
+};

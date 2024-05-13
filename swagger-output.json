@@ -1501,7 +1501,59 @@
         }
       }
 
-    }
+    },
+
+    "/api/profile/getUserStats": {
+      "get": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Pobranie statystyk użytkownika",
+        "description": "Zwraca ilość gier na półce użytkownika oraz ilość lobby, do których jest przypisany.",
+        "operationId": "getUserStats",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Statystyki użytkownika zostały pomyślnie pobrane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "gamesOnShelf": {
+                      "type": "integer",
+                      "example": 5,
+                      "description": "Ilość gier na półce użytkownika"
+                    },
+                    "lobbiesJoined": {
+                      "type": "integer",
+                      "example": 3,
+                      "description": "Ilość lobby, do których użytkownik jest przypisany"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - problem z żądaniem od klienta."
+          },
+          "401": {
+            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+          },
+          "403": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    }    
 
   },  
   "components": {
