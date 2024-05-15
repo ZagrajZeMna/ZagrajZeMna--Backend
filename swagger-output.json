@@ -1122,6 +1122,79 @@
       }
     },
 
+    "/api/lobbyInside/getMessageList": {
+      "get": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Pobranie listy wiadomości przypisanych do lobby.",
+        "description": "Pobiera liste wiadomości przypisanych do lobby.",
+        "operationId": "getMessageList",
+        "responses": {
+          "200": {
+            "description": "Dane zostały pomyślnie wysłane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ID_MESSAGE": {
+                      "type": "integer",
+                      "example": "1"
+                    },
+                    "ID_USER": {
+                      "type": "integer",
+                      "example": "2"
+                    },
+                    "Message": {
+                      "type": "text",
+                      "example": "Dobrze jest, gramy dalej."
+                    },
+                    "Date": {
+                      "type": "date",
+                      "example": "13-05-1764"
+                    },
+                    "Time": {
+                      "type": "time",
+                      "example": "12:12:12"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Nie znaleziono wiadomości."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/lobbyInside/deleteUser": {
+      "post": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Usuwanie gracza z lobby.",
+        "description": "Usuwa gracza z lobby na podstawie id gracza i id lobby.",
+        "operationId": "deleteUserFromLobby",
+        "responses": {
+          "200": {
+            "description": "Gracz został usunięty"
+          },
+          "403": {
+            "description": "Nie znaleziono wiadomości."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
     "/api/auth/signup":{
       "post": {
         "tags": [
