@@ -1174,7 +1174,7 @@
     },
 
     "/api/lobbyInside/deleteUser": {
-      "post": {
+      "delete": {
         "tags": [
           "WnętrzeLobby"
         ],
@@ -1186,7 +1186,78 @@
             "description": "Gracz został usunięty"
           },
           "403": {
-            "description": "Nie znaleziono wiadomości."
+            "description": "Nie ma takiego gracza."
+          },
+          "404": {
+            "description": "Nie ma takiego lobby."
+          },
+          "405": {
+            "description": "Nie ma tego gracza w lobby."
+          },
+          "406": {
+            "description": "Gracz jest właścicielem lobby i nie przekazał uprawnień innemu użytkownikowi."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/lobbyInside/deleteLobby": {
+      "delete": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Usuwanie lobby.",
+        "description": "Usuwa lobby na podstawie id gracza i id lobby.",
+        "operationId": "deleteLobby",
+        "responses": {
+          "200": {
+            "description": "Lobby ustawiono jako nieaktywne."
+          },
+          "403": {
+            "description": "Nie ma takiego gracza."
+          },
+          "404": {
+            "description": "Nie ma takiego lobby."
+          },
+          "405": {
+            "description": "Lobby już jest nieaktywne."
+          },
+          "406": {
+            "description": "Lobby może być usunięte tylko przez właściciela."
+          },
+          "407": {
+            "description": "Lobby usunięto, ale nie usunięto listy użytkowników."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/lobbyInside/addUser": {
+      "post": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Dodawanie gracza do lobby.",
+        "description": "Dodaje gracza do lobby na podstawie id gracza i id lobby.",
+        "operationId": "addUserToLobby",
+        "responses": {
+          "200": {
+            "description": "Gracz został dodany do lobby"
+          },
+          "403": {
+            "description": "Nie znaleziono gracza."
+          },
+          "404": {
+            "description": "Nie znaleziono lobby."
+          },
+          "405": {
+            "description": "Gracz już należy do lobby."
           },
           "500": {
             "description": "Wewnętrzny błąd serwera"

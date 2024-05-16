@@ -14,5 +14,7 @@ module.exports = function(app) {
   app.get("/api/lobbyInside/getUserList", controller.getUserList);
   app.get("/api/lobbyInside/getOwnerLobbyData", controller.getOwnerLobbyData);
   app.get("/api/lobbyInside/getMessageList", controller.getMessageList);
-  app.post("/api/lobbyInside/deleteUser", controller.deleteUser);
+  app.post("/api/lobbyInside/addUser", controller.addUser);
+  app.delete("/api/lobbyInside/deleteUser", controller.deleteUser);
+  app.delete("/api/lobbyInside/deleteLobby", controller.deleteLobby);
 };
