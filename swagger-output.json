@@ -33,13 +33,12 @@
       "description": "Wysyłanie nazw i ścieżek obrazów"
     },
     {
-
-      "name": "WnętrzeLobby",
-      "description": "Obsługa pojedyńczego lobby"
-    }, 
-    {
       "name": "Lobby",
       "description": "Wyświetlanie, tworzenie, dołączanie do lobby"
+    },
+    {
+      "name": "Admin",
+      "description": "Obsługa administratora"
     }
   ],
   "paths": {
@@ -1036,6 +1035,45 @@
         }
       }
     },
+    "/api/mainGame/addNewGame": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Dodawanie zaakceptowanych gier do bazy danych",
+        "description": "Pobiera nazwę, opis i obraz, a następnie wstawia nowy rekord do bazy danych",
+        "operationId": "getImageData",
+        "responses": {
+          "201": {
+            "description": "Gra pomyślnie dodana do bazy danych",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "nazwa": {
+                      "type": "string",
+                      "example": "Minecraft"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Open-world creative sandbox"
+                    },
+                    "image": {
+                      "type": "string",
+                      "example": "./folder/minecraft.jpg"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Nie udało się dodać nowej gry do bazy danych"
+          }
+        }
+      }
+    },
 
     "/api/lobbyInside/getUserList": {
       "get": {
@@ -1272,333 +1310,6 @@
       }
     },
 
-    "/api/auth/signup":{
-      "post": {
-        "tags": [
-          "Logowanie"
-        ],
-        "summary": "Rejestracja użytkownika",
-        "description": "Stworzenia konta użytkownika",
-        "operationId": "addUser",
-        "requestBody": {
-          "description": "Stwórz konto",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/User"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          }
-        }
-      }
-    },
-    "/api/auth/signin":{
-      "post": {
-        "tags": [
-          "Logowanie"
-        ],
-        "summary": "Logowanie",
-        "description": "Logowanie do systemu",
-        "operationId": "Login",
-        "requestBody": {
-          "description": "Zaloguj się",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Remember"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "properties": {
-                  "JWT": {
-                    "type": "string",
-                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imh1YmVydC5rcmF1cy5vZmZpY2lhbEBnbWFpbC5jb20iLCJpYXQiOjE3MTMwOTM2MzV9.SGVZ_cpjrtDT-1waqyDAw05SG0I59Jg33MsM4dEfSxg"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          }
-        }
-      }
-    },
-    "/api/auth/confirm/:confirmationCode":{
-      "get": {
-        "tags": [
-          "Logowanie"
-        ],
-        "summary": "Autoryzacja e-mail",
-        "description": "Potwierdzenie maila",
-        "operationId": "Autoryzacja",
-        "parameters": [
-          {
-            "name": "status",
-            "in": "query",
-            "description": "Klucz autoryzacyjny wysłany w wiadomości email",
-            "required": false,
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "default": "Zweryfikowano"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "confirmationCode": {
-                  "type": "string",
-                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbmJyemVzemN6b3Q5QGdtYWlsLmNvbSIsImlhdCI6MTcxMjg1MTY5N30.46bEOEU4oqn7sS0Bt30erT5Iifm0AIc38hmA-MJHeJo"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          }
-        }
-      }
-    },
-    "/api/auth/signout":{
-      "get": {
-        "tags": [
-          "Logowanie"
-        ],
-        "summary": "Wylogowanie",
-        "description": "Wylogowanie z systemu",
-        "operationId": "Logout",
-        "parameters": [
-          {
-            "name": "status",
-            "in": "query",
-            "description": "Wyloguj się",
-            "required": false,
-            "explode": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "confirmationCode": {
-                  "type": "string",
-                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbmJyemVzemN6b3Q5QGdtYWlsLmNvbSIsImlhdCI6MTcxMjg1MTY5N30.46bEOEU4oqn7sS0Bt30erT5Iifm0AIc38hmA-MJHeJo"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          }
-        }
-      }
-    },
-    "/api/test/all":{
-      "get": {
-        "tags": [
-          "Weryfikacja"
-        ],
-        "summary": "Dostęp dla każdego",
-        "description": "Cześć strony do któej dostęp ma niezalogowany użytkownik",
-        "operationId": "verifyAll",
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          }
-        }
-      }
-    },
-    "/api/test/user":{
-      "get": {
-        "tags": [
-          "Weryfikacja"
-        ],
-        "summary": "Dostęp dla zalogowanych",
-        "description": "Część strony do której dostęp ma tylko zalogowany użytkownik",
-        "operationId": "verifyUser",
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/User"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          }
-        }
-      }
-    },
-    "/api/test/admin":{
-      "get": {
-        "tags": [
-          "Weryfikacja"
-        ],
-        "summary": "Dostęp dla admina",
-        "description": "Część strony do której dostęp ma tylko administrator",
-        "operationId": "verifyUser",
-        "parameters": [
-          {
-            "name": "email",
-            "in": "query",
-            "description": "Email konta administartora",
-            "required": true,
-            "explode": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          }
-        }
-      }
-    },
-    "/api/auth/remember":{
-      "post": {
-        "tags": [
-          "Logowanie"
-        ],
-        "summary": "Przypominanie hasła",
-        "description": "Reset hasła za potwierdzeniem email",
-        "operationId": "rememberPass",
-        "requestBody": {
-          "description": "Zresetuj hasło!",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Remember"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Remember"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          }
-        }
-      }
-    },
-    "/api/auth/reset/:confirmationCode":{
-      "get": {
-        "tags": [
-          "Logowanie"
-        ],
-        "summary": "Reset hasła e-mail",
-        "description": "Reset hasła e-mail",
-        "operationId": "resetPass",
-        "parameters": [
-          {
-            "name": "status",
-            "in": "query",
-            "description": "Link do zresetowania hasła wysłany w wiadomości email",
-            "required": false,
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "default": "Zresetowano"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "422": {
-            "description": "Validation exception"
-          }
-        }
-      }
-    },
-    "/login": {
-      "get": {
-        "tags": [
-          "Weryfikacja"
-        ],
-        "summary": "Logowanie",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-
     "/register": {
       "get": {
         "tags": [
@@ -1693,6 +1404,7 @@
             "schema": {
               "type": "string",
               "default": "0"
+
             }
           },
           {
@@ -1760,6 +1472,7 @@
                   "$ref": "#/components/schemas/DisplayedLobby"
                 }
               }
+
             }
           },
           "400": {
@@ -1775,6 +1488,7 @@
       "get": {
         "tags": [
           "Lobby"
+
         ],
         "summary": "Pobranie danych",
         "description": "Pobranie danych o grach i językach",
@@ -1785,7 +1499,9 @@
             "content": {
               "application/json": {
                 "schema": {
+
                   "$ref": "#/components/schemas/LobbyData"
+
                 }
               }
             }
@@ -1799,6 +1515,7 @@
         }
       }
     },
+
     "/api/profile/usersLobby":{
       "post": {
         "tags": [
@@ -1823,13 +1540,16 @@
           },
           "required": true
         },
+
         "responses": {
           "200": {
             "description": "Successful operation",
             "content": {
               "application/json": {
                 "schema": {
+
                   "$ref": "#/components/schemas/DisplayedLobby"
+
                 }
               }
             }
@@ -1843,13 +1563,17 @@
         }
       }
     },
+
     "/api/profile/usersGames":{
+
       "post": {
         "tags": [
           "Profil"
         ],
+
         "summary": "Pobranie danych o grach",
         "description": "Pobranie danych o grach",
+
         "operationId": "Pobranie danych",
         "security": [
           {
@@ -1857,7 +1581,9 @@
           }
         ],
         "requestBody": {
+
           "description": "Wyświetl gry!",
+
           "content": {
             "application/json": {
               "schema": {
@@ -1873,6 +1599,7 @@
             "content": {
               "application/json": {
                 "schema": {
+
                   "type": "object",
                   "properties": {
                     "shotname": {
@@ -1884,6 +1611,7 @@
                       "example": "./folder/minecraft.jpg"
                     }
                   }
+
                 }
               }
             }
@@ -1897,12 +1625,15 @@
         }
       }
     },
+
     
     "/api/profile/addGameToShelf": {
+
       "post": {
         "tags": [
           "Profil"
         ],
+
         "summary": "Dodaj grę do półki użytkownika",
         "description": "Umożliwia zalogowanemu użytkownikowi dodanie nowej gry do swojej półki.",
         "operationId": "addGameToShelf",
@@ -1912,6 +1643,7 @@
           }
         ],
         "requestBody": {
+
           "description": "Dane potrzebne do dodania gry do półki",
           "required": true,
           "content": {
@@ -1932,11 +1664,13 @@
         "responses": {
           "201": {
             "description": "Gra została pomyślnie dodana do półki",
+
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
+
                     "message": {
                       "type": "string",
                       "example": "Gra została dodana do półki."
@@ -1960,6 +1694,7 @@
                           "description": "ID gry dodanej do półki"
                         }
                       }
+
                     }
                   }
                 }
@@ -1980,6 +1715,7 @@
           }
         }
       }
+
     },
     
     "/api/profile/removeGameFromShelf": {
@@ -2043,7 +1779,60 @@
           }
         }
       }
-    }
+
+    },
+
+    "/api/profile/getUserStats": {
+      "get": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Pobranie statystyk użytkownika",
+        "description": "Zwraca ilość gier na półce użytkownika oraz ilość lobby, do których jest przypisany.",
+        "operationId": "getUserStats",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Statystyki użytkownika zostały pomyślnie pobrane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "gamesOnShelf": {
+                      "type": "integer",
+                      "example": 5,
+                      "description": "Ilość gier na półce użytkownika"
+                    },
+                    "lobbiesJoined": {
+                      "type": "integer",
+                      "example": 3,
+                      "description": "Ilość lobby, do których użytkownik jest przypisany"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - problem z żądaniem od klienta."
+          },
+          "401": {
+            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+          },
+          "403": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    }    
 
   },  
   "components": {

@@ -462,9 +462,9 @@ exports.usersLobby = async (req,res) =>{
       };
   });
 
-  const numberOfPages = Math.round(alllobbies / lobbies.length);
+  const numberOfPages = Math.ceil(alllobbies / limit);
   res.status(200).json({Lobby: lobbyData,pages: numberOfPages});
-}
+};
 
 exports.usersGames = async (req,res) =>{
   //pagination
@@ -494,7 +494,7 @@ exports.usersGames = async (req,res) =>{
   }
 
   const games = shelfs.map(Game => Game.ID_GAME);
-  const numberOfPages = Math.round(allGames / shelfs.length);
+  const numberOfPages = Math.ceil(allGames / limit);
 
   Game.findAll({
       where:{
@@ -508,7 +508,7 @@ exports.usersGames = async (req,res) =>{
   }).catch(err => {
       res.status(500).send({ message: err.message });
   });
-}
+};
 
 exports.addGameToShelf = async (req, res) => {
   const userId = req.userId;
@@ -574,5 +574,28 @@ exports.removeGameFromShelf = async (req, res) => {
   } catch (error) {
     console.error("Error during removing game from shelf: ", error);
     res.status(500).send({ message: "Internal server error" });
+  }
+};
+
+exports.getUserStats = async (req, res) => {
+  const userId = req.userId;
+
+  try {
+      // Liczenie gier na półce użytkownika
+      const gamesCount = await Shelf.count({
+          where: { ID_USER: userId }
+      });
+
+      // Liczenie lobby, do których użytkownik jest przypisany
+      const lobbiesCount = await UIL.count({
+          where: { ID_USER: userId }
+      });
+
+      res.status(200).send({
+          gamesOnShelf: gamesCount,
+          lobbiesJoined: lobbiesCount
+      });
+  } catch (error) {
+      res.status(500).send({ message: "Error retrieving user stats: " + error.message });
   }
 };
