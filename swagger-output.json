@@ -1197,6 +1197,12 @@
           "406": {
             "description": "Gracz jest właścicielem lobby i nie przekazał uprawnień innemu użytkownikowi."
           },
+          "407": {
+            "description": "Nowy właściciel nie jest graczem."
+          },
+          "408": {
+            "description": "Nowego właściciela nie ma w lobby."
+          },
           "500": {
             "description": "Wewnętrzny błąd serwera"
           }

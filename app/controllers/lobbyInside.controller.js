@@ -159,8 +159,18 @@ exports.deleteUser = async (req, res) => {
     const lobbyId = req.lobbyId;
     const userId = req.userId;
     var newOwnerId = null;
-    if(req.newOwnerId)
+    if(req.newOwnerId){
         newOwnerId = req.newOwnerId;
+        
+        const newUserExist = await User.findOne({where: {ID_USER: Number(userId)}});
+        if(newUserExist)
+            return res.status(407).send({message:"New owner is not user!"});
+
+        const newUserInlobby = await UserIn.findOne({where: {ID_USER: Number(userId)}});
+        if(newUserInlobby)
+            return res.status(408).send({message:"New owner is not in Lobby!"});
+
+    }
 
     try{
         //Sprawdzanie czy gracz istnieje
