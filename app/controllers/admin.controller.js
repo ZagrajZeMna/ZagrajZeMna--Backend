@@ -2,9 +2,10 @@ const db = require("../models");
 const Game = db.Game;
 
 exports.addNewGame = (req, res) => {
-    const { name, description, image } = req.body;
+    const { name, shortname, description, image } = req.body;
     Game.create({
       name: name,
+      shortname: shortname,
       description: description,
       image: image
     })

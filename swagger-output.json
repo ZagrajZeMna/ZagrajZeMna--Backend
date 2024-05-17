@@ -1035,8 +1035,8 @@
         }
       }
     },
-    "/api/mainGame/addNewGame": {
-      "get": {
+    "/api/admin/addNewGame": {
+      "post": {
         "tags": [
           "Admin"
         ],
