@@ -6,6 +6,7 @@ const Lobby = db.Lobby;
 const UserIn = db.UserInLobby;
 const User = db.User;
 const Message = db.Message;
+const Review = db.UserReview;
 
 //pobranie tokena json
 var jwt = require("jsonwebtoken");
@@ -72,7 +73,7 @@ exports.getOwnerLobbyData = async (req, res) => {
 
 //Funkcja, która na podstawie id lobby zwraca wszystkie wiadomości w danym lobby.
 exports.getMessageList = async (req, res) => {
-    const lobbyId = 1;//req.lobbyId;
+    const lobbyId = req.lobbyId;
 
 
     try{
@@ -83,7 +84,7 @@ exports.getMessageList = async (req, res) => {
         }
  
         const message_set = await Message.findAll({where: {ID_LOBBY: Number(lobbyId)}, 
-        limit: 100, order: [['ID_MESSAGE', 'DESC']]},{
+        limit: 100, order: [['Date', 'DESC'], ['Time', 'DESC']]},{
             attributes: ['ID_MESSAGE', 'ID_USER', 'Message', 'Date', 'Time']
         });
         
@@ -160,6 +161,141 @@ exports.addUser = async (req, res) => {
         res.status(500).send({message: "Error during adding user to lobby : "+error.message});
     }     
             
+};
+
+//Funkcja, która dodaję recenzje o użytkowniku
+exports.addRewiev = async (req, res) => {
+    const reviewerId = req.reviewerId;
+    const aboutId = req.aboutId;
+    const stars = req.stars;
+    const description = req.description;
+    const localdate = new Date();
+
+    try{
+        //Sprawdzanie czy ktoś nie wystawia opini o samym sobie
+        if(reviewerId == aboutId){
+            return res.status(403).send({message:"Users can't leave reviews for themself!"});
+        }
+
+        //Sprawdzanie czy gracz wystawiający opinie istnieje
+        const ifReviewerExist = await User.findOne({where: {ID_USER: Number(reviewerId)}});
+        
+        if(!ifReviewerExist){
+            return res.status(404).send({message:"There is no such user. Id of reviewer is incorrect!"});
+        }
+
+        //Sprawdzanie czy gracz, któremu wystawiają opinie istnieje
+        const ifUserExist = await User.findOne({where: {ID_USER: Number(aboutId)}});
+        
+        if(!ifUserExist){
+            return res.status(405).send({message:"There is no such user. Id of user is incorrect!"});
+        }
+
+        //Sprawdzanie czy gracz, któremu wystawiają opinie istnieje
+        const ifReviewExist = await Review.findOne({where: {ID_REVIEWER: Number(reviewerId), ID_ABOUT: Number(aboutId),}});
+        
+        if(ifReviewExist){
+            return res.status(406).send({message:"Reviewer is alrady leave review about this user!"});
+        }
+
+
+        //Sprawdzanie czy ocena jest podana w skali całkowitej w przedziale <1, 5>
+        if(stars<1 || stars>5 || (parseInt(stars) != stars)){
+            return res.status(407).send({message:"Stars are incorrect!"});
+        }
+
+        //Sprawdzanie czy opinia jest tekstem 
+        if(!description){
+            return res.status(408).send({message:"Description is incorrect!"});
+        }
+
+        //Dodawanie recenzji
+        const newReview = await Review.create({
+            ID_REVIEWER: reviewerId,
+            ID_ABOUT: aboutId,
+            stars: stars,
+            description: description,
+            date: (localdate.getUTCFullYear()+"-"+(localdate.getUTCMonth()+1)+"-"+localdate.getUTCDate()),
+            time: (localdate.getUTCHours()+":"+localdate.getUTCMinutes()+":"+localdate.getUTCSeconds())
+          });
+      
+          res.status(200).send({
+            message: "Review was added to database.",
+            newRewievDetails: {
+              ID_REVIEW: newReview.ID_REVIEW,
+              ID_REVIEWER: newReview.ID_REVIEWER,
+              ID_ABOUT: newReview.ID_ABOUT,
+              stars: newReview.stars,
+              description: newReview.description,
+              date: newReview.date,
+              time: newReview.time
+            }
+          });
+      
+    }catch(error){
+        res.status(500).send({message: "Error during adding review : "+error.message});
+    }     
+
+};
+
+//Funkcja, która dodaję wiadomość
+exports.addMessage = async (req, res) => {
+    const userId = req.userId;
+    const lobbyId = req.lobbyId;
+    const message = req.message;
+    const localdate = new Date();
+    
+    try{
+        //Sprawdzanie czy gracz istnieje
+        const ifUserExist = await User.findOne({where: {ID_USER: Number(userId)}});
+        
+        if(!ifUserExist){
+            return res.status(403).send({message:"There is no such user!"});
+        }
+
+        //Sprawdzanie czy gracz istnieje
+        const ifLobbyExist = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}});
+        
+        if(!ifLobbyExist){
+            return res.status(404).send({message:"There is no such lobby!"});
+        }
+
+        //Sprawdzanie czy gracz należy do lobby
+        const ifUserInLobbyExist = await UserIn.findOne({where: {ID_USER: Number(userId), ID_LOBBY: Number(lobbyId)}});
+        
+        if(!ifUserInLobbyExist){
+            return res.status(405).send({message:"This user is not in lobby!"});
+        }
+
+        //Sprawdzanie czy wiadomość jest tekstem 
+        if(!message){
+            return res.status(406).send({message:"Message is incorrect!"});
+        }
+
+        //Dodawanie wiadomości
+        const newMessage = await Message.create({
+            ID_USER: userId,
+            ID_LOBBY: lobbyId,
+            Message: message,
+            Date: (localdate.getUTCFullYear()+"-"+(localdate.getUTCMonth()+1)+"-"+localdate.getUTCDate()),
+            Time: (localdate.getUTCHours()+":"+localdate.getUTCMinutes()+":"+localdate.getUTCSeconds())
+          });
+      
+          res.status(200).send({
+            message: "Message was added to database.",
+            newMessageDetails: {
+              ID_USER: newMessage.ID_USER,
+              ID_LOBBY: newMessage.ID_LOBBY,
+              Message: newMessage.Message,
+              Date: newMessage.Date,
+              Time: newMessage.Time
+            }
+          });
+      
+    }catch(error){
+        res.status(500).send({message: "Error during adding message : "+error.message});
+    }     
+
 };
 
 

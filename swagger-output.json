@@ -1317,6 +1317,145 @@
       }
     },
 
+    "/api/lobbyInside/addReview": {
+      "post": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Dodawanie opini o graczu.",
+        "description": "Dodaje opinie o graczu do bazy danych.",
+        "operationId": "addReview",
+        "responses": {
+          "200": {
+            "description": "Recenzja została dodana do bazy danych.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ID_REVIEW": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "ID_REVIEWER": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "ID_ABOUT": {
+                      "type": "integer",
+                      "example": 2
+                    },
+                    "stars": {
+                      "type": "integer",
+                      "example": 3
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Wyjątkowo dobry gracz."
+                    },
+                    "date": {
+                      "type": "date",
+                      "example": "2024-10-12"
+                    },
+                    "time": {
+                      "type": "time",
+                      "example": "11:12:25"
+                    }
+                  }
+                }
+              }
+            }
+
+          },
+ 
+          "403": {
+            "description": "Gracz nie może wystawić samemu sobie opini."
+          },
+          "404": {
+            "description": "Nie ma takiego gracza. Niepoprawne id recenzenta."
+          },
+          "405": {
+            "description": "Nie ma takiego gracza. Niepoprawne id osoby recenzowanej."
+          },
+          "406": {
+            "description": "Recenzent wystawił już wcześniej opinie temu graczowi."
+          },
+          "407": {
+            "description": "Niepoprawnie wyznaczona opinia."
+          },
+          "408": {
+            "description": "Niepoprawny opis."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/lobbyInside/addMessage": {
+      "post": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Dodawanie wiadomości na chacie.",
+        "description": "Dodaje nową wiadomość do bazy danych.",
+        "operationId": "addMessage",
+        "responses": {
+          "200": {
+            "description": "Wiadomość została dodana do bazy danych.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ID_USER": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "ID_LOBBY": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "Message": {
+                      "type": "string",
+                      "example": "Nie wiem co się staneło."
+                    },
+                    "Date": {
+                      "type": "date",
+                      "example": "2024-10-12"
+                    },
+                    "Time": {
+                      "type": "time",
+                      "example": "11:12:25"
+                    }
+                  }
+                }
+              }
+            }
+
+          },
+ 
+          "403": {
+            "description": "Gracz nie istnieje."
+          },
+          "404": {
+            "description": "Lobby nie istnieje."
+          },
+          "405": {
+            "description": "Nie ma tego gracza w lobby."
+          },
+          "406": {
+            "description": "Wiadomość nie jest poprawna."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+
     "/register": {
       "get": {
         "tags": [
