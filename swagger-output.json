@@ -1184,6 +1184,10 @@
                       "type": "integer",
                       "example": "2"
                     },
+                    "ID_LOBBY": {
+                      "type": "integer",
+                      "example": "1"
+                    },
                     "Message": {
                       "type": "text",
                       "example": "Dobrze jest, gramy dalej."
@@ -1202,6 +1206,9 @@
             }
           },
           "403": {
+            "description": "Nie znaleziono lobby."
+          },
+          "404": {
             "description": "Nie znaleziono wiadomości."
           },
           "500": {

@@ -3,7 +3,6 @@ const config = require("../config/auth.config");
 const nodemailer = require("../config/nodemailer.config");
 
 const Lobby = db.Lobby;
-//const Game = db.Game;
 const UserIn = db.UserInLobby;
 const User = db.User;
 const Message = db.Message;
@@ -73,27 +72,37 @@ exports.getOwnerLobbyData = async (req, res) => {
 
 //Funkcja, która na podstawie id lobby zwraca wszystkie wiadomości w danym lobby.
 exports.getMessageList = async (req, res) => {
-    const lobbyId = req.lobbyId;
+    const lobbyId = 1;//req.lobbyId;
+
 
     try{
-        const message_set = await Message.findAll({where: {ID_LOBBY: Number(lobbyId)}}, {
+       const ifLobbyExist = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}});
+        
+        if(!ifLobbyExist){
+            return res.status(403).send({message:"There is no lobby with that id!"});
+        }
+ 
+        const message_set = await Message.findAll({where: {ID_LOBBY: Number(lobbyId)}, 
+        limit: 100, order: [['ID_MESSAGE', 'DESC']]},{
             attributes: ['ID_MESSAGE', 'ID_USER', 'Message', 'Date', 'Time']
         });
         
         if(message_set.length==0){
-            return res.status(403).send({message:"Message in lobby not found!"});
+            return res.status(404).send({message:"Message in lobby not found!"});
         }
         
-        let message_set_response = []
-        for(let i=0; i<message_set.length; i++)
-            message_set_response.push([message_set[i].ID_MESSAGE, message_set[i].ID_USER, message_set[i].Message, message_set[i].Date, message_set[i].Time]);
+        //let message_set_response = []
+        //for(let i=0; i<message_set.length; i++)
+            //message_set_response.push([message_set[i].ID_MESSAGE, message_set[i].ID_USER, message_set[i].Message, message_set[i].Date, message_set[i].Time]);
         
-        res.status(200).send(message_set_response);
+        //message_set_response.reverse();
+        res.status(200).send(message_set);//_response);
     }catch(error){
         res.status(500).send({message: "Error retrieving message in lobby: "+error.message});
     }     
     
 };
+
 
 //Funkcja, która na podstawie id gracza dodaje go do lobby.
 exports.addUser = async (req, res) => {
@@ -216,7 +225,6 @@ exports.deleteUser = async (req, res) => {
             
 };
 
-
 //Funkcja, która usuwa lobby.
 exports.deleteLobby = async (req, res) => {
     const lobbyId = req.lobbyId;
@@ -267,3 +275,4 @@ exports.deleteLobby = async (req, res) => {
     }     
             
 };
+
