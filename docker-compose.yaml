@@ -19,7 +19,7 @@ services:
         ipv4_address: 172.20.0.2
     volumes:
       - ./uploads:/app/uploads
-    
+           
   db:
     container_name: database
     image: postgres:latest

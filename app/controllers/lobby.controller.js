@@ -10,8 +10,10 @@ const Languages = db.Languages;
 const UIL = db.UserInLobby;
 const Op = db.Sequelize.Op;
 
+
+
 const getPagination = (page, size) => {
-    const limit = size ? +size : 10;
+    const limit = size ? +size : 5;
     const offset = page ? page * limit : 0;
     return { limit, offset };
 };
@@ -87,7 +89,8 @@ exports.show = async (req, res) => {
         where: {
             ID_LOBBY: {
                 [Op.in]: lobbyIds
-            }
+            },
+            Accepted: true
         },
         attributes: ['ID_LOBBY', [db.sequelize.fn('COUNT', 'ID_USER'), 'playerCount']],
         group: 'ID_LOBBY'
@@ -181,24 +184,5 @@ exports.data = (req,res) =>{
 }
 
 
-
-
-// exports.join = (req, res) =>{
-//     const loginId = req.userId; 
-//     User.findOne({
-//         where: {
-//             ID_USER: loginId
-//         }
-//     }).then((user)=>{
-//         UIL.create({
-//             ID_OWNER: user.ID_USER,
-            
-//         }).then(userInLobby=>{
-    
-//         }).catch(err => {
-//                 res.status(500).send({ message: err.message });
-//             });
-//     });
-// }
 
 

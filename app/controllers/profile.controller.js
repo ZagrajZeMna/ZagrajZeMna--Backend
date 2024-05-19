@@ -464,7 +464,7 @@ exports.usersLobby = async (req,res) =>{
 
   const numberOfPages = Math.ceil(alllobbies / limit);
   res.status(200).json({Lobby: lobbyData,pages: numberOfPages});
-};
+}
 
 exports.usersGames = async (req,res) =>{
   //pagination
@@ -502,13 +502,13 @@ exports.usersGames = async (req,res) =>{
               [Op.in]: games
           }
       },
-      attributes: ['shortname','image']
+      attributes: ['name','shortname','image']
   }).then((games)=>{
       res.json({Games: games, Pages: numberOfPages});
   }).catch(err => {
       res.status(500).send({ message: err.message });
   });
-};
+}
 
 exports.addGameToShelf = async (req, res) => {
   const userId = req.userId;
