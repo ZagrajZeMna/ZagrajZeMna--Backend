@@ -1108,6 +1108,9 @@
               }
             }
           },
+          "403": {
+            "description": "Nie ma takiego lobby."
+          },
           "404": {
             "description": "Nie znaleziono danych."
           },
@@ -1124,7 +1127,7 @@
           "WnętrzeLobby"
         ],
         "summary": "Pobranie id i nazwy właściciela przypisanego do lobby.",
-        "description": "Pobiera danych właściciela lobby.",
+        "description": "Pobiera dane właściciela lobby.",
         "operationId": "getLobbyOwnerData",
         "responses": {
           "200": {
@@ -1148,9 +1151,12 @@
             }
           },
           "403": {
-            "description": "Nie znaleziono właściciela."
+            "description": "Nie znaleziono lobby."
           },
           "404": {
+            "description": "Nie znaleziono właściciela."
+          },
+          "405": {
             "description": "Nie znaleziono danych właściciela."
           },
           "500": {
@@ -1160,56 +1166,20 @@
       }
     },
 
-    "/api/lobbyInside/getMessageList": {
-      "get": {
+    "/api/lobbyInside/updatelobbyStillLooking": {
+      "put": {
         "tags": [
           "WnętrzeLobby"
         ],
-        "summary": "Pobranie listy wiadomości przypisanych do lobby.",
-        "description": "Pobiera liste wiadomości przypisanych do lobby.",
-        "operationId": "getMessageList",
+        "summary": "Zmiana wartości parametru StillLooking na przeciwny dla wybranego lobby.",
+        "description": "Pozwala zmienić wartość parametru StillLooking na przeciwną wartość.",
+        "operationId": "updateStillLooking",
         "responses": {
           "200": {
-            "description": "Dane zostały pomyślnie wysłane",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ID_MESSAGE": {
-                      "type": "integer",
-                      "example": "1"
-                    },
-                    "ID_USER": {
-                      "type": "integer",
-                      "example": "2"
-                    },
-                    "ID_LOBBY": {
-                      "type": "integer",
-                      "example": "1"
-                    },
-                    "Message": {
-                      "type": "text",
-                      "example": "Dobrze jest, gramy dalej."
-                    },
-                    "Date": {
-                      "type": "date",
-                      "example": "13-05-1764"
-                    },
-                    "Time": {
-                      "type": "time",
-                      "example": "12:12:12"
-                    }
-                  }
-                }
-              }
-            }
+            "description": "Parametr został zmieniony"
           },
           "403": {
             "description": "Nie znaleziono lobby."
-          },
-          "404": {
-            "description": "Nie znaleziono wiadomości."
           },
           "500": {
             "description": "Wewnętrzny błąd serwera"
@@ -1217,6 +1187,64 @@
         }
       }
     },
+
+    "/api/lobbyInside/updatelobbyDescription": {
+      "put": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Zmiana opisu wybranego lobby.",
+        "description": "Pozwala zmienić opis wybraneg lobby.",
+        "operationId": "updateLobbyDescription",
+        "responses": {
+          "200": {
+            "description": "Opis został zmieniony"
+          },
+          "403": {
+            "description": "Nie znaleziono lobby."
+          },
+          "404": {
+            "description": "Nowa wartość jest taka sama jak starsza."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/lobbyInside/changeLobbyOwner": {
+      "put": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Zmiana właściciela lobby.",
+        "description": "Pozwala zmienić właściciela lobby za pomocą id lobby i id nowego właściciela.",
+        "operationId": "changeLobbyOwner",
+        "responses": {
+          "200": {
+            "description": "Parametr zmienił wartość na przeciwną"
+          },
+          "403": {
+            "description": "Nie znaleziono lobby."
+          },
+          "404": {
+            "description": "Nie znaleziono gracza."
+          },
+          "405": {
+            "description": "Nowy właściciel jest poza lobby."
+          },
+          "406": {
+            "description": "Nowy właściciel to stary właściciel."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+
 
     "/api/lobbyInside/deleteUser": {
       "delete": {
@@ -1279,37 +1307,6 @@
           "406": {
             "description": "Lobby może być usunięte tylko przez właściciela."
           },
-          "407": {
-            "description": "Lobby usunięto, ale nie usunięto listy użytkowników."
-          },
-          "500": {
-            "description": "Wewnętrzny błąd serwera"
-          }
-        }
-      }
-    },
-
-    "/api/lobbyInside/addUser": {
-      "post": {
-        "tags": [
-          "WnętrzeLobby"
-        ],
-        "summary": "Dodawanie gracza do lobby.",
-        "description": "Dodaje gracza do lobby na podstawie id gracza i id lobby.",
-        "operationId": "addUserToLobby",
-        "responses": {
-          "200": {
-            "description": "Gracz został dodany do lobby"
-          },
-          "403": {
-            "description": "Nie znaleziono gracza."
-          },
-          "404": {
-            "description": "Nie znaleziono lobby."
-          },
-          "405": {
-            "description": "Gracz już należy do lobby."
-          },
           "500": {
             "description": "Wewnętrzny błąd serwera"
           }
@@ -1369,22 +1366,19 @@
           },
  
           "403": {
-            "description": "Gracz nie może wystawić samemu sobie opini."
-          },
-          "404": {
             "description": "Nie ma takiego gracza. Niepoprawne id recenzenta."
           },
-          "405": {
+          "404": {
             "description": "Nie ma takiego gracza. Niepoprawne id osoby recenzowanej."
+          },
+          "405": {
+            "description": "Gracz nie może wystawić samemu sobie opini."
           },
           "406": {
             "description": "Recenzent wystawił już wcześniej opinie temu graczowi."
           },
           "407": {
-            "description": "Niepoprawnie wyznaczona opinia."
-          },
-          "408": {
-            "description": "Niepoprawny opis."
+            "description": "Niepoprawnie wyznaczona skala opinii."
           },
           "500": {
             "description": "Wewnętrzny błąd serwera"

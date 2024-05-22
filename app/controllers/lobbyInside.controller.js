@@ -16,7 +16,14 @@ exports.getUserList = async (req, res) => {
     const lobbyId = req.lobbyId;
 
     try{
-        const user_set = await UserIn.findAll({ where: { ID_LOBBY: Number(lobbyId) } }, {
+        //Sprawdzanie czy lobby istnieje
+        const ifLobbyExist = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}});
+
+        if(!ifLobbyExist){
+            return res.status(403).send({message:"There is no such lobby!"});
+        }
+
+        const user_set = await UserIn.findAll({ where: { ID_LOBBY: Number(lobbyId), Accepted: true }}, {
             attributes: ['ID_USER']
         });
 
@@ -33,6 +40,7 @@ exports.getUserList = async (req, res) => {
         let name_user = [];
         for(let i=0; i<name_user_set.length; i++)
             name_user.push([name_user_set[i].ID_USER, name_user_set[i].username, name_user_set[i].avatar]);
+
         res.status(200).send(name_user);
 
     }catch(error){
@@ -46,121 +54,37 @@ exports.getOwnerLobbyData = async (req, res) => {
     const lobbyId = req.lobbyId;
 
     try{
-        const lobbyOwner = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}}, {
-            attributes: ['ID_OWNER']
-        });
-        
-        if(lobbyOwner.length==0){
-            return res.status(403).send({message:"Lobby owner not found!"});
-        }
-        const lobbyOwnerId = lobbyOwner.ID_OWNER;
-
-        const lobbyOwnerData = await User.findOne({where: {ID_USER: lobbyOwnerId}}, {
-            attributes: ['ID_USER', 'username']
-        });
-
-        if(lobbyOwnerData.length==0){
-            return res.status(404).send({message:"Data of lobby owner not found!"});
-        }
-        const lobbyOwnerDataSet = [lobbyOwnerData.ID_USER, lobbyOwnerData.username];
-
-        res.status(200).send(lobbyOwnerDataSet);
-    }catch(error){
-        res.status(500).send({message: "Error retrieving lobby owner: "+error.message});
-    }     
-    
-};
-
-//Funkcja, która na podstawie id lobby zwraca wszystkie wiadomości w danym lobby.
-exports.getMessageList = async (req, res) => {
-    const lobbyId = req.lobbyId;
-
-
-    try{
-       const ifLobbyExist = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}});
-        
-        if(!ifLobbyExist){
-            return res.status(403).send({message:"There is no lobby with that id!"});
-        }
- 
-        const message_set = await Message.findAll({where: {ID_LOBBY: Number(lobbyId)}, 
-        limit: 100, order: [['Date', 'DESC'], ['Time', 'DESC']]},{
-            attributes: ['ID_MESSAGE', 'ID_USER', 'Message', 'Date', 'Time']
-        });
-        
-        if(message_set.length==0){
-            return res.status(404).send({message:"Message in lobby not found!"});
-        }
-        
-        //let message_set_response = []
-        //for(let i=0; i<message_set.length; i++)
-            //message_set_response.push([message_set[i].ID_MESSAGE, message_set[i].ID_USER, message_set[i].Message, message_set[i].Date, message_set[i].Time]);
-        
-        //message_set_response.reverse();
-        res.status(200).send(message_set);//_response);
-    }catch(error){
-        res.status(500).send({message: "Error retrieving message in lobby: "+error.message});
-    }     
-    
-};
-
-
-//Funkcja, która na podstawie id gracza dodaje go do lobby.
-exports.addUser = async (req, res) => {
-    const lobbyId = req.lobbyId;
-    const userId = req.userId;
-
-    try{
-        //Sprawdzanie czy gracz istnieje
-        const ifUserExist = await User.findOne({where: {ID_USER: Number(userId)}});
-        
-        if(!ifUserExist){
-            return res.status(403).send({message:"There is no such user!"});
-        }
-
         //Sprawdzanie czy lobby istnieje
         const ifLobbyExist = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}});
 
         if(!ifLobbyExist){
-            return res.status(404).send({message:"There is no such lobby!"});
+            return res.status(403).send({message:"There is no such lobby!"});
         }
 
-        //Sprawdzanie czy użytkownik jest już w lobby
-        const ifUserInLobbyExist = await UserIn.findOne({where: {ID_LOBBY: Number(lobbyId), ID_USER: Number(userId)}});
-
-        if(ifUserInLobbyExist){
-            return res.status(405).send({message:"This user is already in lobby!"});
+                
+        const lobbyOwner = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}, 
+            attributes: ['ID_OWNER']
+        });
+        
+        if(!lobbyOwner){
+            return res.status(404).send({message:"Lobby owner not found!"});
         }
+        const lobbyOwnerId = lobbyOwner.ID_OWNER;
 
-        //Sprawdzanie czy lobby nie jest pełne
-        const userset = await UserIn.findALL({where: {ID_LOBBY: Number(lobbyId)}});
+        const lobbyOwnerData = await User.findOne({where: {ID_USER: lobbyOwnerId},
+            attributes: ['ID_USER', 'username']
+        });
 
-        if((ifLobbyExist.NeedUsers>=userset.length) || !(ifLobbyExist.StillLooking)){
-            return res.status(406).send({message:"Lobby is full!"});
+        if(!lobbyOwnerData){
+            return res.status(405).send({message:"Data of lobby owner not found!"});
         }
+        //const lobbyOwnerDataSet = [lobbyOwnerData.ID_USER, lobbyOwnerData.username];
 
-        //Dodawanie gracza do lobby
-        const newUser = await UserIn.create({
-            ID_USER: userId,
-            ID_LOBBY: lobbyId
-          });
-      
-//          res.status(200).send({
-//            message: "User was added to lobby.",
-//            userInLobbyDetails: {
-//              ID_UIL: newUser.ID_UIL,
-//             ID_USER: newUser.ID_USER,
-//              ID_LOBBY: newUser.ID_LOBBY
-//            }
-//          });
-      
-        const userName = await User.findOne({where: {ID_USER: Number(userId)}});
-
-        res.status(200).send({ message: "Add "+ userName.username+ " to lobby." });
+        res.status(200).send(lobbyOwnerData);
     }catch(error){
-        res.status(500).send({message: "Error during adding user to lobby : "+error.message});
+        res.status(500).send({message: "Error retrieving lobby owner: "+error.message});
     }     
-            
+    
 };
 
 //Funkcja, która dodaję recenzje o użytkowniku
@@ -172,27 +96,27 @@ exports.addRewiev = async (req, res) => {
     const localdate = new Date();
 
     try{
-        //Sprawdzanie czy ktoś nie wystawia opini o samym sobie
-        if(reviewerId == aboutId){
-            return res.status(403).send({message:"Users can't leave reviews for themself!"});
-        }
-
         //Sprawdzanie czy gracz wystawiający opinie istnieje
         const ifReviewerExist = await User.findOne({where: {ID_USER: Number(reviewerId)}});
         
         if(!ifReviewerExist){
-            return res.status(404).send({message:"There is no such user. Id of reviewer is incorrect!"});
+            return res.status(403).send({message:"There is no such user. Id of reviewer is incorrect!"});
         }
 
         //Sprawdzanie czy gracz, któremu wystawiają opinie istnieje
         const ifUserExist = await User.findOne({where: {ID_USER: Number(aboutId)}});
         
         if(!ifUserExist){
-            return res.status(405).send({message:"There is no such user. Id of user is incorrect!"});
+            return res.status(404).send({message:"There is no such user. Id of user is incorrect!"});
         }
-
-        //Sprawdzanie czy gracz, któremu wystawiają opinie istnieje
-        const ifReviewExist = await Review.findOne({where: {ID_REVIEWER: Number(reviewerId), ID_ABOUT: Number(aboutId),}});
+        
+        //Sprawdzanie czy ktoś nie wystawia opini o samym sobie
+        if(reviewerId == aboutId){
+            return res.status(405).send({message:"Users can't leave reviews for themself!"});
+        }
+        
+        //Sprawdzanie czy gracz nie wystawił już wcześniej opini temu graczowi
+        const ifReviewExist = await Review.findOne({where: {ID_REVIEWER: Number(reviewerId), ID_ABOUT: Number(aboutId)}});
         
         if(ifReviewExist){
             return res.status(406).send({message:"Reviewer is alrady leave review about this user!"});
@@ -204,10 +128,6 @@ exports.addRewiev = async (req, res) => {
             return res.status(407).send({message:"Stars are incorrect!"});
         }
 
-        //Sprawdzanie czy opinia jest tekstem 
-        if(!description){
-            return res.status(408).send({message:"Description is incorrect!"});
-        }
 
         //Dodawanie recenzji
         const newReview = await Review.create({
@@ -253,7 +173,7 @@ exports.addMessage = async (req, res) => {
             return res.status(403).send({message:"There is no such user!"});
         }
 
-        //Sprawdzanie czy gracz istnieje
+        //Sprawdzanie czy lobby istnieje
         const ifLobbyExist = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}});
         
         if(!ifLobbyExist){
@@ -267,7 +187,7 @@ exports.addMessage = async (req, res) => {
             return res.status(405).send({message:"This user is not in lobby!"});
         }
 
-        //Sprawdzanie czy wiadomość jest tekstem 
+        //Sprawdzanie czy wiadomość nie jest pusta
         if(!message){
             return res.status(406).send({message:"Message is incorrect!"});
         }
@@ -299,24 +219,105 @@ exports.addMessage = async (req, res) => {
 };
 
 
+//Funkcja zmieniająca ustawienia lobby
+exports.updateLobbyStillLooking = async (req, res) => {
+    const lobbyId = req.lobbyId;
+
+    try{
+        //Sprawdzanie, czy lobby istnieje
+        const ifLobbyExist = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}});
+        
+        if(!ifLobbyExist){
+            return res.status(403).send({message:"There is no such lobby!"});
+        }
+
+        if(ifLobbyExist.StillLooking == null){
+            await ifLobbyExist.update({StillLooking: 1});
+        }
+        else{
+            await ifLobbyExist.update({StillLooking: !(ifLobbyExist.StillLooking)});
+        }
+        
+        res.status(200).send({message: "Lobby data StillLooking set to: " + ifLobbyExist.StillLooking});
+        
+    }catch(error){
+        res.status(500).send({message: "Error during update lobby data StillLooking: "+error.message});
+    } 
+
+};
+
+//Funkcja zmieniająca ustawienia lobby
+exports.updateLobbyDescription = async (req, res) => {
+    const lobbyId = req.lobbyId;
+    const Description = req.description;
+    try{
+        //Sprawdzanie, czy lobby istnieje
+        const ifLobbyExist = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}, attributes:['ID_LOBBY', 'Description']});
+        
+        if(!ifLobbyExist){
+            return res.status(403).send({message:"There is no such lobby!"});
+        }
+
+        if(ifLobbyExist.Description == Description)
+            return res.status(404).send({message:"Description has already that value!"});
+
+        await ifLobbyExist.update({Description: Description});
+      
+        res.status(200).send({message: "Lobby description was changed."});
+      
+    }catch(error){
+        res.status(500).send({message: "Error during update lobby description: "+error.message});
+    }     
+
+};
+
+//Funkcja zmieniająca właściciela lobby
+exports.changeLobbyOwner = async (req, res) => {
+    const lobbyId = req.lobbyId;
+    const newOwnerId = req.userId;
+
+    try{
+        //Sprawdzanie, czy lobby istnieje
+        const ifLobbyExist = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}, attributes: ['ID_LOBBY', 'ID_OWNER']});
+        
+        if(!ifLobbyExist){
+            return res.status(403).send({message:"There is no such lobby!"});
+        }
+
+        //Sprawdzanie, czy gracz istnieje
+        const ifUserExist = await User.findOne({where: {ID_USER: Number(newOwnerId)}, attributes:['ID_USER', 'username']});
+        
+        if(!ifUserExist){
+            return res.status(404).send({message:"There is no such user!"});
+        }
+
+        //Sprawdzanie czy użytkownik jest w lobby
+        const ifUserInLobbyExist = await UserIn.findOne({where: {ID_LOBBY: Number(lobbyId), ID_USER: Number(newOwnerId)}});
+        
+        if(!ifUserInLobbyExist){
+            return res.status(405).send({message:"New owner is not in lobby!"});
+        }
+
+
+        if(ifLobbyExist.ID_OWNER == newOwnerId){
+            return res.status(406).send({message:"New owner is the old one!"});
+        }
+
+        await ifLobbyExist.update({ID_OWNER: newOwnerId});
+        
+        res.status(200).send({message: "Lobby has new Owner: " + ifUserExist.username});
+    }catch(error){
+        res.status(500).send({message: "Error during upgrade lobby data: "+error.message});
+    }     
+
+};
+
+
 //Funkcja, która na podstawie id gracza usuwa go z lobby.
 exports.deleteUser = async (req, res) => {
     const lobbyId = req.lobbyId;
     const userId = req.userId;
-    var newOwnerId = null;
-    if(req.newOwnerId){
-        newOwnerId = req.newOwnerId;
-        
-        const newUserExist = await User.findOne({where: {ID_USER: Number(userId)}});
-        if(newUserExist)
-            return res.status(407).send({message:"New owner is not user!"});
-
-        const newUserInlobby = await UserIn.findOne({where: {ID_USER: Number(userId)}});
-        if(newUserInlobby)
-            return res.status(408).send({message:"New owner is not in Lobby!"});
-
-    }
-
+    
     try{
         //Sprawdzanie czy gracz istnieje
         const ifUserExist = await User.findOne({where: {ID_USER: Number(userId)}});
@@ -342,19 +343,13 @@ exports.deleteUser = async (req, res) => {
 
         //Sprawdzanie czy użytkownik nie jest właścicielem
         if(ifLobbyExist.ID_OWNER == ifUserExist.ID_USER){
-            if(!newOwnerId) 
                 return res.status(406).send({message:"Can't remove lobby owner!"});
-            await Lobby.update({ ID_OWNER: newOwnerId});
         }
 
-                
-        //await UserIn.delete({where: {ID_LOBBY: Number(lobbyId), ID_USER: Number(userId)}});
         //Usuwanie gracza z lobby
         await ifExist.destroy();
 
-        const userName = await User.findOne({where: {ID_USER: Number(userId)}});
-
-        res.status(200).send({ message: "Delete "+ userName.username+ " from lobby." });
+        res.status(200).send({ message: "Delete "+ ifUserExist.username+ " from lobby." });
     }catch(error){
         res.status(500).send({message: "Error during deleting user from lobby : "+error.message});
     }     
@@ -396,11 +391,6 @@ exports.deleteLobby = async (req, res) => {
 
         //Usuwanie wszystkich użytkowników z lobby
         const user_set = await UserIn.findAll({ where: { ID_LOBBY: Number(lobbyId) } });
-
-        //Sprawdzanie czy poprawnie pobrano listę użytkowników
-        if(ifLobbyExist.ID_OWNER != ifUserExist.ID_USER){
-            return res.status(407).send({message:"Lobby is now unactive, but list of user in lobby still exists!"});
-        }
 
         for(let i=0; i<user_set.length; i++)
             await user_set[i].destroy();
