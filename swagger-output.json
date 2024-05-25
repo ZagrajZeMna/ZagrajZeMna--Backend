@@ -1035,8 +1035,8 @@
         }
       }
     },
-    "/api/mainGame/addNewGame": {
-      "get": {
+    "/api/admin/addNewGame": {
+      "post": {
         "tags": [
           "Admin"
         ],
@@ -1074,6 +1074,382 @@
         }
       }
     },
+
+    "/api/lobbyInside/getUserList": {
+      "get": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Pobranie id, nazwy i awatary graczy przypisanych do lobby.",
+        "description": "Pobiera id, nazwe i ścieżke do awatara użytkowników wewnątrz lobby.",
+        "operationId": "getLobbyUserData",
+        "responses": {
+          "200": {
+            "description": "Dane zostały pomyślnie wysłane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "example": 1
+                    },
+                    "nickname": {
+                      "type": "string",
+                      "example": "Tomasz_NN"
+                    },
+                    "avatar": {
+                      "type": "string",
+                      "example": "./folder/minecraft.jpg"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Nie ma takiego lobby."
+          },
+          "404": {
+            "description": "Nie znaleziono danych."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/lobbyInside/getOwnerLobbyData": {
+      "get": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Pobranie id i nazwy właściciela przypisanego do lobby.",
+        "description": "Pobiera dane właściciela lobby.",
+        "operationId": "getLobbyOwnerData",
+        "responses": {
+          "200": {
+            "description": "Dane zostały pomyślnie wysłane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id_owner": {
+                      "type": "integer",
+                      "example": "1"
+                    },
+                    "nickname": {
+                      "type": "string",
+                      "example": "Tomasz_NN"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Nie znaleziono lobby."
+          },
+          "404": {
+            "description": "Nie znaleziono właściciela."
+          },
+          "405": {
+            "description": "Nie znaleziono danych właściciela."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/lobbyInside/updatelobbyStillLooking": {
+      "put": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Zmiana wartości parametru StillLooking na przeciwny dla wybranego lobby.",
+        "description": "Pozwala zmienić wartość parametru StillLooking na przeciwną wartość.",
+        "operationId": "updateStillLooking",
+        "responses": {
+          "200": {
+            "description": "Parametr został zmieniony"
+          },
+          "403": {
+            "description": "Nie znaleziono lobby."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/lobbyInside/updatelobbyDescription": {
+      "put": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Zmiana opisu wybranego lobby.",
+        "description": "Pozwala zmienić opis wybraneg lobby.",
+        "operationId": "updateLobbyDescription",
+        "responses": {
+          "200": {
+            "description": "Opis został zmieniony"
+          },
+          "403": {
+            "description": "Nie znaleziono lobby."
+          },
+          "404": {
+            "description": "Nowa wartość jest taka sama jak starsza."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/lobbyInside/changeLobbyOwner": {
+      "put": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Zmiana właściciela lobby.",
+        "description": "Pozwala zmienić właściciela lobby za pomocą id lobby i id nowego właściciela.",
+        "operationId": "changeLobbyOwner",
+        "responses": {
+          "200": {
+            "description": "Parametr zmienił wartość na przeciwną"
+          },
+          "403": {
+            "description": "Nie znaleziono lobby."
+          },
+          "404": {
+            "description": "Nie znaleziono gracza."
+          },
+          "405": {
+            "description": "Nowy właściciel jest poza lobby."
+          },
+          "406": {
+            "description": "Nowy właściciel to stary właściciel."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+
+
+    "/api/lobbyInside/deleteUser": {
+      "delete": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Usuwanie gracza z lobby.",
+        "description": "Usuwa gracza z lobby na podstawie id gracza i id lobby.",
+        "operationId": "deleteUserFromLobby",
+        "responses": {
+          "200": {
+            "description": "Gracz został usunięty"
+          },
+          "403": {
+            "description": "Nie ma takiego gracza."
+          },
+          "404": {
+            "description": "Nie ma takiego lobby."
+          },
+          "405": {
+            "description": "Nie ma tego gracza w lobby."
+          },
+          "406": {
+            "description": "Gracz jest właścicielem lobby i nie przekazał uprawnień innemu użytkownikowi."
+          },
+          "407": {
+            "description": "Nowy właściciel nie jest graczem."
+          },
+          "408": {
+            "description": "Nowego właściciela nie ma w lobby."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/lobbyInside/deleteLobby": {
+      "delete": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Usuwanie lobby.",
+        "description": "Usuwa lobby na podstawie id gracza i id lobby.",
+        "operationId": "deleteLobby",
+        "responses": {
+          "200": {
+            "description": "Lobby ustawiono jako nieaktywne."
+          },
+          "403": {
+            "description": "Nie ma takiego gracza."
+          },
+          "404": {
+            "description": "Nie ma takiego lobby."
+          },
+          "405": {
+            "description": "Lobby już jest nieaktywne."
+          },
+          "406": {
+            "description": "Lobby może być usunięte tylko przez właściciela."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/lobbyInside/addReview": {
+      "post": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Dodawanie opini o graczu.",
+        "description": "Dodaje opinie o graczu do bazy danych.",
+        "operationId": "addReview",
+        "responses": {
+          "200": {
+            "description": "Recenzja została dodana do bazy danych.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ID_REVIEW": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "ID_REVIEWER": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "ID_ABOUT": {
+                      "type": "integer",
+                      "example": 2
+                    },
+                    "stars": {
+                      "type": "integer",
+                      "example": 3
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Wyjątkowo dobry gracz."
+                    },
+                    "date": {
+                      "type": "date",
+                      "example": "2024-10-12"
+                    },
+                    "time": {
+                      "type": "time",
+                      "example": "11:12:25"
+                    }
+                  }
+                }
+              }
+            }
+
+          },
+ 
+          "403": {
+            "description": "Nie ma takiego gracza. Niepoprawne id recenzenta."
+          },
+          "404": {
+            "description": "Nie ma takiego gracza. Niepoprawne id osoby recenzowanej."
+          },
+          "405": {
+            "description": "Gracz nie może wystawić samemu sobie opini."
+          },
+          "406": {
+            "description": "Recenzent wystawił już wcześniej opinie temu graczowi."
+          },
+          "407": {
+            "description": "Niepoprawnie wyznaczona skala opinii."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/lobbyInside/addMessage": {
+      "post": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Dodawanie wiadomości na chacie.",
+        "description": "Dodaje nową wiadomość do bazy danych.",
+        "operationId": "addMessage",
+        "responses": {
+          "200": {
+            "description": "Wiadomość została dodana do bazy danych.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ID_USER": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "ID_LOBBY": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "Message": {
+                      "type": "string",
+                      "example": "Nie wiem co się staneło."
+                    },
+                    "Date": {
+                      "type": "date",
+                      "example": "2024-10-12"
+                    },
+                    "Time": {
+                      "type": "time",
+                      "example": "11:12:25"
+                    }
+                  }
+                }
+              }
+            }
+
+          },
+ 
+          "403": {
+            "description": "Gracz nie istnieje."
+          },
+          "404": {
+            "description": "Lobby nie istnieje."
+          },
+          "405": {
+            "description": "Nie ma tego gracza w lobby."
+          },
+          "406": {
+            "description": "Wiadomość nie jest poprawna."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+
     "/register": {
       "get": {
         "tags": [

@@ -9,5 +9,5 @@ module.exports = function(app) {
       next();
     });
     
-    app.post("/api/mainGame/addNewGame", controller.addNewGame);
+    app.post("/api/admin/addNewGame", controller.addNewGame);
   };

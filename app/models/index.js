@@ -37,6 +37,7 @@ db.Notification = require('./notification.model.js')(sequelize, Sequelize);
 
 
 
+
 Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
       db[modelName].associate(db);

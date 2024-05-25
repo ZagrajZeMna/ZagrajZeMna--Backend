@@ -106,9 +106,9 @@ require('./app/routes/profile.routes')(app);
 require('./app/routes/mainGame.routes')(app);
 require('./app/routes/admin.routes')(app);
 require('./app/routes/notification.routes')(app);
+require('./app/routes/lobbyInside.routes')(app);
 // set port, listen for requests
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
-
