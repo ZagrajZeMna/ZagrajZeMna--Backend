@@ -502,7 +502,7 @@ exports.usersGames = async (req,res) =>{
               [Op.in]: games
           }
       },
-      attributes: ['shortname','image']
+      attributes: ['name','shortname','image']
   }).then((games)=>{
       res.json({Games: games, Pages: numberOfPages});
   }).catch(err => {
