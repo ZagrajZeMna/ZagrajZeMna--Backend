@@ -74,7 +74,7 @@ exports.signin = (req, res) => {
       }
       const token = jwt.sign({ID_USER: user.ID_USER},config.key.secret, {
         algorithm: "HS256",
-        expiresIn: 1800, // 30 minutes
+        expiresIn: 7200, // 30 minutes
     });
       const admin = jwt.sign({ id: user.id },config.key.admin,
       {
@@ -84,7 +84,13 @@ exports.signin = (req, res) => {
       if(user.IsAdmin === 'Yes'){
         res.send(admin)
       }
-    
+      user.confirmationCode = token;
+      user.save((err) => {
+        if (err) {
+          res.status(500).send({ message: err });
+          return;
+        }
+      });
       res.send(token);
     })
     .catch(err => {
