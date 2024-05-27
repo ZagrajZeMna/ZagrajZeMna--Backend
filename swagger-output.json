@@ -1035,6 +1035,52 @@
         }
       }
     },
+ 
+    "/api/mainGame/getGamePagination":{
+      "get": {
+        "tags": [
+          "Strona Główna"
+        ],
+        "summary": "Wysyłanie gier na stronę główną",
+        "description": "Wysyła gry z paginacją na stronę główną",
+        "operationId": "getGamePagination",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Strona do wyświeltenia",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": "0"
+
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Ilość do wyświeltenia",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": "5"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "404": {
+            "description": "Game no found"
+          }
+        }
+      }
+    },
+ 
+ 
     "/api/admin/addNewGame": {
       "post": {
         "tags": [
