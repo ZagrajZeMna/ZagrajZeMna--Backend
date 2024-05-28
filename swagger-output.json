@@ -1036,51 +1036,6 @@
       }
     },
  
-    "/api/mainGame/getGamePagination":{
-      "get": {
-        "tags": [
-          "Strona Główna"
-        ],
-        "summary": "Wysyłanie gier na stronę główną",
-        "description": "Wysyła gry z paginacją na stronę główną",
-        "operationId": "getGamePagination",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Strona do wyświeltenia",
-            "required": false,
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "default": "0"
-
-            }
-          },
-          {
-            "name": "size",
-            "in": "query",
-            "description": "Ilość do wyświeltenia",
-            "required": false,
-            "explode": true,
-            "schema": {
-              "type": "string",
-              "default": "5"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "404": {
-            "description": "Game no found"
-          }
-        }
-      }
-    },
- 
- 
     "/api/admin/addNewGame": {
       "post": {
         "tags": [
@@ -1495,6 +1450,345 @@
       }
     },
 
+    "/api/admin/getUser": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Pobranie wszystkich statystyk użytkowników",
+        "description": "Zwraca wszystkich użytkowników.",
+        "operationId": "getUser",
+        "responses": {
+          "200": {
+            "description": "Statystyki użytkownika zostały pomyślnie pobrane",
+            "content": {
+              "application/json": {
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - problem z żądaniem od klienta."
+          },
+          "403": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/admin/getBannedUser": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Pobranie zbanowanych statystyk użytkowników",
+        "description": "Zwraca zbanowanych użytkowników.",
+        "operationId": "getBannedUser",
+        "responses": {
+          "200": {
+            "description": "Statystyki użytkownika zostały pomyślnie pobrane",
+            "content": {
+              "application/json": {
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - problem z żądaniem od klienta."
+          },
+          "403": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/admin/getNotBannedUser": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "Pobranie nie zbanowanych statystyk użytkowników",
+        "description": "Zwraca nie zbanowanych użytkowników.",
+        "operationId": "getBannedUser",
+        "responses": {
+          "200": {
+            "description": "Statystyki użytkownika zostały pomyślnie pobrane",
+            "content": {
+              "application/json": {
+              }
+            }
+          },
+          "400": {
+            "description": "Nieprawidłowe żądanie - problem z żądaniem od klienta."
+          },
+          "403": {
+            "description": "Użytkownik nie znaleziony."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+    
+    "/api/admin/banUser": {
+        "put": {
+          "tags": [
+            "Admin"
+          ],
+          "summary": "Zbanowanie użytkownika",
+          "description": "Ten endpoint banuje użytkownika poprzez ustawienie pola isBanned na true.",
+          "operationId": "banUser",
+          "requestBody": {
+            "description": "ID użytkownika do zbanowania",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 123,
+                      "description": "ID użytkownika do zbanowania"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Użytkownik został zbanowany",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Użytkownik został zbanowany."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Nieprawidłowe żądanie - problem z przesłanymi danymi lub użytkownik jest już zbanowany.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "User is already banned."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Nie znaleziono użytkownika."
+            },
+            "500": {
+              "description": "Wewnętrzny błąd serwera."
+            }
+          }
+        }
+    },
+
+    "/api/admin/unbanUser": {
+          "put": {
+            "tags": [
+              "Admin"
+            ],
+            "summary": "Usunięcie bana użytkownika",
+            "description": "Ten endpoint usuwa bana użytkownika poprzez ustawienie pola isBanned na false.",
+            "operationId": "unbanUser",
+            "requestBody": {
+              "description": "ID użytkownika do odbanowania",
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "example": 123,
+                        "description": "ID użytkownika do odbanowania"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Użytkownik został odbanowany",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Użytkownik został odbanowany."
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400": {
+                "description": "Nieprawidłowe żądanie - problem z przesłanymi danymi lub użytkownik nie jest zbanowany.",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "User is not banned."
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "403": {
+                "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+              },
+              "404": {
+                "description": "Nie znaleziono użytkownika."
+              },
+              "500": {
+                "description": "Wewnętrzny błąd serwera."
+              }
+            }
+          }
+    },
+
+    "/api/admin/getUserIfno": {
+        "post": {
+          "tags": [
+            "Admin"
+          ],
+          "summary": "Wyświetlenie szczegółów użytkownika",
+          "operationId": "getUserIfno",
+          "requestBody": {
+            "description": "ID użytkownika do zbanowania",
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 123,
+                      "description": "ID użytkownika"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Pomyślnie wsyświetlono",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "Pomyślnie wsyświetlono."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Nieprawidłowe żądanie",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string",
+                        "example": "User."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Nie znaleziono użytkownika."
+            },
+            "500": {
+              "description": "Wewnętrzny błąd serwera."
+            }
+          }
+        }
+    },
+
+    "/api/mainGame/getGamePagination":{
+        "get": {
+          "tags": [
+            "Strona Główna"
+          ],
+          "summary": "Wysyłanie gier na stronę główną",
+          "description": "Wysyła gry z paginacją na stronę główną",
+          "operationId": "getGamePagination",
+          "parameters": [
+            {
+              "name": "page",
+              "in": "query",
+              "description": "Strona do wyświeltenia",
+              "required": false,
+              "explode": true,
+              "schema": {
+                "type": "string",
+                "default": "0"
+  
+              }
+            },
+            {
+              "name": "size",
+              "in": "query",
+              "description": "Ilość do wyświeltenia",
+              "required": false,
+              "explode": true,
+              "schema": {
+                "type": "string",
+                "default": "5"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successful operation"
+            },
+            "404": {
+              "description": "Game no found"
+            }
+          }
+        }
+    },
 
     "/register": {
       "get": {
