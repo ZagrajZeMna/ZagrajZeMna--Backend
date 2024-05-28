@@ -1084,6 +1084,20 @@
         "summary": "Pobranie id, nazwy i awatary graczy przypisanych do lobby.",
         "description": "Pobiera id, nazwe i ścieżke do awatara użytkowników wewnątrz lobby.",
         "operationId": "getLobbyUserData",
+        "parameters": [
+          {
+            "name": "lobbyId",
+            "in": "query",
+            "description": "IdLobby",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": "1"
+
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Dane zostały pomyślnie wysłane",
@@ -1130,6 +1144,20 @@
         "summary": "Pobranie id i nazwy właściciela przypisanego do lobby.",
         "description": "Pobiera dane właściciela lobby.",
         "operationId": "getLobbyOwnerData",
+        "parameters": [
+          {
+            "name": "lobbyId",
+            "in": "query",
+            "description": "IdLobby",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": "1"
+
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Dane zostały pomyślnie wysłane",
@@ -1175,6 +1203,20 @@
         "summary": "Zmiana wartości parametru StillLooking na przeciwny dla wybranego lobby.",
         "description": "Pozwala zmienić wartość parametru StillLooking na przeciwną wartość.",
         "operationId": "updateStillLooking",
+        "parameters": [
+          {
+            "name": "lobbyId",
+            "in": "query",
+            "description": "IdLobby",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": "1"
+
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Parametr został zmieniony"
@@ -1197,6 +1239,32 @@
         "summary": "Zmiana opisu wybranego lobby.",
         "description": "Pozwala zmienić opis wybraneg lobby.",
         "operationId": "updateLobbyDescription",
+        "parameters": [
+          {
+            "name": "lobbyId",
+            "in": "query",
+            "description": "IdLobby",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": "1"
+
+            }
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "description": "OpisLobby",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": ""
+
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Opis został zmieniony"
@@ -1222,6 +1290,32 @@
         "summary": "Zmiana właściciela lobby.",
         "description": "Pozwala zmienić właściciela lobby za pomocą id lobby i id nowego właściciela.",
         "operationId": "changeLobbyOwner",
+        "parameters": [
+          {
+            "name": "lobbyId",
+            "in": "query",
+            "description": "IdLobby",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": "1"
+
+            }
+          },
+          {
+            "name": "newOwnerId",
+            "in": "query",
+            "description": "IdLobby",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": "1"
+
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Parametr zmienił wartość na przeciwną"
@@ -1255,6 +1349,32 @@
         "summary": "Usuwanie gracza z lobby.",
         "description": "Usuwa gracza z lobby na podstawie id gracza i id lobby.",
         "operationId": "deleteUserFromLobby",
+        "parameters": [
+          {
+            "name": "lobbyId",
+            "in": "query",
+            "description": "IdLobby",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": "1"
+
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "UserId",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": "1"
+
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Gracz został usunięty"
@@ -1292,6 +1412,33 @@
         "summary": "Usuwanie lobby.",
         "description": "Usuwa lobby na podstawie id gracza i id lobby.",
         "operationId": "deleteLobby",
+        "parameters": [
+          {
+            "name": "lobbyId",
+            "in": "query",
+            "description": "IdLobby",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": "1"
+
+            }
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "UserId",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": "1"
+
+            }
+          }
+        ],
+        
         "responses": {
           "200": {
             "description": "Lobby ustawiono jako nieaktywne."
@@ -1776,6 +1923,17 @@
               "schema": {
                 "type": "string",
                 "default": "5"
+              }
+            },
+            {
+              "name": "name",
+              "in": "query",
+              "description": "Wpisywana nazwa",
+              "required": false,
+              "explode": true,
+              "schema": {
+                "type": "string",
+                "default": ""
               }
             }
           ],
