@@ -1,6 +1,7 @@
 const db = require("../models");
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config");
+const { all } = require("axios");
 const Lobby = db.Lobby;
 const User = db.User;
 const Game = db.Game;
@@ -9,8 +10,10 @@ const Languages = db.Languages;
 const UIL = db.UserInLobby;
 const Op = db.Sequelize.Op;
 
+
+
 const getPagination = (page, size) => {
-    const limit = size ? +size : 10;
+    const limit = size ? +size : 5;
     const offset = page ? page * limit : 0;
     return { limit, offset };
 };
@@ -25,20 +28,22 @@ exports.show = async (req, res) => {
     const sort = sorting ? [[sorting, 'ASC']]: defaultSorting;
 
     //language
-    var lang = language ? language : "Polski";
+    const lang = language ? language : [];
+
     const findLang = await Languages.findOne({
         where: {
             LANGUAGE: lang
         },
         attributes: ['ID_LANGUAGE']
-    })
+    });
+
 
     // title/desc serach
     var condition = {};
     if (name) {
         condition[Op.or] = [
-            { Name: { [Op.like]: `%${name}%` } },
-            { Description: { [Op.like]: `%${name}%` } }
+            { Name: { [Op.iLike]: `%${name}%` } }, 
+            { Description: { [Op.iLike]: `%${name}%` } }
         ];
     }
 
@@ -50,19 +55,19 @@ exports.show = async (req, res) => {
         }
     }).then( async(game)=>{
         try{
-        const allLobbies = await Lobby.count({
-            where: {
-                ...condition,
-                ID_LANGUAGE: findLang.ID_LANGUAGE,
-                ID_GAME: game.ID_GAME,
-                Active: true,
-                StillLooking: true
-            }
-        })
+            const allLobbies = await Lobby.count({
+                where: {
+                    ...condition,
+                    ID_LANGUAGE: findLang ? findLang.ID_LANGUAGE : { [Op.not]: null },
+                    ID_GAME: game.ID_GAME,
+                    Active: true,
+                    StillLooking: true
+                }
+            });
         const lobbies = await Lobby.findAll({
             where: {
                 ...condition,
-                ID_LANGUAGE: findLang.ID_LANGUAGE,
+                ID_LANGUAGE: findLang ? findLang.ID_LANGUAGE : { [Op.not]: null },
                 ID_GAME: game.ID_GAME,
                 Active: true,
                 StillLooking: true
@@ -84,7 +89,8 @@ exports.show = async (req, res) => {
         where: {
             ID_LOBBY: {
                 [Op.in]: lobbyIds
-            }
+            },
+            Accepted: true
         },
         attributes: ['ID_LOBBY', [db.sequelize.fn('COUNT', 'ID_USER'), 'playerCount']],
         group: 'ID_LOBBY'
@@ -177,25 +183,5 @@ exports.data = (req,res) =>{
     })
 }
 
-
-
-
-// exports.join = (req, res) =>{
-//     const loginId = req.userId; 
-//     User.findOne({
-//         where: {
-//             ID_USER: loginId
-//         }
-//     }).then((user)=>{
-//         UIL.create({
-//             ID_OWNER: user.ID_USER,
-            
-//         }).then(userInLobby=>{
-    
-//         }).catch(err => {
-//                 res.status(500).send({ message: err.message });
-//             });
-//     });
-// }
 
 

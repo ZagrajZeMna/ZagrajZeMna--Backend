@@ -3,8 +3,11 @@ const cookieParser = require('cookie-parser');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger-output.json');
 const cors = require('cors');
-
+const http = require("http");
+const { Server } = require("socket.io");
 const app = express();
+const { authJwt } = require("./app/middleware");
+const notifications = require("./app/middleware/notification");
 
 var corsOptions = {
   origin: ["https://zagrajzemna-backend.onrender.com", "https://zagrajzemna-frontend.onrender.com"]
@@ -17,13 +20,64 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+
 // database
 const db = require("./app/models");
-const Role = db.role;
+
 db.sequelize.sync().then(() => {
   console.log('Database sequelized');
 });
 
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: { origin: "http://localhost:5173", methods: ["GET", "POST"] },
+});
+
+var ID,token;
+app.post("/api/lobby/join", (req, res) => {
+  authJwt.verifyTokenNoti(req)
+  ID = req.userId;
+  token = req.token;
+});
+
+io.on("connection", (socket) => {
+
+  socket.on("joinRoom", async (data) => {   
+    try{
+      let result = await notifications.join(data,ID,token);
+      if(result != null){
+        socket.broadcast.emit(result[0],result[1],result[2]);
+      }
+    }
+    catch(err){
+      console.log(err);
+    }
+  });
+  
+  socket.on("accepted", async (ID,Desc,IDLobby) => {
+    try{
+      let result = await notifications.accept(ID,Desc,IDLobby);
+      if(result != null){
+        socket.broadcast.emit(result[0],result[1],result[2]);
+      }
+    }
+    catch(err){
+      console.log(err);
+    }
+  });
+
+  socket.on("declined", async (ID,Desc,IDLobby) => {
+    try{
+      let result = await notifications.decline(ID,Desc,IDLobby);
+      if(result != null){
+        socket.broadcast.emit(result[0],result[1],result[2]);
+      }
+    }
+    catch(err){
+      console.log(err);
+    }
+  });
+});
 
 // main route
 app.get("/", (req, res) => {
@@ -50,11 +104,11 @@ require('./app/routes/user.routes')(app);
 require('./app/routes/lobby.routes')(app);
 require('./app/routes/profile.routes')(app);
 require('./app/routes/mainGame.routes')(app);
+require('./app/routes/lobbyInside.routes')(app);
 require('./app/routes/admin.routes')(app);
-
+require('./app/routes/notification.routes')(app);
 // set port, listen for requests
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
-

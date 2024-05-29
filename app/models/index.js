@@ -17,7 +17,6 @@ const sequelize = new Sequelize(
     },
     dialectOptions:{
       ssl:{
-        // ca: config.dialectOptions.ssl.ca,
         rejectUnauthorized: false
       }
     }
@@ -40,6 +39,8 @@ db.Shelf = require('./shelf.model.js')(sequelize, Sequelize);
 db.UserReview = require('./userReviews.model.js')(sequelize, Sequelize);
 db.DayLobby = require('./dayLobby.model.js')(sequelize, Sequelize);
 db.Day = require('./day.model.js')(sequelize, Sequelize);
+db.Notification = require('./notification.model.js')(sequelize, Sequelize);
+
 
 
 
