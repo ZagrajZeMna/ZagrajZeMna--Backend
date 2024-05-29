@@ -10,7 +10,7 @@ const { authJwt } = require("./app/middleware");
 const notifications = require("./app/middleware/notification");
 
 var corsOptions = {
-  origin: ["https://zagrajzemna-backend.onrender.com", "https://zagrajzemna-frontend.onrender.com"]
+  origin: ["http://localhost:4000", "https://zagrajzemna-backend.onrender.com", "https://zagrajzemna-frontend.onrender.com"]
 };
 
 app.use(cors(corsOptions));
