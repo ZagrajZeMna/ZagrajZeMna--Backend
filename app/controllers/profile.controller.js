@@ -12,11 +12,19 @@ const axios = require('axios');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { v2: cloudinary } = require('cloudinary');
 
 const Op = db.Sequelize.Op;
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+
+// Konfiguracja Cloudinary
+cloudinary.config({
+  cloud_name: 'dcqhaa1ez',
+  api_key: '334823839869595',
+  api_secret: 'jhBEa7mL2z_mnlbCsEAEYklusbI'
+});
 
 exports.getUserDetails = async (req, res) => {
   const userId = req.userId;
@@ -273,16 +281,8 @@ exports.postAvatarLink = async (req, res) => {
 
 exports.postAvatarFile = (req, res) => {
   // Konfiguracja przechowywania plików multer
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-      // Tworzenie unikalnej nazwy pliku
-      cb(null, Date.now() + path.extname(file.originalname));
-    }
-  });
-
+  const storage = multer.memoryStorage();
+  
   // Filtr plików multer, który akceptuje tylko określone typy obrazów
   const fileFilter = (req, file, cb) => {
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
@@ -313,39 +313,41 @@ exports.postAvatarFile = (req, res) => {
       const userId = req.userId;
       const user = await User.findByPk(userId);
       if (!user) {
-        fs.unlinkSync(req.file.path);
         return res.status(404).send({ message: "User not found." });
       }
 
-      if (user.avatar) {
-        const oldAvatarPath = path.join('uploads', user.avatar);
-
-        fs.unlink(oldAvatarPath, (err) => {
-          if (err) {
-            if (err.code === 'ENOENT') {
-              onsole.log('File does not exist, cannot delete:', oldAvatarPath);
-            } else {
-              console.error('Failed to delete old avatar:', err);
-            }
+      // Przesyłanie obrazu do Cloudinary
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream({ resource_type: 'image' }, (error, result) => {
+          if (error) {
+            reject(error);
           } else {
-            console.log('Old avatar successfully deleted');
+            resolve(result);
+          }
+        }).end(req.file.buffer);
+      });
+
+      // Jeśli użytkownik ma już avatar, usuń go z Cloudinary
+      if (user.avatar) {
+        const publicId = user.avatar.match(/\/([^\/]+)\.[^\/]+$/)[1];
+        cloudinary.uploader.destroy(publicId, (error, result) => {
+          if (error) {
+            console.error('Failed to delete old avatar from Cloudinary:', error);
+          } else {
+            console.log('Old avatar successfully deleted from Cloudinary');
           }
         });
       }
 
-      // Zaktualizuj użytkownika z nową ścieżką awatara
-      const updatedUser = await user.update({ avatar: req.file.filename });
+      // Zaktualizuj użytkownika z nowym URL awatara
+      const updatedUser = await user.update({ avatar: result.secure_url });
 
       res.status(200).send({
         message: "Avatar successfully uploaded.",
-        avatar: req.file.filename
+        avatar: result.secure_url
       });
 
     } catch (error) {
-      // Usuń nowy plik, jeśli nie można zaktualizować użytkownika
-      if (req.file) {
-        fs.unlinkSync(req.file.path);
-      }
       res.status(500).send({ message: error.message });
     }
   });
