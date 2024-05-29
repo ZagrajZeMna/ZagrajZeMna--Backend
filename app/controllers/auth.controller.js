@@ -20,7 +20,8 @@ exports.signup = (req, res) => {
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
     confirmationCode: token,
-    ID_LANGUAGE: 1
+    ID_LANGUAGE: 1,
+    avatar: "https://res.cloudinary.com/dcqhaa1ez/image/upload/v1716977307/default.png"
   })
   .then((user)=>{
     console.log("----------------MAIL SEND-----------------")
