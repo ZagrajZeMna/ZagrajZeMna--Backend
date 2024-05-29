@@ -10,7 +10,7 @@ const { authJwt } = require("./app/middleware");
 const notifications = require("./app/middleware/notification");
 
 var corsOptions = {
-  origin: ["http://localhost:4000", "https://zagrajzemna-backend.onrender.com", "https://zagrajzemna-frontend.onrender.com"]
+  origin: ["http://localhost:4000", "https://zagrajzemna-backend.onrender.com", "https://zagrajzemna.onrender.com"]
 };
 
 app.use(cors(corsOptions));
@@ -30,7 +30,7 @@ db.sequelize.sync().then(() => {
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "https://zagrajzemna-frontend.onrender.com", methods: ["GET", "POST"] },
+  cors: { origin: "https://zagrajzemna.onrender.com", methods: ["GET", "POST"] },
 });
 
 var ID,token;
