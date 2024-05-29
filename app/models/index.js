@@ -15,12 +15,12 @@ const sequelize = new Sequelize(
       acquire: config.pool.acquire,
       idle: config.pool.idle
     },
-    // dialectOptions:{
-    //   ssl:{
-    //     ca: config.dialectOptions.ssl.ca,
-    //     rejectUnauthorized: false
-    //   }
-    // }
+    dialectOptions:{
+      ssl:{
+        // ca: config.dialectOptions.ssl.ca,
+        rejectUnauthorized: false
+      }
+    }
   }
 );
 
