@@ -26,6 +26,8 @@ cloudinary.config({
   api_secret: 'jhBEa7mL2z_mnlbCsEAEYklusbI'
 });
 
+const DEFAULT_AVATAR_URL = 'https://res.cloudinary.com/dcqhaa1ez/image/upload/v1716977307/default.png';
+
 exports.getUserDetails = async (req, res) => {
   const userId = req.userId;
 
@@ -219,66 +221,6 @@ exports.updateContact = async (req, res) => {
   }
 };
 
-
-exports.postAvatarLink = async (req, res) => {
-  const userId = req.userId;
-  const avatarLink = req.body.avatarLink;
-
-  const isValidUrl = (string) => {
-    try {
-      new URL(string);
-      return true;
-    } catch (err) {
-      return false;
-    }
-  };
-
-  const getFileSize = async (url) => {
-    try {
-      const response = await axios.head(url);
-      return response.headers['content-length'];
-    } catch (error) {
-      console.error('Error fetching file size:', error);
-      return null;
-    }
-  };
-
-  if (!isValidUrl(avatarLink)) {
-    return res.status(400).send({ message: "Invalid URL provided." });
-  }
-
-  const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
-  if (!allowedExtensions.test(avatarLink)) {
-    return res.status(400).send({ message: "Avatar link must point to a .jpg, .jpeg, or .png file." });
-  }
-
-  const fileSize = await getFileSize(avatarLink);
-  if (!fileSize || fileSize > 5000000) {
-    return res.status(400).send({ message: "Avatar must be less than 5MB." });
-  }
-
-  User.findByPk(userId)
-    .then(user => {
-      if (!user) {
-        return res.status(404).send({ message: "User not found." });
-      }
-
-      user.update({ avatar: avatarLink })
-        .then(() => {
-          res.status(200).send({
-            message: "Avatar has been successfully updated.",
-            avatarLink: avatarLink
-          });
-        })
-        .catch(err => {
-          res.status(500).send({ message: err.message });
-        });
-    })
-    .catch(err => {
-      res.status(500).send({ message: err.message });
-    });
-};
-
 exports.postAvatarFile = (req, res) => {
   // Konfiguracja przechowywania plików multer
   const storage = multer.memoryStorage();
@@ -327,8 +269,8 @@ exports.postAvatarFile = (req, res) => {
         }).end(req.file.buffer);
       });
 
-      // Jeśli użytkownik ma już avatar, usuń go z Cloudinary
-      if (user.avatar) {
+      // Sprawdzenie, czy obecny avatar to domyślny URL
+      if (user.avatar && user.avatar !== DEFAULT_AVATAR_URL) {
         const publicId = user.avatar.match(/\/([^\/]+)\.[^\/]+$/)[1];
         cloudinary.uploader.destroy(publicId, (error, result) => {
           if (error) {
