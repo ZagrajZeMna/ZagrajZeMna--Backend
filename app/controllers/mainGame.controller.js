@@ -34,14 +34,23 @@ exports.getGame = async (req, res) => {
 
 
 exports.getgamePagination = async (req, res) => {
-    const { page, size} = req.query;
+    const { page, size, name} = req.query;
 
     const { limit, offset } = getPagination(page, size);
 
+        // title/desc serach
+        var condition = {};
+        if (name) {
+            condition[Op.or] = [
+                { name: { [Op.iLike]: `%${name}%` } }
+            ];
+        }
+    
     try{
         const allGames = await Game.count();
 
         const gameSet = await Game.findAll({
+            where: {...condition},
             limit,
             offset,
             attributes: ['ID_GAME','name', 'image']
@@ -57,6 +66,5 @@ exports.getgamePagination = async (req, res) => {
     }
     catch(err){
         res.status(500).send({ message: err.message }); 
-    }
-    
+    }    
 };

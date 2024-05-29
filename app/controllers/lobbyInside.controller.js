@@ -13,7 +13,7 @@ var jwt = require("jsonwebtoken");
 
 //Funkcja, która na podstawie id lobby zwraca nicki oraz ścieżki do awatara użytkowników, którzy są wewnątrz danego lobby
 exports.getUserList = async (req, res) => {
-    const lobbyId = req.lobbyId;
+    const {lobbyId} = req.query;
 
     try{
         //Sprawdzanie czy lobby istnieje
@@ -51,7 +51,7 @@ exports.getUserList = async (req, res) => {
 
 //Funkcja, która na podstawie id lobby zwraca id i nickname właściciela.
 exports.getOwnerLobbyData = async (req, res) => {
-    const lobbyId = req.lobbyId;
+    const {lobbyId} = req.query;
 
     try{
         //Sprawdzanie czy lobby istnieje
@@ -221,7 +221,7 @@ exports.addMessage = async (req, res) => {
 
 //Funkcja zmieniająca ustawienia lobby
 exports.updateLobbyStillLooking = async (req, res) => {
-    const lobbyId = req.lobbyId;
+    const {lobbyId} = req.query;
 
     try{
         //Sprawdzanie, czy lobby istnieje
@@ -248,8 +248,8 @@ exports.updateLobbyStillLooking = async (req, res) => {
 
 //Funkcja zmieniająca ustawienia lobby
 exports.updateLobbyDescription = async (req, res) => {
-    const lobbyId = req.lobbyId;
-    const Description = req.description;
+    const {lobbyId, description} = req.query;
+    
     try{
         //Sprawdzanie, czy lobby istnieje
         const ifLobbyExist = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}, attributes:['ID_LOBBY', 'Description']});
@@ -258,10 +258,13 @@ exports.updateLobbyDescription = async (req, res) => {
             return res.status(403).send({message:"There is no such lobby!"});
         }
 
-        if(ifLobbyExist.Description == Description)
+        if(ifLobbyExist.Description == description)
             return res.status(404).send({message:"Description has already that value!"});
 
-        await ifLobbyExist.update({Description: Description});
+        if(description == null)
+            await ifLobbyExist.update({Description: null});
+        
+        await ifLobbyExist.update({Description: description});
       
         res.status(200).send({message: "Lobby description was changed."});
       
@@ -273,8 +276,7 @@ exports.updateLobbyDescription = async (req, res) => {
 
 //Funkcja zmieniająca właściciela lobby
 exports.changeLobbyOwner = async (req, res) => {
-    const lobbyId = req.lobbyId;
-    const newOwnerId = req.userId;
+    const {lobbyId, newOwnerId} = req.query;
 
     try{
         //Sprawdzanie, czy lobby istnieje
@@ -315,8 +317,7 @@ exports.changeLobbyOwner = async (req, res) => {
 
 //Funkcja, która na podstawie id gracza usuwa go z lobby.
 exports.deleteUser = async (req, res) => {
-    const lobbyId = req.lobbyId;
-    const userId = req.userId;
+    const {lobbyId, userId} = req.query;
     
     try{
         //Sprawdzanie czy gracz istnieje
@@ -358,8 +359,7 @@ exports.deleteUser = async (req, res) => {
 
 //Funkcja, która usuwa lobby.
 exports.deleteLobby = async (req, res) => {
-    const lobbyId = req.lobbyId;
-    const userId = req.userId;
+    const {lobbyId, userId} = req.query;
 
     try{
         //Sprawdzanie czy gracz istnieje
