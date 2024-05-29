@@ -6,6 +6,7 @@ module.exports = {
   DB: "defaultdb_ted4",
   port: 5432,
   dialect: "postgres",
+  ssl: true,
   pool: {
     max: 5,
     min: 0,
