@@ -75,16 +75,13 @@ exports.signin = (req, res) => {
       }
       const token = jwt.sign({ID_USER: user.ID_USER},config.key.secret, {
         algorithm: "HS256",
-        expiresIn: 7200, // 30 minutes
+        expiresIn: 7200, 
     });
-      const admin = jwt.sign({ id: user.id },config.key.admin,
+      const admin = jwt.sign({ ADMIN: user.isAdmin },config.key.admin,
       {
-          expiresIn: 1800, // 1 hour
+          expiresIn: 7200, 
       });
-
-      if(user.IsAdmin === 'Yes'){
-        res.send(admin)
-      }
+      
       user.confirmationCode = token;
       user.save((err) => {
         if (err) {
@@ -92,6 +89,11 @@ exports.signin = (req, res) => {
           return;
         }
       });
+
+      if(user.isAdmin === true){
+        res.send(admin)
+      }
+
       res.send(token);
     })
     .catch(err => {
