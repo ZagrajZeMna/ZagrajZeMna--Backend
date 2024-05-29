@@ -7,7 +7,7 @@ const cors = require('cors');
 const app = express();
 
 var corsOptions = {
-  origin: ["http://localhost:4000", "http://localhost:5173"]
+  origin: ["https://zagrajzemna-backend.onrender.com", "https://zagrajzemna-frontend.onrender.com"]
 };
 
 app.use(cors(corsOptions));
