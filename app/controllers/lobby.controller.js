@@ -182,6 +182,16 @@ exports.data = (req,res) =>{
         })
     })
 }
-
-
+exports.gameinfo = async (req,res) =>{
+    const {gameName} = req.query;
+    try{
+        const game_set = await Game.findOne({
+            where: {name: gameName},
+            attributes: ['description', 'image']
+        });
+        res.status(200).send(game_set);
+}catch(error){
+    res.status(500).send({message: "Error retrieving game data"});
+}
+}
 
