@@ -355,7 +355,8 @@ exports.usersLobby = async (req,res) =>{
 
   const userslobbies = await UIL.findAll({
       where: {
-          ID_USER: req.userId
+          ID_USER: req.userId,
+          Accepted: true
       },
       limit,
       offset,

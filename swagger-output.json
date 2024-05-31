@@ -1531,7 +1531,78 @@
         }
       }
     },
+    "/api/lobbyInside/latest100messages": {
+      "post": {
+        "tags": [
+          "WnętrzeLobby"
+        ],
+        "summary": "Pobranie 100 ostatnich wiadomości z czatu.",
+        "description": "Zwraca 100 ostatnich wiadomości z danego czatu.",
+        "operationId": "showMessage",
+        "requestBody": {
+          "description": "Pokaż wiadomości!",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/100messages"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Wiadomość została dodana do bazy danych.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ID_USER": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "ID_LOBBY": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "Message": {
+                      "type": "string",
+                      "example": "Przykładowa wiadomość."
+                    },
+                    "Date": {
+                      "type": "date",
+                      "example": "2005-04-2"
+                    },
+                    "Time": {
+                      "type": "time",
+                      "example": "21:37:00"
+                    }
+                  }
+                }
+              }
+            }
 
+          },
+ 
+          "403": {
+            "description": "Gracz nie istnieje."
+          },
+          "404": {
+            "description": "Lobby nie istnieje."
+          },
+          "405": {
+            "description": "Nie ma tego gracza w lobby."
+          },
+          "406": {
+            "description": "Wiadomość nie jest poprawna."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
     "/api/admin/getUser": {
       "get": {
         "tags": [
@@ -2551,6 +2622,15 @@
           "size": {
             "type": "string",
             "example": "20"
+          }
+        }
+      },
+      "100messages": {
+        "type": "object",
+        "properties": {
+          "room": {
+            "type": "string",
+            "example": "10"
           }
         }
       }

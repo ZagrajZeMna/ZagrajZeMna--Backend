@@ -7,6 +7,7 @@ const UserIn = db.UserInLobby;
 const User = db.User;
 const Message = db.Message;
 const Review = db.UserReview;
+const Op = db.Sequelize.Op;
 
 //pobranie tokena json
 var jwt = require("jsonwebtoken");
@@ -402,3 +403,44 @@ exports.deleteLobby = async (req, res) => {
             
 };
 
+exports.latest100messages = async (req,res) =>{
+    try{
+        const lobbyId = req.body.room;
+        const ifLobbyExist = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}});
+        
+        if(!ifLobbyExist){
+            res.status(404).send({message:"There is no such lobby!"});
+        }
+
+        const messages = await Message.findAll({
+            where:{
+                ID_LOBBY: lobbyId
+            },
+            limit: 100,
+            attributes: ['ID_USER','ID_LOBBY','Message','Date','Time']
+        })
+        const usersIds = messages.map(user => user.ID_USER);
+        const usernames = await User.findAll({
+            where:{
+                ID_USER:{
+                    [Op.in]: usersIds
+                }
+            },
+            attributes: ['ID_USER','username']
+        })
+        const messageData = messages.map(message => {
+            const username = usernames.find(c => c.ID_USER === message.ID_USER);
+            return {
+                username: username ? username.dataValues.username : "Brak danych",
+                message: message.Message,
+                date: message.Date,
+                time: message.Time,
+            };
+        });
+    
+        res.status(200).json({message: messageData});
+    }
+    catch(error){
+        res.status(500).send({message: "Error during fetching messages : "+ error.message});
+    }  
+}

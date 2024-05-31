@@ -1,7 +1,7 @@
 const { verifySignUp } = require("../middleware");
 const controller = require("../controllers/lobbyInside.controller");
 const { authJwt } = require("../middleware");
-
+const chat = require("../middleware/chat");
 module.exports = function(app) {
   app.use(function(req, res, next) {
     res.header(
@@ -22,4 +22,6 @@ module.exports = function(app) {
 
   app.delete("/api/lobbyInside/deleteUser", controller.deleteUser);
   app.delete("/api/lobbyInside/deleteLobby", controller.deleteLobby);
+
+  app.post("/api/lobbyInside/latest100messages", controller.latest100messages);
 };
