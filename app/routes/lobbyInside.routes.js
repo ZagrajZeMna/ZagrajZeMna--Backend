@@ -13,8 +13,6 @@ module.exports = function(app) {
   
   app.get("/api/lobbyInside/getUserList", controller.getUserList);
   app.get("/api/lobbyInside/getOwnerLobbyData", controller.getOwnerLobbyData);
-  app.post("/api/lobbyInside/addReview", controller.addRewiev);
-  app.post("/api/lobbyInside/addMessage", controller.addMessage);
 
   app.put("/api/lobbyInside/updateLobbyStillLooking", controller.updateLobbyStillLooking);
   app.put("/api/lobbyInside/updateLobbyDescription", controller.updateLobbyDescription);
