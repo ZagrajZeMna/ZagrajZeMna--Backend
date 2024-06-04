@@ -47,7 +47,8 @@ exports.getgamePagination = async (req, res) => {
         }
     
     try{
-        const allGames = await Game.count();
+        const allGames = await Game.count({
+            where: {...condition}});
 
         const gameSet = await Game.findAll({
             where: {...condition},
@@ -60,7 +61,8 @@ exports.getgamePagination = async (req, res) => {
             return res.status(404).send({ message: "Game not found!" });
         }
     
-        const numberOfPages = Math.ceil(allGames / limit);
+        const numberOfPages = Math.ceil(allGames/ limit);
+
 
         res.status(200).json({Game: gameSet, Pages: numberOfPages});
     }
