@@ -96,7 +96,7 @@ exports.signin = (req, res) => {
       };
 
       if (user.isAdmin === true) {
-        response.adminToken = adminToken;
+        response = admin;
       }
 
       res.send(response);
