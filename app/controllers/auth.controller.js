@@ -90,11 +90,16 @@ exports.signin = (req, res) => {
         }
       });
 
-      if(user.isAdmin === true){
-        res.send(admin)
+      const response = {
+        username: user.username,
+        token: token
+      };
+
+      if (user.isAdmin === true) {
+        response = admin;
       }
 
-      res.send(token);
+      res.send(response);
     })
     .catch(err => {
       res.status(500).send({ message: err.message });
