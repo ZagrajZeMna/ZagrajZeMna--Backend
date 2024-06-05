@@ -20,7 +20,8 @@ exports.signup = (req, res) => {
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8),
     confirmationCode: token,
-    ID_LANGUAGE: 1
+    ID_LANGUAGE: 1,
+    avatar: "https://res.cloudinary.com/dcqhaa1ez/image/upload/v1716977307/default.png"
   })
   .then((user)=>{
     console.log("----------------MAIL SEND-----------------")
@@ -74,16 +75,13 @@ exports.signin = (req, res) => {
       }
       const token = jwt.sign({ID_USER: user.ID_USER},config.key.secret, {
         algorithm: "HS256",
-        expiresIn: 7200, // 30 minutes
+        expiresIn: 7200, 
     });
-      const admin = jwt.sign({ id: user.id },config.key.admin,
+      const admin = jwt.sign({ ADMIN: user.isAdmin },config.key.admin,
       {
-          expiresIn: 1800, // 1 hour
+          expiresIn: 7200, 
       });
-
-      if(user.IsAdmin === 'Yes'){
-        res.send(admin)
-      }
+      
       user.confirmationCode = token;
       user.save((err) => {
         if (err) {
@@ -91,7 +89,17 @@ exports.signin = (req, res) => {
           return;
         }
       });
-      res.send(token);
+
+      const response = {
+        username: user.username,
+        token: token
+      };
+
+      if (user.isAdmin === true) {
+        response.adminToken = adminToken;
+      }
+
+      res.send(response);
     })
     .catch(err => {
       res.status(500).send({ message: err.message });

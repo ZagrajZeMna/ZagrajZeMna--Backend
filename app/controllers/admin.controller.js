@@ -11,7 +11,7 @@ const UIL = db.UserInLobby;
 exports.getUser = async (req, res) => {  
     try {
         const users = await User.findAll({
-            attributes: ['ID_USER', 'email', 'username', 'isBanned'],
+            attributes: ['ID_USER', 'email', 'username', 'avatar', 'isBanned'],
             order: [['username', 'ASC']]
         });
 
@@ -24,7 +24,7 @@ exports.getUser = async (req, res) => {
 exports.getBannedUser = async (req, res) => {  
     try {
         const users = await User.findAll({
-            attributes: ['ID_USER', 'email', 'username', 'isBanned'],
+            attributes: ['ID_USER', 'email', 'username', 'avatar', 'isBanned'],
             where: {
                 isBanned: true
             },
@@ -40,7 +40,7 @@ exports.getBannedUser = async (req, res) => {
 exports.getNotBannedUser = async (req, res) => {  
     try {
         const users = await User.findAll({
-            attributes: ['ID_USER', 'email', 'username', 'isBanned'],
+            attributes: ['ID_USER', 'email', 'username', 'avatar', 'isBanned'],
             where: {
                 isBanned: false
             },

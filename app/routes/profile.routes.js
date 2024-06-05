@@ -12,7 +12,6 @@ module.exports = function(app) {
   });
   
   app.get("/api/profile/getUserDetails", [authJwt.verifyToken], controller.getUserDetails);
-  app.post("/api/profile/postAvatarlink", [authJwt.verifyToken], controller.postAvatarLink);
   app.post("/api/profile/postAvatarFile", [authJwt.verifyToken], controller.postAvatarFile);
   app.post("/api/profile/postUsername", [authJwt.verifyToken], controller.postUsername);
   app.post("/api/profile/changePassword", [authJwt.verifyToken], controller.changePassword);

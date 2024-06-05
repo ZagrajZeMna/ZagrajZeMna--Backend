@@ -15,4 +15,6 @@ module.exports = function(app) {
   app.get("/api/lobby/show",controller.show);
   app.post("/api/lobby/add",[authJwt.verifyToken],controller.add);
   app.get("/api/lobby/data",controller.data);
+  app.get("/api/lobby/gameinfo", controller.gameinfo);
 };
+  
