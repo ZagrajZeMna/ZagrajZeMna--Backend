@@ -13,20 +13,36 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'ID_USER'
             }
         },
-        gameTitle: {
-            type: Sequelize.STRING,
-            allowNull: false
-        },
-        gameDescription: {
-            type: Sequelize.TEXT,
-            allowNull: false
-        },
-        requestDate: {
-            type: Sequelize.DATE,
+        ID_SENDER: {
+            type: Sequelize.INTEGER,
             allowNull: false,
-            defaultValue: Sequelize.NOW
+            references: {
+                model: 'users',
+                key: 'ID_USER'
+            }
+        },
+        GameName: {
+            type: Sequelize.STRING
+        },
+        Description: {
+            type: Sequelize.TEXT
         }
+    },{
+        timestamps: false,
+        freezeTableName: true
     });
 
+
+    GameRequests.associate = function(models) {
+        GameRequests.belongsTo(models.User, {
+            foreignKey: 'ID_USER',
+            as: 'user'
+        });
+        GameRequests.belongsTo(models.User, {
+            foreignKey: 'ID_SENDER',
+            as: 'sender'
+        });
+    };
+    
     return GameRequests;
 };
