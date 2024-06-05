@@ -39,6 +39,10 @@
     {
       "name": "Admin",
       "description": "Obsługa administratora"
+    },
+    {
+      "name": "Kontakt",
+      "description": "Panel kontaktowy pomiędzy użytkownikami, a adminem"
     }
   ],
   "paths": {
@@ -1397,79 +1401,6 @@
       }
     },
 
-    "/api/lobbyInside/addReview": {
-      "post": {
-        "tags": [
-          "WnętrzeLobby"
-        ],
-        "summary": "Dodawanie opini o graczu.",
-        "description": "Dodaje opinie o graczu do bazy danych.",
-        "operationId": "addReview",
-        "responses": {
-          "200": {
-            "description": "Recenzja została dodana do bazy danych.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ID_REVIEW": {
-                      "type": "integer",
-                      "example": 1
-                    },
-                    "ID_REVIEWER": {
-                      "type": "integer",
-                      "example": 1
-                    },
-                    "ID_ABOUT": {
-                      "type": "integer",
-                      "example": 2
-                    },
-                    "stars": {
-                      "type": "integer",
-                      "example": 3
-                    },
-                    "description": {
-                      "type": "string",
-                      "example": "Wyjątkowo dobry gracz."
-                    },
-                    "date": {
-                      "type": "date",
-                      "example": "2024-10-12"
-                    },
-                    "time": {
-                      "type": "time",
-                      "example": "11:12:25"
-                    }
-                  }
-                }
-              }
-            }
-
-          },
- 
-          "403": {
-            "description": "Nie ma takiego gracza. Niepoprawne id recenzenta."
-          },
-          "404": {
-            "description": "Nie ma takiego gracza. Niepoprawne id osoby recenzowanej."
-          },
-          "405": {
-            "description": "Gracz nie może wystawić samemu sobie opini."
-          },
-          "406": {
-            "description": "Recenzent wystawił już wcześniej opinie temu graczowi."
-          },
-          "407": {
-            "description": "Niepoprawnie wyznaczona skala opinii."
-          },
-          "500": {
-            "description": "Wewnętrzny błąd serwera"
-          }
-        }
-      }
-    },
-
     "/api/lobbyInside/addMessage": {
       "post": {
         "tags": [
@@ -1898,6 +1829,223 @@
           }
         }
     },
+
+    "/api/review/addReview": {
+      "post": {
+        "tags": [
+          "Kontakt"
+        ],
+        "summary": "Dodawanie opini o graczu.",
+        "description": "Dodaje opinie o graczu do bazy danych.",
+        "operationId": "addReview",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "query",
+            "description": "usernameOfAbout",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": ""
+
+            }
+          },
+          {
+            "name": "stars",
+            "in": "query",
+            "description": "rating",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": "2"
+
+            }
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "description": "description",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": ""
+
+            }
+          }
+        ],
+ 
+        "responses": {
+          "200": {
+            "description": "Recenzja została dodana do bazy danych.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ID_REVIEW": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "ID_REVIEWER": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "ID_ABOUT": {
+                      "type": "integer",
+                      "example": 2
+                    },
+                    "stars": {
+                      "type": "integer",
+                      "example": 3
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Wyjątkowo dobry gracz."
+                    },
+                    "date": {
+                      "type": "date",
+                      "example": "2024-10-12"
+                    },
+                    "time": {
+                      "type": "time",
+                      "example": "11:12:25"
+                    }
+                  }
+                }
+              }
+            }
+
+          },
+ 
+          "403": {
+            "description": "Nie ma takiego gracza. Niepoprawne id recenzenta."
+          },
+          "404": {
+            "description": "Nie ma takiego gracza. Niepoprawny pseudonim osoby recenzowanej."
+          },
+          "405": {
+            "description": "Gracz nie może wystawić samemu sobie opini."
+          },
+          "406": {
+            "description": "Recenzent wystawił już wcześniej opinie temu graczowi."
+          },
+          "407": {
+            "description": "Niepoprawnie wyznaczona skala opinii."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera"
+          }
+        }
+      }
+    },
+
+    "/api/review/addGameReq": {
+      "post": {
+        "tags": [
+          "Kontakt"
+        ],
+        "summary": "Dodawanie prośby o gre.",
+        "description": "Dodaje prośbe o dodanie gry do bazy danych.",
+        "operationId": "addGameReq",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "description": "IdUser",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": "1"
+
+            }
+          },
+          {
+            "name": "sender_id",
+            "in": "query",
+            "description": "SenderId",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "integer",
+              "default": "2"
+
+            }
+          },
+          {
+            "name": "name_game",
+            "in": "query",
+            "description": "NazwaGry",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": ""
+
+            }
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "description": "description",
+            "required": true,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": ""
+
+            }
+          }
+        ],
+ 
+        "responses": {
+          "200": {
+            "description": "Prośba o dodanie gry została dodana do bazy danych.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "ID_REQUEST": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "ID_USER": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "ID_SENDER": {
+                      "type": "integer",
+                      "example": 2
+                    },
+                    "GameName": {
+                      "type": "string",
+                      "example": "Reksio i skarb piratów"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Proszę o dodanie tej gry, bo jest interesująca."
+                    }
+                  }
+                }
+              }
+            }
+
+          },
+ 
+          "403": {
+            "description": "Nie ma takiego gracza. Niepoprawne id usera."
+          },
+          "404": {
+            "description": "Nie ma takiego gracza. Niepoprawne id sendera."
+          }
+        }
+      }
+    },
+
 
     "/api/mainGame/getGamePagination":{
         "get": {

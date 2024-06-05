@@ -30,9 +30,7 @@ exports.getUserList = async (req, res) => {
 
         let name_user_set=[];
         for(let i=0; i<user_set.length; i++)
-            name_user_set.push(await User.findOne({where: {ID_USER: user_set[i].ID_USER}}, {
-              attributes: ['username', 'avatar']
-        }));
+            name_user_set.push(await User.findOne({ where: {ID_USER: user_set[i].ID_USER}, attributes: ['username', 'avatar']}));
 
         if(name_user_set.length==0){
             return res.status(404).send({message:"User in lobby not found!"});
@@ -40,9 +38,9 @@ exports.getUserList = async (req, res) => {
 
         let name_user = [];
         for(let i=0; i<name_user_set.length; i++)
-            name_user.push([name_user_set[i].ID_USER, name_user_set[i].username, name_user_set[i].avatar]);
+            name_user.push([ name_user_set[i].username, name_user_set[i].avatar]);
 
-        res.status(200).send(name_user);
+        res.status(200).send(name_user_set);
 
     }catch(error){
         res.status(500).send({message: "Error retrieving user in lobby: "+error.message});
@@ -87,138 +85,6 @@ exports.getOwnerLobbyData = async (req, res) => {
     }     
     
 };
-
-//Funkcja, która dodaję recenzje o użytkowniku
-exports.addRewiev = async (req, res) => {
-    const reviewerId = req.reviewerId;
-    const aboutId = req.aboutId;
-    const stars = req.stars;
-    const description = req.description;
-    const localdate = new Date();
-
-    try{
-        //Sprawdzanie czy gracz wystawiający opinie istnieje
-        const ifReviewerExist = await User.findOne({where: {ID_USER: Number(reviewerId)}});
-        
-        if(!ifReviewerExist){
-            return res.status(403).send({message:"There is no such user. Id of reviewer is incorrect!"});
-        }
-
-        //Sprawdzanie czy gracz, któremu wystawiają opinie istnieje
-        const ifUserExist = await User.findOne({where: {ID_USER: Number(aboutId)}});
-        
-        if(!ifUserExist){
-            return res.status(404).send({message:"There is no such user. Id of user is incorrect!"});
-        }
-        
-        //Sprawdzanie czy ktoś nie wystawia opini o samym sobie
-        if(reviewerId == aboutId){
-            return res.status(405).send({message:"Users can't leave reviews for themself!"});
-        }
-        
-        //Sprawdzanie czy gracz nie wystawił już wcześniej opini temu graczowi
-        const ifReviewExist = await Review.findOne({where: {ID_REVIEWER: Number(reviewerId), ID_ABOUT: Number(aboutId)}});
-        
-        if(ifReviewExist){
-            return res.status(406).send({message:"Reviewer is alrady leave review about this user!"});
-        }
-
-
-        //Sprawdzanie czy ocena jest podana w skali całkowitej w przedziale <1, 5>
-        if(stars<1 || stars>5 || (parseInt(stars) != stars)){
-            return res.status(407).send({message:"Stars are incorrect!"});
-        }
-
-
-        //Dodawanie recenzji
-        const newReview = await Review.create({
-            ID_REVIEWER: reviewerId,
-            ID_ABOUT: aboutId,
-            stars: stars,
-            description: description,
-            date: (localdate.getUTCFullYear()+"-"+(localdate.getUTCMonth()+1)+"-"+localdate.getUTCDate()),
-            time: (localdate.getUTCHours()+":"+localdate.getUTCMinutes()+":"+localdate.getUTCSeconds())
-          });
-      
-          res.status(200).send({
-            message: "Review was added to database.",
-            newRewievDetails: {
-              ID_REVIEW: newReview.ID_REVIEW,
-              ID_REVIEWER: newReview.ID_REVIEWER,
-              ID_ABOUT: newReview.ID_ABOUT,
-              stars: newReview.stars,
-              description: newReview.description,
-              date: newReview.date,
-              time: newReview.time
-            }
-          });
-      
-    }catch(error){
-        res.status(500).send({message: "Error during adding review : "+error.message});
-    }     
-
-};
-
-//Funkcja, która dodaję wiadomość
-exports.addMessage = async (req, res) => {
-    const userId = req.userId;
-    const lobbyId = req.lobbyId;
-    const message = req.message;
-    const localdate = new Date();
-    
-    try{
-        //Sprawdzanie czy gracz istnieje
-        const ifUserExist = await User.findOne({where: {ID_USER: Number(userId)}});
-        
-        if(!ifUserExist){
-            return res.status(403).send({message:"There is no such user!"});
-        }
-
-        //Sprawdzanie czy lobby istnieje
-        const ifLobbyExist = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}});
-        
-        if(!ifLobbyExist){
-            return res.status(404).send({message:"There is no such lobby!"});
-        }
-
-        //Sprawdzanie czy gracz należy do lobby
-        const ifUserInLobbyExist = await UserIn.findOne({where: {ID_USER: Number(userId), ID_LOBBY: Number(lobbyId)}});
-        
-        if(!ifUserInLobbyExist){
-            return res.status(405).send({message:"This user is not in lobby!"});
-        }
-
-        //Sprawdzanie czy wiadomość nie jest pusta
-        if(!message){
-            return res.status(406).send({message:"Message is incorrect!"});
-        }
-
-        //Dodawanie wiadomości
-        const newMessage = await Message.create({
-            ID_USER: userId,
-            ID_LOBBY: lobbyId,
-            Message: message,
-            Date: (localdate.getUTCFullYear()+"-"+(localdate.getUTCMonth()+1)+"-"+localdate.getUTCDate()),
-            Time: (localdate.getUTCHours()+":"+localdate.getUTCMinutes()+":"+localdate.getUTCSeconds())
-          });
-      
-          res.status(200).send({
-            message: "Message was added to database.",
-            newMessageDetails: {
-              ID_USER: newMessage.ID_USER,
-              ID_LOBBY: newMessage.ID_LOBBY,
-              Message: newMessage.Message,
-              Date: newMessage.Date,
-              Time: newMessage.Time
-            }
-          });
-      
-    }catch(error){
-        res.status(500).send({message: "Error during adding message : "+error.message});
-    }     
-
-};
-
 
 //Funkcja zmieniająca ustawienia lobby
 exports.updateLobbyStillLooking = async (req, res) => {
