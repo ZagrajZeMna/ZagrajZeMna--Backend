@@ -96,7 +96,6 @@ exports.usersLobby = async (req,res) =>{
       attributes: ['ID_LOBBY', [db.sequelize.fn('COUNT', 'ID_USER'), 'playerCount']],
       group: 'ID_LOBBY'
   });
-
   const lobbyIds = userslobbies.map(lobby => lobby.ID_LOBBY);
 
   const lobbies = await Lobby.findAll({
@@ -126,9 +125,20 @@ exports.usersLobby = async (req,res) =>{
       },
       attributes: ['ID_USER','avatar'],
   });
-  
+
+  const counters = await UIL.findAll({
+    where: {
+        ID_LOBBY: {
+            [Op.in]: lobbyIds
+        },
+        Accepted: true
+    },
+    attributes: ['ID_LOBBY', [db.sequelize.fn('COUNT', 'ID_USER'), 'playerCount']],
+    group: 'ID_LOBBY'
+  });
+
   const lobbyData = lobbies.map(lobby => {
-      const counter = userslobbies.find(c => c.ID_LOBBY === lobby.ID_LOBBY);
+      const counter = counters.find(c => c.ID_LOBBY === lobby.ID_LOBBY);
       const png = userAvatar.find(p => p.ID_USER === lobby.ID_OWNER);
       return {
           ID_LOBBY: lobby.ID_LOBBY,
