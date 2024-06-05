@@ -1,6 +1,6 @@
 module.exports = (sequelize, Sequelize) => {
-    const GameRequests = sequelize.define("gameRequests", {
-        ID_REQUEST: {
+    const UserReport = sequelize.define("userReports", {
+        ID_REPORT: {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true
@@ -13,20 +13,25 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'ID_USER'
             }
         },
-        gameTitle: {
+        ID_REPORTED: {
+            type: Sequelize.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'users',
+                key: 'ID_USER'
+            }
+        },
+        title: {
             type: Sequelize.STRING,
             allowNull: false
         },
-        gameDescription: {
+        description: {
             type: Sequelize.TEXT,
             allowNull: false
-        },
-        requestDate: {
-            type: Sequelize.DATE,
-            allowNull: false,
-            defaultValue: Sequelize.NOW
         }
+    }, {
+        timestamps: false
     });
 
-    return GameRequests;
+    return UserReport;
 };
