@@ -102,7 +102,14 @@ io.on("connection", (socket) => {
 
   socket.on('send_message', async (data) => {
     const {message, username, room} = data;
-    io.in(room).emit('receive_message', data, date, time); // Send to all users in room, including sender
+    console.log("ID LOBBY: ",room);
+    io.in(room).emit('receive_message', {
+      message: message,
+      username: username,
+      date: date,
+      time: time,
+    }); 
+    console.log("EMIT WYKONANY!");
     chat.saveMessage(message, username, room) // Save message in db
       .then((response) => console.log(response))
       .catch((err) => console.log(err));
