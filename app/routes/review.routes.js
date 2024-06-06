@@ -11,9 +11,9 @@ module.exports = function(app) {
     next();
   });
   
-  app.post("/api/review/addReview", controller.addReview);
-  app.post("/api/review/addGameReq", controller.addGameReq);
-  app.post("/api/review/addGameReq", controller.addGameReq);
-  app.post("/api/review/addGameReq", controller.addGameReq);
+  app.post("/api/review/addReview", [authJwt.verifyToken],controller.addReview);
+  app.post("/api/review/addGameReq",[authJwt.verifyToken], controller.addGameReq);
+  app.post("/api/review/reportUser", [authJwt.verifyToken],controller.reportUser);
+  app.post("/api/review/sendMessage", [authJwt.verifyToken],controller.sendMessage);
   
 };

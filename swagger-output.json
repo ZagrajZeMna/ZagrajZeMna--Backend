@@ -1770,37 +1770,38 @@
         "parameters": [
           {
             "name": "username",
-            "in": "query",
-            "description": "usernameOfAbout",
+            "in": "body",
+            "description": "NazwaGry",
             "required": true,
             "explode": true,
             "schema": {
               "type": "string",
-              "default": ""
+              "default": "Hedonist"
 
             }
           },
           {
             "name": "stars",
-            "in": "query",
-            "description": "rating",
+            "in": "body",
+            "description": "NazwaGry",
             "required": true,
             "explode": true,
             "schema": {
-              "type": "integer",
+              "type": "string",
               "default": "2"
 
             }
           },
+          
           {
             "name": "description",
-            "in": "query",
+            "in": "body",
             "description": "description",
-            "required": false,
+            "required": true,
             "explode": true,
             "schema": {
               "type": "string",
-              "default": ""
+              "default": "Nie no gierka pierwsza klasa, musi być."
 
             }
           }
@@ -1881,50 +1882,26 @@
         "operationId": "addGameReq",
         "parameters": [
           {
-            "name": "user_id",
-            "in": "query",
-            "description": "IdUser",
-            "required": true,
-            "explode": true,
-            "schema": {
-              "type": "integer",
-              "default": "1"
-
-            }
-          },
-          {
-            "name": "sender_id",
-            "in": "query",
-            "description": "SenderId",
-            "required": true,
-            "explode": true,
-            "schema": {
-              "type": "integer",
-              "default": "2"
-
-            }
-          },
-          {
             "name": "name_game",
-            "in": "query",
+            "in": "body",
             "description": "NazwaGry",
             "required": true,
             "explode": true,
             "schema": {
               "type": "string",
-              "default": ""
+              "default": "Shrek"
 
             }
           },
           {
             "name": "description",
-            "in": "query",
+            "in": "body",
             "description": "description",
             "required": true,
             "explode": true,
             "schema": {
               "type": "string",
-              "default": ""
+              "default": "Nie no gierka pierwsza klasa, musi być."
 
             }
           }

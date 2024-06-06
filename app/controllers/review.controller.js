@@ -4,6 +4,7 @@ const nodemailer = require("../config/nodemailer.config");
 const User = db.User;
 const Review = db.UserReview;
 const GameReq = db.GameRequests;
+const ReportUser = db.UserReport;
 
 //pobranie tokena json
 var jwt = require("jsonwebtoken");
@@ -83,8 +84,7 @@ exports.addReview = async (req, res) => {
 
 //Funkcja, która dodaję prośbę na temat gry
 exports.addGameReq = async (req, res) => {
-    const user_id = 1;//req.userId;
-    //const sender_id = 1;
+    const user_id = req.userId;
     const {name_game, description} = req.body;
 
     try{
@@ -95,17 +95,9 @@ exports.addGameReq = async (req, res) => {
             return res.status(403).send({message:"There is no such user. Id of user is incorrect!"});
         }
 
-        //Sprawdzanie czy gracz, który wysyła prośbę istnieje
-        const ifSenderExist = await User.findOne({where: {ID_USER: Number(sender_id)}});
-        
-        if(!ifSenderExist){
-            return res.status(404).send({message:"There is no such user. Id of sender is incorrect!"});
-        }
-
         //Dodawanie recenzji
         const newGameReq = await GameReq.create({
             ID_USER: user_id,
-            ID_SENDER: sender_id,
             GameName: name_game,
             Description: description
         });
@@ -115,21 +107,20 @@ exports.addGameReq = async (req, res) => {
             gameRequestDetails: {
               ID_REQUEST: newGameReq.ID_REQUEST,
               ID_USER: newGameReq.ID_USER,
-              ID_SENDER: newGameReq.ID_SENDER,
               GameName: newGameReq.GameName,
-              Description: newGameReq.Description
+              Description: newGameReq.Description,
             }
           });
       
     }catch(error){
-        res.status(500).send({message: "Error during adding review : "+error.message});
+        res.status(500).send({message: "Error during adding request: "+error.message});
     }     
 
 };
 
 //Funkcja, która dodaję prośbę na temat gry
 exports.reportUser = async (req, res) => {
-    const user_id = req.userId;
+    const user_id = 1;//req.userId;
     const {username, description} = req.body;
 
     try{
@@ -148,7 +139,7 @@ exports.reportUser = async (req, res) => {
         }
 
         //Dodawanie recenzji
-        const newReported = await GameReq.create({
+        const newReported = await ReportUser.create({
             ID_USER: user_id,
             ID_Reported: ifReportedExist.ID_USER,
             Description: description
@@ -157,10 +148,10 @@ exports.reportUser = async (req, res) => {
         res.status(200).send({
             message: "A request was send.",
             gameRequestDetails: {
-              ID_REPORT: newReported.ID_REQUEST,
-              ID_USER: newReported.ID_USER,
-              ID_Reported: newReported.ID_SENDER,
-              Description: newReported.Description
+                ID_REPORT: newReported.ID_REPORT,
+                ID_USER: newReported.ID_USER,
+                ID_Reported: newReported.ID_REPORTED,
+                Description: newReported.description
             }
           });
       
