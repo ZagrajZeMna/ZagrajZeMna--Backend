@@ -980,36 +980,57 @@
         "tags": [
           "Admin"
         ],
-        "summary": "Dodawanie zaakceptowanych gier do bazy danych",
-        "description": "Pobiera nazwę, opis i obraz, a następnie wstawia nowy rekord do bazy danych",
-        "operationId": "getImageData",
-        "responses": {
-          "201": {
-            "description": "Gra pomyślnie dodana do bazy danych",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "nazwa": {
-                      "type": "string",
-                      "example": "Minecraft"
-                    },
-                    "description": {
-                      "type": "string",
-                      "example": "Open-world creative sandbox"
-                    },
-                    "image": {
-                      "type": "string",
-                      "example": "./folder/minecraft.jpg"
-                    }
+        "summary": "Add a new game",
+        "description": "Allows the user to add a new game to the database.",
+        "operationId": "addGame",
+        "requestBody": {
+          "description": "Details of the game to be added",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the game",
+                    "example": "Example Game"
+                  },
+                  "shortname": {
+                    "type": "string",
+                    "description": "Short name of the game",
+                    "example": "ExGame"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Description of the game",
+                    "example": "This is an example game description."
+                  },
+                  "image": {
+                    "type": "string",
+                    "description": "Image URL of the game",
+                    "example": "http://example.com/image.png"
                   }
-                }
+                },
+                "required": [
+                  "name",
+                  "shortname",
+                  "description",
+                  "image"
+                ]
               }
             }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The game was successfully added"
+          },
+          "400": {
+            "description": "A game with this name already exists"
           },
           "500": {
-            "description": "Nie udało się dodać nowej gry do bazy danych"
+            "description": "Internal server error"
           }
         }
       }
