@@ -8,120 +8,38 @@ const Lobby = db.Lobby;
 const Shelf = db.Shelf;
 const UIL = db.UserInLobby;
 
-exports.getUser = async (req, res) => {  
-    try {
-        const users = await User.findAll({
-            attributes: ['ID_USER', 'email', 'username', 'avatar', 'isBanned'],
-            order: [['username', 'ASC']]
-        });
+const gameMiddleware = require('../middleware/games.middleware');
+const userMiddleware = require("../middleware/user.middleware");
 
-        res.status(200).send(users);
-    } catch (error) {
-        res.status(500).send({ message: error.message });
-    }
+exports.getUser = (req, res) => {  
+    userMiddleware.fetchUsers(req, res);
 };
 
-exports.getBannedUser = async (req, res) => {  
-    try {
-        const users = await User.findAll({
-            attributes: ['ID_USER', 'email', 'username', 'avatar', 'isBanned'],
-            where: {
-                isBanned: true
-            },
-            order: [['username', 'ASC']]
-        });
-
-        res.status(200).send(users);
-    } catch (error) {
-        res.status(500).send({ message: error.message });
-    }
+exports.getBannedUser = (req, res) => {
+    userMiddleware.fetchUsers(req, res, true);
 };
 
-exports.getNotBannedUser = async (req, res) => {  
-    try {
-        const users = await User.findAll({
-            attributes: ['ID_USER', 'email', 'username', 'avatar', 'isBanned'],
-            where: {
-                isBanned: false
-            },
-            order: [['username', 'ASC']]
-        });
-
-        res.status(200).send(users);
-    } catch (error) {
-        res.status(500).send({ message: error.message });
-    }
+exports.getNotBannedUser = (req, res) => {
+    userMiddleware.fetchUsers(req, res, false);
 };
 
-exports.banUser = async (req, res) => {  
-    try {
-        const userId = req.body.id;
-        const user = await User.findByPk(userId);
-
-        if (!user) {
-            return res.status(404).send({ message: "User not found." });
-        }
-
-        if (user.isBanned) {
-            return res.status(400).send({ message: "User is already banned." });
-        }
-
-        user.isBanned = true;
-        await user.save();
-
-        res.status(200).send({ message: "User has been banned." });
-    } catch (error) {
-        res.status(500).send({ message: error.message });
-    }
+exports.banUser = (req, res) => {
+    const userId = req.body.id;
+    userMiddleware.banUsers(req, res, userId);
 };
 
-exports.unbanUser = async (req, res) => {  
-    try {
-        const userId = req.body.id;
-        const user = await User.findByPk(userId);
-
-        if (!user) {
-            return res.status(404).send({ message: "User not found." });
-        }
-
-        if (!user.isBanned) {
-            return res.status(400).send({ message: "User is not banned." });
-        }
-
-        user.isBanned = false;
-        await user.save();
-
-        res.status(200).send({ message: "User has been unbanned." });
-    } catch (error) {
-        res.status(500).send({ message: error.message });
-    }
+exports.unbanUser = (req, res) => {
+    const userId = req.body.id;
+    userMiddleware.unbanUsers(req, res, userId);
 };
 
 exports.getUserIfno = async (req, res) => {  
-    try {
-        const userId = req.body.id;
-        const user = await User.findByPk((userId),{
-        attributes: ['ID_USER','email', 'username', 'about', 'country', 'city', 'contact', 'isAdmin']
-        });
-  
-        res.status(200).send(user);
-    } catch (error) {
-      res.status(500).send({ message: error.message });
-    }
+    const userId = req.body.id;
+    userMiddleware.fetchUserInfo(req, res, userId);
 };
+
 
 exports.addNewGame = (req, res) => {
     const { name, shortname, description, image } = req.body;
-    Game.create({
-      name: name,
-      shortname: shortname,
-      description: description,
-      image: image
-    })
-    .then(game => {
-      res.status(201).json({ message: "Game created successfully!", game: game });
-    })
-    .catch(err => {
-      res.status(500).json({ message: "Failed to create game.", error: err });
-    });
+    gameMiddleware.addGame(req, res, name, shortname, description, image);
 };
