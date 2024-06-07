@@ -6,6 +6,7 @@ const Review = db.UserReview;
 const GameReq = db.GameRequests;
 const ReportUser = db.UserReport;
 
+
 //pobranie tokena json
 var jwt = require("jsonwebtoken");
 
@@ -120,7 +121,7 @@ exports.addGameReq = async (req, res) => {
 
 //Funkcja, która dodaję prośbę na temat gry
 exports.reportUser = async (req, res) => {
-    const user_id = 1;//req.userId;
+    const user_id = req.userId;
     const {username, description} = req.body;
 
     try{
@@ -132,26 +133,30 @@ exports.reportUser = async (req, res) => {
         }
 
         //Pobieranie Id gracza na podstawie imienia
-        const ifReportedExist = await User.findOne({where: {username: username}, attributes: ['ID_USER']});
+        const ifReportedExist = await User.findOne({where: {username: username}, attributes: ['ID_USER', 'isBanned']});
         
         if(!ifReportedExist){
             return res.status(404).send({message:"There is no such user. Username is incorrect!"});
         }
 
-        //Dodawanie recenzji
+        if(ifReportedExist.isBanned){
+            return res.status(405).send({message:"This user is already banned!"});
+        }
+
+        //Dodawanie zgłoszenia
         const newReported = await ReportUser.create({
-            ID_USER: user_id,
-            ID_Reported: ifReportedExist.ID_USER,
+            ID_REPORTING: user_id,
+            ID_REPORTED: ifReportedExist.ID_USER,
             Description: description
         });
       
         res.status(200).send({
-            message: "A request was send.",
+            message: "A report was send.",
             gameRequestDetails: {
                 ID_REPORT: newReported.ID_REPORT,
-                ID_USER: newReported.ID_USER,
+                ID_USER: newReported.ID_REPORTING,
                 ID_Reported: newReported.ID_REPORTED,
-                Description: newReported.description
+                Description: newReported.Description
             }
           });
       
@@ -168,14 +173,118 @@ exports.sendMessage = async (req, res) => {
 
     try{
         //Sprawdzanie czy gracz wysyłający prośbę istnieje
-        const ifUserExist = await User.findOne({where: {ID_USER: Number(user_id)}, attributes: ["email"]});
+        const ifUserExist = await User.findOne({where: {ID_USER: Number(user_id)}, attributes: ["username", "email"]});
         
         if(!ifUserExist){
             return res.status(403).send({message:"There is no such user. Id of user is incorrect!"});
         }
-      
+
+        const regex = new RegExp(/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/);
+
+        if(!(regex.test(ifUserExist.email))){
+            return res.status(404).send({message:"Email of user is incorect!"});
+        }
+
+        nodemailer.sendQuestion(
+            name,
+            message+"\n\n"+ifUserExist.username+"\n"+ifUserExist.email
+        );
+
+          res.status(200).send({message:"Email was send!"});
+
     }catch(error){
         res.status(500).send({message: "Error during adding review : "+error.message});
+    }     
+
+};
+
+const getPagination = (page, size) => {
+    const limit = size ? +size : 3;
+    const offset = page ? page * limit : 0;
+    return { limit, offset };
+};
+
+//Funkcja, która wysyła listę zgłoszeń
+exports.getReportUser = async (req, res) => {
+    const {page, size} = req.query;
+
+    const { limit, offset } = getPagination(page, size);
+    
+    try{
+        const allUser = await ReportUser.count();
+
+        const UserSet = await ReportUser.findAll({
+            limit,
+            offset,
+            attributes: ['ID_REPORTING','ID_REPORTED', 'Description']
+        });
+
+        if (UserSet.length == 0) {
+            return res.status(404).send({ message: "There is no report!" });
+        }
+
+        let name_user_set=[];
+        var sender;
+        var reported;
+        var description;
+        for(let i=0; i< UserSet.length; i++){
+            sender = await User.findOne({ where: {ID_USER: UserSet[i].ID_REPORTING}, attributes: ['username']});
+            sender = sender.username;
+            reported = await User.findOne({ where: {ID_USER: UserSet[i].ID_REPORTED}, attributes: ['username']});
+            reported = reported.username;
+            description = UserSet[i].Description;
+            name_user_set.push({sender, reported, description});
+        }
+    
+        const numberOfPages = Math.ceil(allUser/ limit);
+
+
+        res.status(200).json({User: name_user_set, Pages: numberOfPages});
+
+    }catch(error){
+        res.status(500).send({message: "Error during sending report list : "+error.message});
+    }     
+
+};
+
+//Funkcja, która wysyła listę próśb
+exports.getRequestGame = async (req, res) => {
+    const {page, size} = req.query;
+
+    const { limit, offset } = getPagination(page, size);
+    
+    try{
+        const allGame = await GameReq.count();
+
+        const gameSet = await GameReq.findAll({
+            limit,
+            offset,
+            attributes: ['ID_USER','GameName', 'Description']
+        });
+
+        if (gameSet.length == 0) {
+            return res.status(404).send({ message: "There is no request!" });
+        }
+
+        let game_user_set=[];
+        var user;
+        var name;
+        var description;
+        for(let i=0; i< gameSet.length; i++){
+            user = await User.findOne({ where: {ID_USER: gameSet[i].ID_USER}, attributes: ['username']});
+            user = user.username;
+            name = gameSet[i].GameName;
+            description = gameSet[i].Description;
+            game_user_set.push({user, name, description});
+        }
+    
+        const numberOfPages = Math.ceil(allGame/ limit);
+
+
+        res.status(200).json({game: game_user_set, Pages: numberOfPages});
+
+    }catch(error){
+        res.status(500).send({message: "Error during sending report list : "+error.message});
     }     
 
 };

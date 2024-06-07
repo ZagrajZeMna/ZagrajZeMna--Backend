@@ -2044,6 +2044,94 @@
       }
     },
 
+    "/api/review/getReportUser":{
+      "get": {
+        "tags": [
+          "Kontakt"
+        ],
+        "summary": "Wysyłanie listy zgłoszeń",
+        "description": "Wysyła listę zgłoszeń do panelu admina",
+        "operationId": "getReport",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Strona do wyświeltenia",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": "0"
+
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "description": "Ilość do wyświeltenia",
+            "required": false,
+            "explode": true,
+            "schema": {
+              "type": "string",
+              "default": "5"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "404": {
+            "description": "User no found"
+          }
+        }
+      }
+  },
+
+  "/api/review/getRequestGame":{
+    "get": {
+      "tags": [
+        "Kontakt"
+      ],
+      "summary": "Wysyłanie listy propozycji gier",
+      "description": "Wysyła listę propozycji gier do panelu admina",
+      "operationId": "getRequest",
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "description": "Strona do wyświeltenia",
+          "required": false,
+          "explode": true,
+          "schema": {
+            "type": "string",
+            "default": "0"
+
+          }
+        },
+        {
+          "name": "size",
+          "in": "query",
+          "description": "Ilość do wyświeltenia",
+          "required": false,
+          "explode": true,
+          "schema": {
+            "type": "string",
+            "default": "5"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Successful operation"
+        },
+        "404": {
+          "description": "Game no found"
+        }
+      }
+    }
+},
+
 
     "/api/mainGame/getGamePagination":{
         "get": {
