@@ -39,6 +39,22 @@ exports.fetchUserDetails = async (req, res, userId) => {
     }
 };
 
+exports.fetchUserInfo = async (req, res, userId) => {  
+  try {
+      const user = await User.findByPk(userId, {
+          attributes: ['ID_USER', 'email', 'username', 'about', 'country', 'city', 'contact', 'isAdmin']
+      });
+
+      if (!user) {
+          return res.status(404).send({ message: "User not found." });
+      }
+
+      res.status(200).send(user);
+  } catch (error) {
+      res.status(500).send({ message: error.message });
+  }
+};
+
 exports.postChangePassword = async (req, res, userId, oldPassword, newPassword, confirmPassword) => {
     if (!oldPassword || !newPassword || !confirmPassword) {
       return res.status(400).send({ message: "All fields are required." });
@@ -265,4 +281,61 @@ exports.updateUserLanguage = async (userId, languageId, res) => {
     } catch (error) {
       return res.status(500).send({ message: "Error updating user language: " + error.message });
     }
-  };
+};
+
+exports.banUsers = async (req, res, userId) => {  
+  try {
+      const user = await User.findByPk(userId);
+
+      if (!user) {
+          return res.status(404).send({ message: "User not found." });
+      }
+
+      if (user.isBanned) {
+          return res.status(400).send({ message: "User is already banned." });
+      }
+
+      user.isBanned = true;
+      await user.save();
+
+      res.status(200).send({ message: "User has been banned." });
+  } catch (error) {
+      res.status(500).send({ message: error.message });
+  }
+};
+
+exports.unbanUsers = async (req, res, userId) => {  
+  try {
+      const user = await User.findByPk(userId);
+
+      if (!user) {
+          return res.status(404).send({ message: "User not found." });
+      }
+
+      if (!user.isBanned) {
+          return res.status(400).send({ message: "User is not banned." });
+      }
+
+      user.isBanned = false;
+      await user.save();
+
+      res.status(200).send({ message: "User has been unbanned." });
+  } catch (error) {
+      res.status(500).send({ message: error.message });
+  }
+};
+
+exports.fetchUsers = async (req, res, isBanned = null) => {  
+  try {
+      const whereClause = isBanned !== null ? { isBanned } : {};
+      const users = await User.findAll({
+          attributes: ['ID_USER', 'email', 'username', 'avatar', 'isBanned'],
+          where: whereClause,
+          order: [['username', 'ASC']]
+      });
+
+      res.status(200).send(users);
+  } catch (error) {
+      res.status(500).send({ message: error.message });
+  }
+};

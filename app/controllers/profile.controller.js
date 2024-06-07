@@ -89,14 +89,14 @@ exports.usersLobby = async (req,res) =>{
 
   const userslobbies = await UIL.findAll({
       where: {
-          ID_USER: req.userId
+          ID_USER: req.userId,
+          Accepted: true
       },
       limit,
       offset,
       attributes: ['ID_LOBBY', [db.sequelize.fn('COUNT', 'ID_USER'), 'playerCount']],
       group: 'ID_LOBBY'
   });
-
   const lobbyIds = userslobbies.map(lobby => lobby.ID_LOBBY);
 
   const lobbies = await Lobby.findAll({
@@ -126,6 +126,7 @@ exports.usersLobby = async (req,res) =>{
       },
       attributes: ['ID_USER','avatar'],
   });
+
   const counters = await UIL.findAll({
     where: {
         ID_LOBBY: {

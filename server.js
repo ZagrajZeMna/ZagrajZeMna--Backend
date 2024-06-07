@@ -8,6 +8,7 @@ const { Server } = require("socket.io");
 const app = express();
 const { authJwt } = require("./app/middleware");
 const notifications = require("./app/middleware/notification");
+const chat = require("./app/middleware/chat");
 
 var corsOptions = {
   origin: ["http://localhost:4000", "https://zagrajzemna-backend.onrender.com", "https://zagrajzemna.onrender.com"]
@@ -40,6 +41,11 @@ app.post("/api/lobby/join", (req, res) => {
   token = req.token;
 });
 
+const localdate = new Date();
+const date = (localdate.getUTCFullYear()+"-"+(localdate.getUTCMonth()+1)+"-"+localdate.getUTCDate());
+const time = (localdate.getUTCHours()+":"+localdate.getUTCMinutes()+":"+localdate.getUTCSeconds());
+const CHAT_BOT = 'ChatBot';
+// Add this
 io.on("connection", (socket) => {
 
   socket.on("joinRoom", async (data) => {   
@@ -76,6 +82,53 @@ io.on("connection", (socket) => {
     catch(err){
       console.log(err);
     }
+  });
+//chat sockets
+  socket.on("joinchat", async (data) => {   
+    try{
+      const { username, room } = data;
+      socket.join(room);
+      socket.to(room).emit('receive_message', {
+        message: `${username} has joined the chat room`,
+        username: CHAT_BOT,
+        date: date,
+        time: time,
+      });
+    }
+    catch(err){
+      console.log(err);
+    }
+  });
+
+  socket.on('send_message', async (data) => {
+    const {message, username, room} = data;
+    console.log("ID LOBBY: ",room);
+    io.in(room).emit('receive_message', {
+      message: message,
+      username: username,
+      date: date,
+      time: time,
+    }); 
+    console.log("EMIT WYKONANY!");
+    chat.saveMessage(message, username, room) // Save message in db
+      .then((response) => console.log(response))
+      .catch((err) => console.log(err));
+  });
+
+  socket.on('leave_room', (data) => {
+    const { username, room } = data;
+    socket.leave(room);
+    socket.to(room).emit('receive_message', {
+      username: CHAT_BOT,
+      message: `${username} opuścił czat`,
+      date: date,
+      time: time
+    });
+    console.log(`${username} opuścił czat`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected from the chat');
   });
 });
 
