@@ -4,9 +4,6 @@ const nodemailer = require("../config/nodemailer.config");
 const admin = require("../middleware/authAcc")
 
 const User = db.User;
-
-const Role = db.role;
-
 const Op = db.Sequelize.Op;
 
 var jwt = require("jsonwebtoken");

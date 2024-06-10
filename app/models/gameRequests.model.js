@@ -13,14 +13,6 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'ID_USER'
             }
         },
-        ID_SENDER: {
-            type: Sequelize.INTEGER,
-            allowNull: false,
-            references: {
-                model: 'users',
-                key: 'ID_USER'
-            }
-        },
         GameName: {
             type: Sequelize.STRING
         },
@@ -37,10 +29,6 @@ module.exports = (sequelize, Sequelize) => {
         GameRequests.belongsTo(models.User, {
             foreignKey: 'ID_USER',
             as: 'user'
-        });
-        GameRequests.belongsTo(models.User, {
-            foreignKey: 'ID_SENDER',
-            as: 'sender'
         });
     };
     

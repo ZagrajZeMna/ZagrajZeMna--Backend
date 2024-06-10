@@ -36,3 +36,14 @@ module.exports.sendConfirmationEmail = (name, email, confirmationCode) => {
           </div>`,
     }).catch(err => console.log(err));
   }; 
+
+  
+module.exports.sendQuestion = (title, message )=> {
+  transport.sendMail({      
+  from: user,
+  to: user,
+  subject: title,
+  text: message,
+  }).catch(err => console.log(err));
+}; 
+  

@@ -1,4 +1,3 @@
-
 module.exports = (sequelize, Sequelize) => {
     const Lobby = sequelize.define("lobbies", {
         ID_LOBBY: {
@@ -49,13 +48,6 @@ module.exports = (sequelize, Sequelize) => {
         StillLooking: {
             type: Sequelize.BOOLEAN,
             defaultValue: true
-        },
-        PlayingFrequency: {
-            type: Sequelize.INTEGER,
-        },
-        IsFirstGame: {
-            type: Sequelize.BOOLEAN,
-            defaultValue: true
         }
     },{
         timestamps: false,
@@ -83,10 +75,6 @@ module.exports = (sequelize, Sequelize) => {
         Lobby.hasMany(models.Message, {
             foreignKey: 'ID_LOBBY',
             as: 'messages'
-        });
-        Lobby.hasMany(models.DayLobby, {
-            foreignKey: 'ID_LOBBY',
-            as: 'daylobby'
         })
     };
 

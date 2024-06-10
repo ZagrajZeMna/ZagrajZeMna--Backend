@@ -20,9 +20,6 @@ module.exports = (sequelize, Sequelize) => {
         Accepted: {
             type: Sequelize.BOOLEAN,
             defaultValue: false
-        },
-        Description: {
-            type: Sequelize.TEXT
         }
     },{
         timestamps: false,
