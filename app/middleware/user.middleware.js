@@ -339,3 +339,32 @@ exports.fetchUsers = async (req, res, isBanned = null) => {
       res.status(500).send({ message: error.message });
   }
 };
+
+exports.sendMessage = async (req, res, user_id, name, message) => {
+try{
+    //Sprawdzanie czy gracz wysyłający prośbę istnieje
+    const ifUserExist = await User.findOne({where: {ID_USER: Number(user_id)}, attributes: ["username", "email"]});
+    
+    if(!ifUserExist){
+        return res.status(403).send({message:"There is no such user. Id of user is incorrect!"});
+    }
+
+    const regex = new RegExp(/[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/);
+
+    if(!(regex.test(ifUserExist.email))){
+        return res.status(404).send({message:"Email of user is incorect!"});
+    }
+
+    nodemailer.sendQuestion(
+        name,
+        message+"\n\n"+ifUserExist.username+"\n"+ifUserExist.email
+    );
+
+      res.status(200).send({message:"Email was send!"});
+
+}
+catch(error){
+    res.status(500).send({message: "Error during adding review : "+error.message});
+}     
+
+};

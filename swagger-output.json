@@ -1422,67 +1422,6 @@
       }
     },
 
-    "/api/lobbyInside/addMessage": {
-      "post": {
-        "tags": [
-          "WnętrzeLobby"
-        ],
-        "summary": "Dodawanie wiadomości na chacie.",
-        "description": "Dodaje nową wiadomość do bazy danych.",
-        "operationId": "addMessage",
-        "responses": {
-          "200": {
-            "description": "Wiadomość została dodana do bazy danych.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ID_USER": {
-                      "type": "integer",
-                      "example": 1
-                    },
-                    "ID_LOBBY": {
-                      "type": "integer",
-                      "example": 1
-                    },
-                    "Message": {
-                      "type": "string",
-                      "example": "Nie wiem co się staneło."
-                    },
-                    "Date": {
-                      "type": "date",
-                      "example": "2024-10-12"
-                    },
-                    "Time": {
-                      "type": "time",
-                      "example": "11:12:25"
-                    }
-                  }
-                }
-              }
-            }
-
-          },
- 
-          "403": {
-            "description": "Gracz nie istnieje."
-          },
-          "404": {
-            "description": "Lobby nie istnieje."
-          },
-          "405": {
-            "description": "Nie ma tego gracza w lobby."
-          },
-          "406": {
-            "description": "Wiadomość nie jest poprawna."
-          },
-          "500": {
-            "description": "Wewnętrzny błąd serwera"
-          }
-        }
-      }
-    },
     "/api/lobbyInside/latest100messages": {
       "post": {
         "tags": [
@@ -2132,7 +2071,79 @@
     }
 },
 
+  "/api/review/deleteGameReq": {
+  "delete": {
+    "tags": [
+      "Kontakt"
+    ],
+    "summary": "Usuwanie prośby o dodanie gry.",
+    "description": "Usuwa prośbę o dodanie gry na podstawie id.",
+    "operationId": "deletegameReq",
+    "parameters": [
+      {
+        "name": "request_id",
+        "in": "query",
+        "description": "requestId",
+        "required": true,
+        "explode": true,
+        "schema": {
+          "type": "string",
+          "default": "1"
 
+        }
+      }
+    ],
+    
+    "responses": {
+      "200": {
+        "description": "Usunięto prośbę o dodanie gry."
+      },
+      "403": {
+        "description": "Nie ma takiej prośby."
+      },
+      "500": {
+        "description": "Wewnętrzny błąd serwera"
+      }
+    }
+  }
+  },
+
+  "/api/review/deleteReport": {
+    "delete": {
+      "tags": [
+        "Kontakt"
+      ],
+      "summary": "Usuwanie zgłoszenia.",
+      "description": "Usuwa zgłoszenia gracza na podstawie id.",
+      "operationId": "deleteReport",
+      "parameters": [
+        {
+          "name": "report",
+          "in": "query",
+          "description": "reportuId",
+          "required": true,
+          "explode": true,
+          "schema": {
+            "type": "string",
+            "default": "1"
+          }
+        }
+      ],
+      
+      "responses": {
+        "200": {
+          "description": "Usunięto zgłoszenie gracza."
+        },
+        "403": {
+          "description": "Nie ma takiego zgłoszenia."
+        },
+        "500": {
+          "description": "Wewnętrzny błąd serwera"
+        }
+      }
+    }
+    },
+  
     "/api/mainGame/getGamePagination":{
         "get": {
           "tags": [

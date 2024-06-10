@@ -19,4 +19,7 @@ module.exports = function(app) {
   app.get("/api/review/getReportUser", controller.getReportUser);
   app.get("/api/review/getRequestGame", controller.getRequestGame);
   
+  app.delete("/api/review/deleteGameReq", controller.deleteGameReq);
+  app.delete("/api/review/deleteReport", controller.deleteReport);
+  
 };
