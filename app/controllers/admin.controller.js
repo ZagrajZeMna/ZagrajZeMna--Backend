@@ -15,14 +15,6 @@ exports.getUser = (req, res) => {
     userMiddleware.fetchUsers(req, res);
 };
 
-exports.getBannedUser = (req, res) => {
-    userMiddleware.fetchUsers(req, res, true);
-};
-
-exports.getNotBannedUser = (req, res) => {
-    userMiddleware.fetchUsers(req, res, false);
-};
-
 exports.banUser = (req, res) => {
     const userId = req.body.id;
     userMiddleware.banUsers(req, res, userId);

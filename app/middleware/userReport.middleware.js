@@ -73,26 +73,25 @@ exports.getReport = async (req, res, page, size) => {
         var sender;
         var reported;
         var description;
+        var reportedId;
         for(let i=0; i< UserSet.length; i++){
             id=UserSet[i].ID_REPORT;
             sender = await User.findOne({ where: {ID_USER: UserSet[i].ID_REPORTING}, attributes: ['username']});
             sender = sender.username;
             reported = await User.findOne({ where: {ID_USER: UserSet[i].ID_REPORTED}, attributes: ['username']});
+            reportedId = UserSet[i].ID_REPORTED;
             reported = reported.username;
             description = UserSet[i].Description;
-            name_user_set.push({id, sender, reported, description});
+            name_user_set.push({id, sender, reported, reportedId, description});
         }
     
-        const numberOfPages = Math.ceil(allUser/ limit);
-
+        const numberOfPages = Math.ceil(allUser / limit);
 
         res.status(200).json({User: name_user_set, Pages: numberOfPages});
 
     }catch(error){
         res.status(500).send({message: "Error during sending report list : "+error.message});
     }     
-   
-   
 };
 
 exports.deleteReportMiddle = async (req, res, r_id) => {

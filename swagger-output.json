@@ -1494,92 +1494,101 @@
         }
       }
     },
+    
     "/api/admin/getUser": {
-      "get": {
-        "tags": [
-          "Admin"
-        ],
-        "summary": "Pobranie wszystkich statystyk użytkowników",
-        "description": "Zwraca wszystkich użytkowników.",
-        "operationId": "getUser",
-        "responses": {
-          "200": {
-            "description": "Statystyki użytkownika zostały pomyślnie pobrane",
-            "content": {
-              "application/json": {
-              }
-            }
-          },
-          "400": {
-            "description": "Nieprawidłowe żądanie - problem z żądaniem od klienta."
-          },
-          "403": {
-            "description": "Użytkownik nie znaleziony."
-          },
-          "500": {
-            "description": "Wewnętrzny błąd serwera"
-          }
+  "get": {
+    "tags": [
+      "Admin"
+    ],
+    "summary": "Pobranie listy użytkowników",
+    "description": "Pobranie listy użytkowników z opcjonalnym filtrem `isBanned` oraz paginacją",
+    "operationId": "fetchUsers",
+    "parameters": [
+      {
+        "name": "page",
+        "in": "query",
+        "required": false,
+        "description": "Numer strony",
+        "schema": {
+          "type": "integer",
+          "example": 1
+        }
+      },
+      {
+        "name": "size",
+        "in": "query",
+        "required": false,
+        "description": "Liczba wyników na stronę",
+        "schema": {
+          "type": "integer",
+          "example": 10
+        }
+      },
+      {
+        "name": "isBanned",
+        "in": "query",
+        "required": false,
+        "description": "Filtr użytkowników na podstawie statusu zbanowania",
+        "schema": {
+          "type": "boolean",
+          "example": false
         }
       }
-    },
-
-    "/api/admin/getBannedUser": {
-      "get": {
-        "tags": [
-          "Admin"
-        ],
-        "summary": "Pobranie zbanowanych statystyk użytkowników",
-        "description": "Zwraca zbanowanych użytkowników.",
-        "operationId": "getBannedUser",
-        "responses": {
-          "200": {
-            "description": "Statystyki użytkownika zostały pomyślnie pobrane",
-            "content": {
-              "application/json": {
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful operation",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "users": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ID_USER": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "user@example.com"
+                      },
+                      "username": {
+                        "type": "string",
+                        "example": "username"
+                      },
+                      "avatar": {
+                        "type": "string",
+                        "example": "/path/to/avatar.jpg"
+                      },
+                      "isBanned": {
+                        "type": "boolean",
+                        "example": false
+                      }
+                    }
+                  }
+                },
+                "totalPages": {
+                  "type": "integer",
+                  "example": 5
+                }
               }
             }
-          },
-          "400": {
-            "description": "Nieprawidłowe żądanie - problem z żądaniem od klienta."
-          },
-          "403": {
-            "description": "Użytkownik nie znaleziony."
-          },
-          "500": {
-            "description": "Wewnętrzny błąd serwera"
           }
         }
+      },
+      "400": {
+        "description": "Invalid input"
+      },
+      "500": {
+        "description": "Internal server error"
       }
-    },
-
-    "/api/admin/getNotBannedUser": {
-      "get": {
-        "tags": [
-          "Admin"
-        ],
-        "summary": "Pobranie nie zbanowanych statystyk użytkowników",
-        "description": "Zwraca nie zbanowanych użytkowników.",
-        "operationId": "getBannedUser",
-        "responses": {
-          "200": {
-            "description": "Statystyki użytkownika zostały pomyślnie pobrane",
-            "content": {
-              "application/json": {
-              }
-            }
-          },
-          "400": {
-            "description": "Nieprawidłowe żądanie - problem z żądaniem od klienta."
-          },
-          "403": {
-            "description": "Użytkownik nie znaleziony."
-          },
-          "500": {
-            "description": "Wewnętrzny błąd serwera"
-          }
-        }
-      }
-    },
+    }
+  }
+},
     
     "/api/admin/banUser": {
         "put": {

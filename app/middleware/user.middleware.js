@@ -16,6 +16,12 @@ cloudinary.config({
 
 const DEFAULT_AVATAR_URL = 'https://res.cloudinary.com/dcqhaa1ez/image/upload/v1716977307/default.png';
 
+const getPagination = (page, size) => {
+  const limit = size ? +size : 10;
+  const offset = page ? page * limit : 0;
+  return { limit, offset };
+};
+
 exports.fetchUserDetails = async (req, res, userId) => {
     try {
       const user = await User.findByPk(userId, {
@@ -325,18 +331,49 @@ exports.unbanUsers = async (req, res, userId) => {
   }
 };
 
-exports.fetchUsers = async (req, res, isBanned = null) => {  
+exports.fetchUsers = async (req, res) => {
   try {
-      const whereClause = isBanned !== null ? { isBanned } : {};
-      const users = await User.findAll({
-          attributes: ['ID_USER', 'email', 'username', 'avatar', 'isBanned'],
-          where: whereClause,
-          order: [['username', 'ASC']]
-      });
+    // Paginacja z parametrów zapytania
+    const page = req.query.page ? parseInt(req.query.page) : 0;
+    const size = req.query.size ? parseInt(req.query.size) : 10;
+    const { limit, offset } = getPagination(page, size);
 
-      res.status(200).send(users);
+    // Pobieranie wartości isBanned z parametrów zapytania
+    let isBanned = req.query.isBanned;
+    if (isBanned === 'true') {
+      isBanned = true;
+    } else if (isBanned === 'false') {
+      isBanned = false;
+    } else {
+      isBanned = null;
+    }
+
+    const whereClause = isBanned !== null ? { isBanned } : {};
+
+    // Liczenie wszystkich użytkowników
+    const totalUsers = await User.count({ where: whereClause });
+
+    // Pobieranie użytkowników z limitem
+    const users = await User.findAll({
+      attributes: ['ID_USER', 'email', 'username', 'avatar', 'isBanned'],
+      where: whereClause,
+      order: [['username', 'ASC']],
+      limit,
+      offset
+    });
+
+    if (users.length === 0) {
+      return res.status(404).send({ message: "Users not found!" });
+    }
+
+    const numberOfPages = Math.ceil(totalUsers / limit);
+
+    res.status(200).send({
+      users,
+      totalPages: numberOfPages
+    });
   } catch (error) {
-      res.status(500).send({ message: error.message });
+    res.status(500).send({ message: error.message });
   }
 };
 
