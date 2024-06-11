@@ -95,20 +95,23 @@ exports.getReport = async (req, res, page, size) => {
 };
 
 exports.deleteReportMiddle = async (req, res, r_id) => {
-    try{
-        //Sprawdzanie, czy zgłoszenie istnieje
-        const ifExist = await ReportUser.findOne({where: {ID_REPORT: Number(r_id)}});
-        
-        if(!ifExist){
-            return res.status(403).send({message:"There is no such report!"});
+    try {
+        if (!r_id) {
+            return res.status(400).send({ message: "Report ID is required" });
         }
 
-        //Usuwanie zgłoszenia z listy
+        // Sprawdzanie, czy zgłoszenie istnieje
+        const ifExist = await ReportUser.findOne({ where: { ID_REPORT: Number(r_id) } });
+        
+        if (!ifExist) {
+            return res.status(404).send({ message: "There is no such report!" });
+        }
+
+        // Usuwanie zgłoszenia z listy
         await ifExist.destroy();
 
         res.status(200).send({ message: "Delete User report." });
-    }catch(error){
-        res.status(500).send({message: "Error during deleting report : "+error.message});
+    } catch (error) {
+        res.status(500).send({ message: "Error during deleting report: " + error.message });
     }     
- 
 };
