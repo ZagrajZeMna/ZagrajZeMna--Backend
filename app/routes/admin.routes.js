@@ -10,4 +10,7 @@ module.exports = function(app) {
     });
     
     app.post("/api/mainGame/addNewGame", controller.addNewGame);
+    app.delete("/api/mainGame/deleteGame/:id", controller.deleteGame);
+    app.put("/api/admin/banUser", controller.banUser); 
+    app.put("/api/admin/unbanUser", controller.unbanUser); 
   };
