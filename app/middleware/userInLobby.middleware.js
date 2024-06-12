@@ -241,9 +241,8 @@ exports.deleteLobby = async (req, res, lobbyId, userId) => {
 
 };
 
-exports.latest100 = async (req, res) => {  
+exports.latest100 = async (req, res, lobbyId) => {  
     try{
-        const lobbyId = req.body.room;
         const ifLobbyExist = await Lobby.findOne({where: {ID_LOBBY: Number(lobbyId)}});
         
         if(!ifLobbyExist){
@@ -282,4 +281,87 @@ exports.latest100 = async (req, res) => {
         res.status(500).send({message: "Error during fetching messages : "+ error.message});
     }  
 
+};
+
+const getPagination = (page, size) => {
+    const limit = size ? +size : 10;
+    const offset = page ? page * limit : 0;
+    return { limit, offset };
+};
+  
+exports.getUserLobby = async (req, res, userId, page, size) => {  
+    const { limit, offset } = getPagination(page, size);
+
+    const alllobbies = await UIL.count({
+        where: {
+            ID_USER: userId
+        },
+    });
+  
+    const userslobbies = await UIL.findAll({
+        where: {
+            ID_USER: userId,
+            Accepted: true
+        },
+        limit,
+        offset,
+        attributes: ['ID_LOBBY', [db.sequelize.fn('COUNT', 'ID_USER'), 'playerCount']],
+        group: 'ID_LOBBY'
+    });
+    const lobbyIds = userslobbies.map(lobby => lobby.ID_LOBBY);
+  
+    const lobbies = await Lobby.findAll({
+        where: {
+            Active: true,
+            ID_LOBBY: {
+                [Op.in]: lobbyIds
+            }
+        },
+        order: [
+            ['ID_LOBBY', 'DESC'],
+        ],
+        attributes: ['ID_LOBBY','ID_OWNER','Name', 'Description','NeedUsers']
+    });
+    
+    if (lobbies.length == 0) {
+        return res.status(404).send({ message: "Lobby not found!" });
+    }
+  
+    const ownerIds = lobbies.map(lobby => lobby.ID_OWNER);
+  
+    const userAvatar = await User.findAll({
+        where: {
+            ID_USER: {
+                [Op.in]: ownerIds
+            }
+        },
+        attributes: ['ID_USER','avatar'],
+    });
+  
+    const counters = await UIL.findAll({
+      where: {
+          ID_LOBBY: {
+              [Op.in]: lobbyIds
+          },
+          Accepted: true
+      },
+      attributes: ['ID_LOBBY', [db.sequelize.fn('COUNT', 'ID_USER'), 'playerCount']],
+      group: 'ID_LOBBY'
+    });
+  
+    const lobbyData = lobbies.map(lobby => {
+        const counter = counters.find(c => c.ID_LOBBY === lobby.ID_LOBBY);
+        const png = userAvatar.find(p => p.ID_USER === lobby.ID_OWNER);
+        return {
+            ID_LOBBY: lobby.ID_LOBBY,
+            Name: lobby.Name,
+            Description: lobby.Description,
+            NeedUsers: lobby.NeedUsers,
+            ownerAvatar: png ? png.dataValues.avatar : "/img/default",
+            playerCount: counter ? counter.dataValues.playerCount : 0,
+        };
+    });
+  
+    const numberOfPages = Math.ceil(alllobbies / limit);
+    res.status(200).json({Lobby: lobbyData,pages: numberOfPages});  
 };

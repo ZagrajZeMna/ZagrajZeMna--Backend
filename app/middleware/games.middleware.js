@@ -61,4 +61,50 @@ exports.getGame = async (req, res, page, size, name) => {
     catch(err){
         res.status(500).send({ message: err.message }); 
     }    
-}
+};
+
+exports.getRecomendedGame = async (req, res) => {
+    try {
+        const recommendedGames = await sequelize.query(`
+            SELECT g.name, g.image, COUNT(l."ID_LOBBY") as lobbyCount
+            FROM public.games g
+            JOIN public.lobbies l ON g."ID_GAME" = l."ID_GAME"
+            GROUP BY g."ID_GAME", g.name, g.image
+            ORDER BY lobbyCount DESC
+            LIMIT 7;
+        `, {
+            type: sequelize.QueryTypes.SELECT
+        });
+
+        res.status(200).send(recommendedGames);
+    } catch (error) {
+        res.status(500).send({ message: "Error retrieving recommended games: " + error.message });
+    }
+};
+
+exports.getInfoToLobby = async (req, res, gameName) => {
+    try{
+        const game_set = await Game.findOne({
+            where: {name: gameName},
+            attributes: ['description', 'image']
+        });
+        res.status(200).send(game_set);
+    }
+    catch(error){
+        res.status(500).send({message: "Error retrieving game data"});
+    }
+
+};
+
+exports.getData = async (req, res) => {
+    Game.findAll({
+        attributes: ['name']
+    }).then((Games)=>{
+        Languages.findAll({
+            attributes: ['LANGUAGE']
+        }).then((languages)=>{
+            res.json({Languages: languages, Games: Games});
+        })
+    })
+};
+

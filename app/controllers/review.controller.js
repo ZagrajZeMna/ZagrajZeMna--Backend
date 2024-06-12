@@ -28,7 +28,7 @@ exports.reportUser = async (req, res) => {
     userReportMiddleware.addReport(req, res, user_id, username, description);
 };
 
-//Funkcja, która dodaję prośbę na temat gry
+//Funkcja, która wysyła maila
 exports.sendMessage = async (req, res) => {
     const user_id = req.userId;
     const {name, message} = req.body;

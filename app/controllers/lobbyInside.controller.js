@@ -51,5 +51,6 @@ exports.deleteLobby = async (req, res) => {
 };
 
 exports.latest100messages = async (req,res) =>{
-    lobbyInsideMiddleware.latest100(req, res);
-}
+    const lobbyId = req.body.room;
+    lobbyInsideMiddleware.latest100(req, res, lobbyId);
+};

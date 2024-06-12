@@ -66,7 +66,6 @@ exports.join = async (data,ID,token,req, res) => {
       } 
 };
   
-
 exports.accept = async (ID,Desc,IDLobby) => {
     try{      
     let result = [];
@@ -120,7 +119,7 @@ exports.accept = async (ID,Desc,IDLobby) => {
     catch(err){
         console.log(err);
     } 
-}
+};
 
 exports.decline = async (ID,Desc,IDLobby) => {
     try{      
@@ -173,4 +172,81 @@ exports.decline = async (ID,Desc,IDLobby) => {
     catch(err){
         console.log(err);
     } 
-}
+};
+
+exports.showNot = async (req, res, userId) => {
+  const notifi = await Noti.findAll({
+    where:{
+        ID_HOST: userId,
+        type: "Respond"
+    },
+})
+if (notifi.length == 0) {
+    return res.status(404).send({ message: "Notifications not found!" });
+}  
+const notiIds = notifi.map(user => user.ID_USER);  
+
+const userAvatar = await User.findAll({
+    where:{
+        ID_USER: {[Op.in]: notiIds}
+    },
+    attributes: ['avatar']
+})
+
+const notiData = notifi.map(user => {
+    const png = userAvatar.find(p => p.ID_USER === user.ID_USER);
+    return {
+        idNoti: user.ID_NOTI,
+        idLobby: user.ID_LOBBY,
+        message: user.message,
+        ownerAvatar: png ? png.dataValues.avatar : "/img/default",
+    };
+}); 
+
+res.status(200).json({Notification: notiData});
+
+};
+
+exports.showInfoNot = async (req, res, userId) => {
+  const notifi = await Noti.findAll({
+    where:{
+        ID_HOST: userId,
+        type: "Info"
+    },
+})
+if (notifi.length == 0) {
+    return res.status(404).send({ message: "Notifications not found!" });
+}  
+const notiIds = notifi.map(user => user.ID_USER);  
+const userAvatar = await User.findAll({
+    where:{
+        ID_USER: {[Op.in]: notiIds}
+    },
+    attributes: ['avatar']
+})
+
+const notiData = notifi.map(user => {
+    const png = userAvatar.find(p => p.ID_USER === user.ID_USER);
+    return {
+        idNoti: user.ID_NOTI,
+        message: user.message,
+        ownerAvatar: png ? png.dataValues.avatar : "/img/default",
+    };
+}); 
+
+res.status(200).json({Notification: notiData});
+
+};
+
+exports.deleteNot = async (req, res, id) => {
+  Noti.destroy({
+    where:{
+     ID_NOTI: id
+    } 
+ }).then((noti)=>{
+     res.status(200).json("Pomyślnie usunięto");
+ }).catch(err => {
+     res.status(500).send({ message: err.message });
+ }); 
+
+};

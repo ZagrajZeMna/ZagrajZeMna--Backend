@@ -1,5 +1,7 @@
 const db = require("../models");
 const Shelf = db.Shelf;
+const Game = db.Game;
+
 
 exports.addGameToUserShelf = async (userId, gameId, res) => {
   try {
@@ -60,4 +62,45 @@ exports.removeGameFromUserShelf = async (userId, gameId, res) => {
       console.error("Error during removing game from shelf: ", error);
       return res.status(500).send({ message: "Internal server error" });
     }
-  };
+};
+
+exports.getUserGame = async (req, res, userId, page, size) => {
+    const { limit, offset } = getPagination(page, size);
+
+    const allGames = await Shelf.count({
+        where: {
+            ID_USER: userId
+        },
+    })
+  
+    const shelfs = await Shelf.findAll({
+        where: {
+            ID_USER: userId
+        },
+        limit,
+        offset,
+        attributes: ['ID_GAME'],
+    }).catch(err => {
+        res.status(500).send({ message: err.message });
+    });
+  
+    if (shelfs.length == 0) {
+        return res.status(404).send({ message: "Games not found!" });
+    }
+  
+    const games = shelfs.map(Game => Game.ID_GAME);
+    const numberOfPages = Math.ceil(allGames / limit);
+  
+    Game.findAll({
+        where:{
+            ID_GAME: {
+                [Op.in]: games
+            }
+        },
+        attributes: ['name','shortname','image']
+    }).then((games)=>{
+        res.json({Games: games, Pages: numberOfPages});
+    }).catch(err => {
+        res.status(500).send({ message: err.message });
+    });
+};
