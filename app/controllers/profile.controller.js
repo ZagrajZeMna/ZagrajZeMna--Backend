@@ -109,7 +109,14 @@ exports.usersLobby = async (req,res) =>{
       order: [
           ['ID_LOBBY', 'DESC'],
       ],
-      attributes: ['ID_LOBBY','ID_OWNER','Name', 'Description','NeedUsers']
+      attributes: ['ID_LOBBY','ID_OWNER','ID_GAME','Name', 'Description','NeedUsers'],
+      include: [
+        {
+          model: db.Game,
+          as: 'game',
+          attributes: ['name']
+        }
+      ]
   });
   
   if (lobbies.length == 0) {
@@ -148,6 +155,7 @@ exports.usersLobby = async (req,res) =>{
           NeedUsers: lobby.NeedUsers,
           ownerAvatar: png ? png.dataValues.avatar : "/img/default",
           playerCount: counter ? counter.dataValues.playerCount : 0,
+          gameName: lobby.game ? lobby.game.name : "Unknown",
       };
   });
 

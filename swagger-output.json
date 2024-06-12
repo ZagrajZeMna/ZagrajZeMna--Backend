@@ -2897,6 +2897,10 @@
           "Pages": {
             "type": "string",
             "example": "12"
+          },
+          "gameName": {
+            "type": "string",
+            "example": "League of Legends"
           }
         }
       },
