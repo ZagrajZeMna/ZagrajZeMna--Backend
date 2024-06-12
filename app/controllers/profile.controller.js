@@ -69,7 +69,6 @@ exports.usersLobby = async (req,res) =>{
   const size = req.body.size;
   const userId = req.userId;
   userInLobbyMiddleware.getUserLobby(req, res, userId, page, size);
-
 };
 
 exports.usersGames = async (req,res) =>{
