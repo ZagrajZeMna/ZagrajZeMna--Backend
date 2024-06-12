@@ -20,7 +20,7 @@ exports.getUserInLobby = async (req, res, lobbyId) => {
 
         let name_user_set=[];
         for(let i=0; i<user_set.length; i++)
-            name_user_set.push(await User.findOne({ where: {ID_USER: user_set[i].ID_USER}, attributes: ['username', 'avatar']}));
+            name_user_set.push(await User.findOne({ where: {ID_USER: user_set[i].ID_USER}, attributes: ['ID_USER', 'username', 'avatar']}));
 
         if(name_user_set.length==0){
             return res.status(404).send({message:"User in lobby not found!"});
@@ -28,7 +28,7 @@ exports.getUserInLobby = async (req, res, lobbyId) => {
 
         let name_user = [];
         for(let i=0; i<name_user_set.length; i++)
-            name_user.push([ name_user_set[i].username, name_user_set[i].avatar]);
+            name_user.push([name_user_set[i].ID_USER, name_user_set[i].username, name_user_set[i].avatar]);
 
         res.status(200).send(name_user_set);
 
@@ -159,11 +159,11 @@ exports.changeOwner = async (req, res, lobbyId, newOwnerId) => {
 
 };
 
-exports.deleteUser = async (req, res, lobbyId, userId) => {  
+exports.deleteUser = async (req, res, lobbyId, username) => {  
    
     try{
         //Sprawdzanie czy gracz istnieje
-        const ifUserExist = await User.findOne({where: {ID_USER: Number(userId)}});
+        const ifUserExist = await User.findOne({where: {username: username}, atributes: ['ID_USER']});
         
         if(!ifUserExist){
             return res.status(403).send({message:"There is no such user!"});
@@ -177,7 +177,7 @@ exports.deleteUser = async (req, res, lobbyId, userId) => {
         }
 
         //sprawdzanie czy użytkownik jest w lobby!
-        const ifExist = await UserIn.findOne({where: {ID_LOBBY: Number(lobbyId), ID_USER: Number(userId)}});
+        const ifExist = await UserIn.findOne({where: {ID_LOBBY: Number(lobbyId), ID_USER: Number(ifUserExist.ID_USER)}});
         
         if(!ifExist){
             return res.status(405).send({message:"There is no such user in lobby!"});

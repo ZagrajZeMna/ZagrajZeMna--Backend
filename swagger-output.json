@@ -1307,7 +1307,7 @@
           "WnętrzeLobby"
         ],
         "summary": "Usuwanie gracza z lobby.",
-        "description": "Usuwa gracza z lobby na podstawie id gracza i id lobby.",
+        "description": "Usuwa gracza z lobby na podstawie username i id lobby.",
         "operationId": "deleteUserFromLobby",
         "parameters": [
           {
@@ -1323,14 +1323,14 @@
             }
           },
           {
-            "name": "userId",
+            "name": "username",
             "in": "query",
-            "description": "UserId",
+            "description": "Username",
             "required": true,
             "explode": true,
             "schema": {
-              "type": "integer",
-              "default": "1"
+              "type": "string",
+              "default": "Hedonist"
 
             }
           }

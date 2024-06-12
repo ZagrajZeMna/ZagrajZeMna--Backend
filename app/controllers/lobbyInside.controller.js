@@ -40,8 +40,8 @@ exports.changeLobbyOwner = async (req, res) => {
 
 //Funkcja, która na podstawie id gracza usuwa go z lobby.
 exports.deleteUser = async (req, res) => {
-    const {lobbyId, userId} = req.query;
-    lobbyInsideMiddleware.deleteUser(req, res, lobbyId, userId);        
+    const {lobbyId, username} = req.query;
+    lobbyInsideMiddleware.deleteUser(req, res, lobbyId, username);        
 };
 
 //Funkcja, która usuwa lobby.
