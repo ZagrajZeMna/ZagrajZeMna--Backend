@@ -50,12 +50,12 @@ exports.getRequestGame = async (req, res) => {
 
 //Funkcja, usuwająca próśbe z listy
 exports.deleteGameReq = async (req, res) => {
-    const {request_id} = req.query;
+    const { request_id } = req.body;
     gameRequestsMiddleware.deleteGameReqMiddle(req, res, request_id);
 };
 
 //Funkcja, usuwająca zgłoszenia z listy
 exports.deleteReport = async (req, res) => {
-    const {report} = req.query;
-    userReportMiddleware.deleteReportMiddle(req, res, report);
+    const { report_id } = req.body;
+    userReportMiddleware.deleteReportMiddle(req, res, report_id);
 };

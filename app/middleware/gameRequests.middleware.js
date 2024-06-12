@@ -82,21 +82,24 @@ exports.getGameReq = async (req, res, page, size) => {
 };
 
 exports.deleteGameReqMiddle = async (req, res, r_id) => {
-    try{
-        //Sprawdzanie, czy prośba istnieje
-        const ifExist = await GameReq.findOne({where: {ID_REQUEST: Number(r_id)}});
-        
-        if(!ifExist){
-            return res.status(403).send({message:"There is no such ask!"});
+    try {
+        if (!r_id) {
+            return res.status(400).send({ message: "Request ID is required" });
         }
 
-        //Usuwanie prośby z listy
+        // Sprawdzanie, czy prośba istnieje
+        const ifExist = await GameReq.findOne({ where: { ID_REQUEST: Number(r_id) } });
+        
+        if (!ifExist) {
+            return res.status(404).send({ message: "There is no such request!" });
+        }
+
+        // Usuwanie prośby z listy
         await ifExist.destroy();
 
         res.status(200).send({ message: "Delete Game request." });
-    }catch(error){
-        res.status(500).send({message: "Error during deleting request : "+error.message});
+    } catch (error) {
+        res.status(500).send({ message: "Error during deleting request: " + error.message });
     }     
- 
 };
 
