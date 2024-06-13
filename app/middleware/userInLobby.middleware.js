@@ -186,7 +186,7 @@ exports.deleteUser = async (req, res, lobbyId, username) => {
 
         //Sprawdzanie czy użytkownik nie jest właścicielem
         if(ifLobbyExist.ID_OWNER == ifUserExist.ID_USER){
-                return res.status(406).send({message:"Can't remove lobby owner!"});
+            this.deleteLobby(req, res, lobbyId, ifUserExist.ID_USER);
         }
 
         //Usuwanie gracza z lobby
