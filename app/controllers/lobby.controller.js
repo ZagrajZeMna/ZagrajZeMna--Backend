@@ -22,7 +22,7 @@ exports.show = async (req, res) => {
 exports.add = (req,res) =>{
     const userId = req.userId;
     const {gameName, language, Name, Description, NeedUsers} = req.body;
-    lobbyMiddleware.showLobby(req, res, userId, gameName, language, Name, Description, NeedUsers);
+    lobbyMiddleware.addLobby(req, res, userId, gameName, language, Name, Description, NeedUsers);
 
 };
 
