@@ -1,6 +1,7 @@
 const db = require("../models");
 const User = db.User;
 const Languages = db.Languages;
+const config = require("../config/auth.config");
 
 const multer = require('multer');
 var jwt = require("jsonwebtoken");

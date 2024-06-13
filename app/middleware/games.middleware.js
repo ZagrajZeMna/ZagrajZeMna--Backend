@@ -1,6 +1,7 @@
 const db = require("../models");
 const Game = db.Game;
 const Op = db.Sequelize.Op;
+const Languages = db.Languages
 
 const getPagination = (page, size) => {
     const limit = size ? +size : 10;

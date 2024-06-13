@@ -292,13 +292,13 @@ const getPagination = (page, size) => {
 exports.getUserLobby = async (req, res, userId, page, size) => {  
     const { limit, offset } = getPagination(page, size);
 
-    const alllobbies = await UIL.count({
+    const alllobbies = await UserIn.count({
         where: {
             ID_USER: userId
         },
     });
   
-    const userslobbies = await UIL.findAll({
+    const userslobbies = await UserIn.findAll({
         where: {
             ID_USER: userId,
             Accepted: true
@@ -338,7 +338,7 @@ exports.getUserLobby = async (req, res, userId, page, size) => {
         attributes: ['ID_USER','avatar'],
     });
   
-    const counters = await UIL.findAll({
+    const counters = await UserIn.findAll({
       where: {
           ID_LOBBY: {
               [Op.in]: lobbyIds

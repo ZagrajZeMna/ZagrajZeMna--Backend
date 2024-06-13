@@ -2,6 +2,11 @@ const db = require("../models");
 const Shelf = db.Shelf;
 const Game = db.Game;
 
+const getPagination = (page, size) => {
+  const limit = size ? +size : 10;
+  const offset = page ? page * limit : 0;
+  return { limit, offset };
+};
 
 exports.addGameToUserShelf = async (userId, gameId, res) => {
   try {
