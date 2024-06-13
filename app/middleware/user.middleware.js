@@ -1,7 +1,8 @@
 const db = require("../models");
+const config = require("../config/auth.config");
 const User = db.User;
 const Languages = db.Languages;
-const config = require("../config/auth.config");
+const UserReview = db.UserReview;
 
 const multer = require('multer');
 var jwt = require("jsonwebtoken");
@@ -33,15 +34,29 @@ exports.fetchUserDetails = async (req, res, userId) => {
       if (!user) {
         return res.status(404).send({ message: "User not found." });
       }
-  
+      
+      const reviews = await UserReview.findAll({
+        where: { ID_ABOUT: userId },
+        attributes: ['stars']
+    });
+
+
+    let averageRating = null;
+        if (reviews.length > 0) {
+            const totalStars = reviews.reduce((total, review) => total + review.stars, 0);
+            averageRating = totalStars / reviews.length;
+        }
+
+
       // Konwersja ID_LANGUAGE na nazwę języka
       const language = await Languages.findByPk(user.ID_LANGUAGE);
-      const userWithLanguage = {
+      const userWithLanguageAndRating = {
         ...user.get({ plain: true }),
-        language: language ? language.LANGUAGE : null
+        language: language ? language.LANGUAGE : null,
+        averageRating
       };
   
-      return res.status(200).send(userWithLanguage);
+      return res.status(200).send(userWithLanguageAndRating);
     } catch (error) {
       return res.status(500).send({ message: error.message });
     }

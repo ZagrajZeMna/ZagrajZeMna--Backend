@@ -270,8 +270,98 @@
         }
       }
     },
-
-
+    "/api/review/sendReviews": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Pobranie recenzji użytkownika z paginacją",
+        "description": "Pozwala na pobranie recenzji dla danego użytkownika na podstawie jego nazwy użytkownika z paginacją.",
+        "operationId": "sendReviews",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userName": {
+                    "type": "string",
+                    "example": "jan_kowalski",
+                    "description": "Nazwa użytkownika, dla którego chcemy pobrać recenzje."
+                  },
+                  "page": {
+                    "type": "integer",
+                    "example": 1,
+                    "description": "Numer strony wyników. Domyślnie 1."
+                  },
+                  "size": {
+                    "type": "integer",
+                    "example": 10,
+                    "description": "Liczba wyników na stronie. Domyślnie 10."
+                  }
+                },
+                "required": ["userName"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lista recenzji użytkownika została pomyślnie pobrana.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ID_REVIEW": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "ID_REVIEWER": {
+                        "type": "integer",
+                        "example": 2
+                      },
+                      "ID_ABOUT": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "stars": {
+                        "type": "integer",
+                        "example": 5
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Świetny użytkownik!"
+                      },
+                      "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00.000Z"
+                      },
+                      "time": {
+                        "type": "string",
+                        "example": "12:34:56"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nie znaleziono użytkownika."
+          },
+          "404": {
+            "description": "Nie znaleziono opinii dla tego użytkownika."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera."
+          }
+        }
+      }
+    },
     "/api/profile/getUserDetails": {
       "get": {
         "tags": [
@@ -321,7 +411,13 @@
                       "type": "integer",
                       "example": 1,
                       "description": "ID języka zgodnie z tabelą Languages"
-                    }
+                    },
+                    "averageRating": {
+                      "type": "number",
+                      "format": "float",
+                      "example": 4.5,
+                      "description": "Średnia ocena wystawiona użytkownikowi"
+                  }
                   }
                 }
               }

@@ -2,6 +2,12 @@ const db = require("../models");
 const User = db.User;
 const Review = db.UserReview;
 
+const getPagination = (page, size) => {
+    const limit = size ? +size : 10;
+    const offset = page ? page * limit : 0;
+    return { limit, offset };
+  };
+
 exports.addReview = async (req, res, reviewerId, username, stars, description) => {
     const localdate = new Date();
 
@@ -70,4 +76,28 @@ exports.addReview = async (req, res, reviewerId, username, stars, description) =
     }     
    
    
-}
+};
+
+exports.sendReviewsMiddle = async (req, res, userName, page, size) => {
+    try{
+        const { limit, offset } = getPagination(page, size);
+        
+        const user = await User.findOne({where: {username: String(userName)}});
+
+        if(!user){
+            return res.status(400).send({message: "Nie znaleziono użytkownika"});
+        }
+
+        const userId = user.ID_USER;
+
+        const reviews = await Review.findAll({where:{ID_ABOUT: userId}, limit: limit, offset: offset});
+
+        if(reviews.length === 0){
+            return res.status(404).send({message: "Nie znaleziono opini dla tego użytkownika"});
+        }
+
+        return res.status(200).send(reviews);
+    }catch(error){
+        return res.status(500).send({message: error.message});
+    }
+};

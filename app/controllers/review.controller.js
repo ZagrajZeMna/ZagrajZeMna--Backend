@@ -6,6 +6,7 @@ const userReportMiddleware = require("../middleware/userReport.middleware");
 const gameRequestsMiddleware = require("../middleware/gameRequests.middleware");
 const reviewMiddleware = require("../middleware/usersReviews.middleware");
 const userMiddleware = require("../middleware/user.middleware");
+const userReviewsModel = require("../models/userReviews.model");
 
 //Funkcja, która dodaję recenzje o użytkowniku
 exports.addReview = async (req, res) => {
@@ -58,4 +59,10 @@ exports.deleteGameReq = async (req, res) => {
 exports.deleteReport = async (req, res) => {
     const { report_id } = req.body;
     userReportMiddleware.deleteReportMiddle(req, res, report_id);
+};
+
+//Funkcja która wysyła opinie o danym użytkowniku
+exports.sendReviews = async (req, res) => {
+    const { userName, page, size } = req.body;
+    reviewMiddleware.sendReviewsMiddle(req, res, userName, page, size);
 };
