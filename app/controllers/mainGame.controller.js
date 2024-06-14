@@ -10,5 +10,5 @@ exports.getgamePagination = async (req, res) => {
 };
 
 exports.getRecommendedGames = async (req, res) => {
-    gameMiddleware.getGame(req, res);
+    gameMiddleware.getRecomendedGames(req, res);
 };

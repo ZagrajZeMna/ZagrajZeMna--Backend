@@ -1,7 +1,8 @@
 const db = require("../models");
 const Game = db.Game;
 const Op = db.Sequelize.Op;
-const Languages = db.Languages
+const Languages = db.Languages;
+const sequelize = db.sequelize;
 
 const getPagination = (page, size) => {
     const limit = size ? +size : 10;
@@ -64,7 +65,7 @@ exports.getGame = async (req, res, page, size, name) => {
     }    
 };
 
-exports.getRecomendedGame = async (req, res) => {
+exports.getRecomendedGames = async (req, res) => {
     try {
         const recommendedGames = await sequelize.query(`
             SELECT g.name, g.image, COUNT(l."ID_LOBBY") as lobbyCount
