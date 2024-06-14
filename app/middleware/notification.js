@@ -3,6 +3,7 @@ const Lobby = db.Lobby;
 const User = db.User;
 const Noti = db.Notification;
 const UIL = db.UserInLobby;
+const Op = db.Sequelize.Op;
 
 exports.join = async (data,ID,token,req, res) => {
     try{
@@ -29,6 +30,22 @@ exports.join = async (data,ID,token,req, res) => {
         lobbyName = ownerID.Name; 
         let result = [];
         if(token != destination.confirmationCode){
+          const amountNedded = await Lobby.findOne({
+            where:{
+              ID_LOBBY: data,
+            },
+            attributes: ['NeedUsers']
+          })
+          const amountCurrent = await UIL.findAll({
+            where:{
+              ID_LOBBY: data
+            },
+            //attributes: [[db.sequelize.fn('COUNT', 'ID_USER'), 'playerCount']]
+            attributes: [[db.sequelize.fn('COUNT', db.sequelize.col('ID_USER')), 'playerCount']]
+          })
+          console.log("Liczba potrzebna: ",amountNedded.NeedUsers)
+          console.log("Liczba aktualna: ",amountCurrent[0].get('playerCount'))
+          const amountNow = amountCurrent[0].get('playerCount');
           const notification = await Noti.findOne({
             where:{
                 ID_USER: ID,
@@ -42,7 +59,8 @@ exports.join = async (data,ID,token,req, res) => {
             },
             attributes: ['Accepted']
           })
-          if(userinL == null && notification == null){
+
+          if(userinL == null && notification == null && amountNedded.NeedUsers > amountNow){
               Noti.create({
                 ID_HOST: ownerID.ID_OWNER,
                 ID_USER: ID,
@@ -192,7 +210,7 @@ const userAvatar = await User.findAll({
     },
     attributes: ['avatar']
 })
-
+console.log(notifi);
 const notiData = notifi.map(user => {
     const png = userAvatar.find(p => p.ID_USER === user.ID_USER);
     return {
