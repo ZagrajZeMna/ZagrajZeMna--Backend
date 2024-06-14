@@ -18,6 +18,6 @@ exports.showinfo = async (req, res) => {
 };
 
 exports.delete = (req,res) => {
-    const id = req.body;
+    const id = req.body.id;
     notiMiddleware.deleteNot(req, res, id);
 };
