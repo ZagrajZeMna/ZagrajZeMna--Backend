@@ -11,7 +11,7 @@ const notifications = require("./app/middleware/notification");
 const chat = require("./app/middleware/chat");
 
 var corsOptions = {
-  origin: ["http://localhost:4000", "https://zagrajzemna-backend.onrender.com", "https://zagrajzemna.onrender.com"]
+  origin: ["https://zagrajzemna.onrender.com"]
 };
 
 app.use(cors(corsOptions));
