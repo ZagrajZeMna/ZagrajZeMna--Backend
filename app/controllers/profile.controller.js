@@ -80,8 +80,8 @@ exports.usersGames = async (req,res) =>{
 
 exports.addGameToShelf = (req, res) => {
   const userId = req.userId;
-  const { ID_GAME } = req.body;
-  shelfMiddleware.addGameToUserShelf(userId, ID_GAME, res);
+  const { GAME_NAME } = req.body;
+  shelfMiddleware.addGameToUserShelf(userId, GAME_NAME, res);
 };
 
 exports.removeGameFromShelf = (req, res) => {
