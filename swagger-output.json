@@ -438,6 +438,91 @@
         }
       }
     },
+    "/api/profile/getUserById": {
+      "get": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Pobranie szczegółów użytkownika z id w urlu",
+        "description": "Pozwala użytkownikowi wyświetlenie profili innych użytkowników. Wymaga wysłania id w URLu",
+        "operationId": "getUserById",
+        "parameters": [
+            {
+              "name": "id",
+              "in": "query",
+              "description": "id użytkowinka ",
+              "required": true,
+              "explode": true,
+              "schema": {
+                "type": "string",
+                "default": "1"
+  
+              }
+            }],
+        "responses": {
+          "200": {
+            "description": "Szczegóły profilu użytkownika zostały pomyślnie pobrane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                      "email": {
+                        "type": "string",
+                        "example": "jan_kowalski"
+                      },
+                      "username": {
+                        "type": "string",
+                        "example": "Johnny"
+                      },
+                      "about": {
+                        "type": "string",
+                        "example": "Pasjonat gier i programowania."
+                      },
+                      "country": {
+                        "type": "string",
+                        "example": "Polska"
+                      },
+                      "city": {
+                        "type": "string",
+                        "example": "Warszawa"
+                      },
+                      "contact": {
+                        "type": "string",
+                        "example": "jan@example.com"
+                      },
+                      "IDlanguage": {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "ID języka zgodnie z tabelą Languages"
+                      },
+                      "averageRating": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 4.5,
+                        "description": "Średnia ocena wystawiona użytkownikowi"
+                    },
+                    "400": {
+                      "description": "Nieprawidłowe żądanie - problem z danymi użytkownika."
+                    },
+                    "401": {
+                      "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+                    },
+                    "404": {
+                      "description": "Użytkownik nie znaleziony."
+                    },
+                    "500": {
+                      "description": "Wewnętrzny błąd serwera"
+                    }
+                  }
+                }
+              }
+            }
+          }
+      }
+    }
+    },
+  
     
     "/api/profile/changePassword": {
       "post": {
@@ -2600,6 +2685,47 @@
         }
       }
     },
+    "/api/profile/lastLobbies":{
+      "get": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Pobranie danych o o 3 lobby, w których ostatnio wysłano wiadomość",
+        "description": "Pobranie danych o lobby - o 3 lobby, w których ostatnio wysłano wiadomość. Mają to być ostatnio aktywne",
+        "operationId": "ost3lobby",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Wyświetl lobby!",
+          "content": {
+            "application/json": {}
+          },
+          "required": false
+        },
+
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisplayedLobbyGame"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
 
     "/api/profile/usersGames":{
 
@@ -2960,6 +3086,39 @@
           "NeedUsers": {
             "type": "string",
             "example": "3"
+          }
+        }
+      },
+      "DisplayedLobbyGame": {
+        "type": "object",
+        "properties": {
+          "ID_LOBBY": {
+            "type": "string",
+            "example": "1"
+          },
+          "Name": {
+            "type": "string",
+            "example": "Mid i Top do Clasha"
+          },
+          "Description": {
+            "type": "string",
+            "example": "Potrzebnych 2 graczy do najbliższego clasha"
+          },
+          "NeedUsers": {
+            "type": "string",
+            "example": "3"
+          },
+          "ownerAvatar": {
+            "type": "string",
+            "example": "/img/nickname"
+          },
+          "playerCount": {
+            "type": "string",
+            "example": "0"
+          },
+          "gameName": {
+            "type": "string",
+            "example": "League of Legends"
           }
         }
       },

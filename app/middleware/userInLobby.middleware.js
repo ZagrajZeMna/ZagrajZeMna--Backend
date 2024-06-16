@@ -3,6 +3,7 @@ const Lobby = db.Lobby;
 const UserIn = db.UserInLobby;
 const User = db.User;
 const Message = db.Message;
+const Game = db.Game;
 const Op = db.Sequelize.Op;
 
 exports.getUserInLobby = async (req, res, lobbyId) => {  
@@ -289,6 +290,106 @@ const getPagination = (page, size) => {
     return { limit, offset };
 };
   
+//lobbies that were active lately
+exports.getLastLobbiesTop3 = async (req, res, userId) => {
+    try {
+
+        const userslobbies = await db.sequelize.query(
+            `SELECT DISTINCT "ID_LOBBY" FROM "UserInLobby"
+            WHERE "ID_USER" = ${userId}
+            ORDER BY "ID_LOBBY";`,
+            {
+                type: db.sequelize.QueryTypes.SELECT
+            });
+
+        const lobbyUserIDs = userslobbies.map(lobby => lobby.ID_LOBBY);
+
+        //getting 3 lobbies that was active lately (depending on last message)
+        const LastLobbies = await db.sequelize.query(
+            `SELECT MAX("Time"), "ID_LOBBY", "Date" FROM message
+            WHERE "ID_LOBBY" IN (${lobbyUserIDs}) AND "Date" IN (
+                SELECT MAX("Date") FROM message
+                WHERE "ID_LOBBY" IN (${lobbyUserIDs})
+                GROUP BY "ID_LOBBY")
+            GROUP BY "ID_LOBBY", "Date"
+            ORDER BY "Date", MAX("Time") DESC
+            LIMIT 3;`, {
+            type: db.sequelize.QueryTypes.SELECT
+        });
+
+        //getting data about this 3 lobbies
+        const lobbyIds = LastLobbies.map(lobby => lobby.ID_LOBBY);
+        const Lobbies = await Lobby.findAll({
+            where: {
+                Active: true,
+                ID_LOBBY: {
+                    [Op.in]: lobbyIds
+                }
+            },
+            order: [
+                ['ID_LOBBY', 'DESC'],
+            ],
+            attributes: ['ID_LOBBY','ID_OWNER','Name', 'Description','ID_GAME','NeedUsers']
+        });
+
+        //looking for owner avatar
+        const ownerIds = Lobbies.map(lobby => lobby.ID_OWNER);
+        const userAvatar = await User.findAll({
+            where: {
+                ID_USER: {
+                    [Op.in]: ownerIds
+                }
+            },
+            attributes: ['ID_USER','avatar'],
+        });
+
+        //looking for game name
+        const gamesIDs = Lobbies.map(lobby=>lobby.ID_GAME);
+        const games = await Game.findAll({
+            where: {
+                ID_GAME: {
+                    [Op.in]: gamesIDs
+                }
+            },
+            atributes: ['ID_GAME','name'],
+        });
+        
+        //looking for number of players inside of lobby
+        const counters = await UserIn.findAll({
+            where: {
+                ID_LOBBY: {
+                    [Op.in]: lobbyIds
+                },
+                Accepted: true
+            },
+            attributes: ['ID_LOBBY', [db.sequelize.fn('COUNT', 'ID_USER'), 'playerCount']],
+            group: 'ID_LOBBY'
+          });
+          
+          //data preparation
+          const lobbyData = Lobbies.map(lobby => {
+              const counter = counters.find(c => c.ID_LOBBY === lobby.ID_LOBBY);
+              const png = userAvatar.find(p => p.ID_USER === lobby.ID_OWNER);
+              const game_name = games.find(g=> g.ID_GAME === lobby.ID_GAME);
+              return {
+                  ID_LOBBY: lobby.ID_LOBBY,
+                  Name: lobby.Name,
+                  Description: lobby.Description,
+                  NeedUsers: lobby.NeedUsers,
+                  ownerAvatar: png ? png.dataValues.avatar : "/img/default",
+                  playerCount: counter ? counter.dataValues.playerCount : 0,
+                  game_name: game_name ? game_name.dataValues.name : 'ni ma',
+              };
+          });
+
+          //data sending
+          res.status(200).json({Lobby: lobbyData});  
+
+    } catch (error) {
+        res.status(500).send({ message: error.message });
+    }
+};
+
 exports.getUserLobby = async (req, res, userId, page, size) => {  
     const { limit, offset } = getPagination(page, size);
 

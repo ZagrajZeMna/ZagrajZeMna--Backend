@@ -9,6 +9,7 @@ exports.saveMessage = async (message, username, room) => {
     room = room;
     recived_message = message;
     const localdate = new Date();
+    console.log(localdate);
     try{
         //Sprawdzanie czy lobby istnieje
         const ifLobbyExist = await Lobby.findOne({where: {ID_LOBBY: Number(room)}});

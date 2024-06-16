@@ -2,6 +2,8 @@ const db = require("../models");
 const Shelf = db.Shelf;
 const Game = db.Game;
 
+const Op = db.Sequelize.Op;
+
 const getPagination = (page, size) => {
   const limit = size ? +size : 10;
   const offset = page ? page * limit : 0;
@@ -95,7 +97,6 @@ exports.getUserGame = async (req, res, userId, page, size) => {
   
     const games = shelfs.map(Game => Game.ID_GAME);
     const numberOfPages = Math.ceil(allGames / limit);
-  
     Game.findAll({
         where:{
             ID_GAME: {

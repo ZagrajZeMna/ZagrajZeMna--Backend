@@ -3,6 +3,8 @@ const config = require("../config/auth.config");
 const User = db.User;
 const Languages = db.Languages;
 const UserReview = db.UserReview;
+const Shelf = db.Shelf;
+const UIL = db.UserInLobby;
 
 const multer = require('multer');
 var jwt = require("jsonwebtoken");
