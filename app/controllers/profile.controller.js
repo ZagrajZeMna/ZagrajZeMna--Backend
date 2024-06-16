@@ -7,11 +7,20 @@ const languageMiddleware = require("../middleware/language.middleware");
 const shelfMiddleware = require("../middleware/shelf.middleware");
 const userInLobbyMiddleware = require("../middleware/userInLobby.middleware");
 
-
 exports.getUserDetails = (req, res) => {
   const userId = req.userId;
   userMiddleware.fetchUserDetails(req, res, userId);
 };
+
+exports.getUserById = async (req, res) =>{
+  const { id } = req.query;
+  userMiddleware.fetchUserDetails(req, res, id);
+};
+
+exports.getLastLobbies = async (req, res) =>{
+  const userId = req.userId;
+  userInLobbyMiddleware.getLastLobbiesTop3(req, res, userId);
+}
 
 exports.changePassword = (req, res) => {
   const userId = req.userId;
@@ -75,7 +84,7 @@ exports.usersGames = async (req,res) =>{
   const page = req.body.page;
   const size = req.body.size;
   const userId= req.userId;
-  shelfMiddleware.getUserGame(req, res, userId, size, page);
+  shelfMiddleware.getUserGame(req, res, userId, page, size);
 };
 
 exports.addGameToShelf = (req, res) => {

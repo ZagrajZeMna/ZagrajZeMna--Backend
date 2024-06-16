@@ -217,7 +217,8 @@ const notiData = notifi.map(user => {
         idNoti: user.ID_NOTI,
         idLobby: user.ID_LOBBY,
         message: user.message,
-        ownerAvatar: png ? png.dataValues.avatar : "/img/default",
+        ownerAvatar: png ? png.dataValues.avatar : 'https://res.cloudinary.com/dcqhaa1ez/image/upload/v1716977307/default.png',
+        senderId: user.ID_USER,
     };
 }); 
 
@@ -248,7 +249,7 @@ const notiData = notifi.map(user => {
     return {
         idNoti: user.ID_NOTI,
         message: user.message,
-        ownerAvatar: png ? png.dataValues.avatar : "/img/default",
+        ownerAvatar: png ? png.dataValues.avatar : 'https://res.cloudinary.com/dcqhaa1ez/image/upload/v1716977307/default.png',
     };
 }); 
 
