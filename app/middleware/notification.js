@@ -3,6 +3,7 @@ const Lobby = db.Lobby;
 const User = db.User;
 const Noti = db.Notification;
 const UIL = db.UserInLobby;
+const Op = db.Sequelize.Op;
 
 exports.join = async (data,ID,token,req, res) => {
     try{
@@ -29,6 +30,22 @@ exports.join = async (data,ID,token,req, res) => {
         lobbyName = ownerID.Name; 
         let result = [];
         if(token != destination.confirmationCode){
+          const amountNedded = await Lobby.findOne({
+            where:{
+              ID_LOBBY: data,
+            },
+            attributes: ['NeedUsers']
+          })
+          const amountCurrent = await UIL.findAll({
+            where:{
+              ID_LOBBY: data
+            },
+            //attributes: [[db.sequelize.fn('COUNT', 'ID_USER'), 'playerCount']]
+            attributes: [[db.sequelize.fn('COUNT', db.sequelize.col('ID_USER')), 'playerCount']]
+          })
+          console.log("Liczba potrzebna: ",amountNedded.NeedUsers)
+          console.log("Liczba aktualna: ",amountCurrent[0].get('playerCount'))
+          const amountNow = amountCurrent[0].get('playerCount');
           const notification = await Noti.findOne({
             where:{
                 ID_USER: ID,
@@ -42,7 +59,8 @@ exports.join = async (data,ID,token,req, res) => {
             },
             attributes: ['Accepted']
           })
-          if(userinL == null && notification == null){
+
+          if(userinL == null && notification == null && amountNedded.NeedUsers > amountNow){
               Noti.create({
                 ID_HOST: ownerID.ID_OWNER,
                 ID_USER: ID,
@@ -66,7 +84,6 @@ exports.join = async (data,ID,token,req, res) => {
       } 
 };
   
-
 exports.accept = async (ID,Desc,IDLobby) => {
     try{      
     let result = [];
@@ -120,7 +137,7 @@ exports.accept = async (ID,Desc,IDLobby) => {
     catch(err){
         console.log(err);
     } 
-}
+};
 
 exports.decline = async (ID,Desc,IDLobby) => {
     try{      
@@ -173,4 +190,82 @@ exports.decline = async (ID,Desc,IDLobby) => {
     catch(err){
         console.log(err);
     } 
-}
+};
+
+exports.showNot = async (req, res, userId) => {
+  const notifi = await Noti.findAll({
+    where:{
+        ID_HOST: userId,
+        type: "Respond"
+    },
+})
+if (notifi.length == 0) {
+    return res.status(404).send({ message: "Notifications not found!" });
+}  
+const notiIds = notifi.map(user => user.ID_USER);  
+
+const userAvatar = await User.findAll({
+    where:{
+        ID_USER: {[Op.in]: notiIds}
+    },
+    attributes: ['avatar']
+})
+console.log(notifi);
+const notiData = notifi.map(user => {
+    const png = userAvatar.find(p => p.ID_USER === user.ID_USER);
+    return {
+        idNoti: user.ID_NOTI,
+        idLobby: user.ID_LOBBY,
+        message: user.message,
+        ownerAvatar: png ? png.dataValues.avatar : 'https://res.cloudinary.com/dcqhaa1ez/image/upload/v1716977307/default.png',
+        senderId: user.ID_USER,
+    };
+}); 
+
+res.status(200).json({Notification: notiData});
+
+};
+
+exports.showInfoNot = async (req, res, userId) => {
+  const notifi = await Noti.findAll({
+    where:{
+        ID_HOST: userId,
+        type: "Info"
+    },
+})
+if (notifi.length == 0) {
+    return res.status(404).send({ message: "Notifications not found!" });
+}  
+const notiIds = notifi.map(user => user.ID_USER);  
+const userAvatar = await User.findAll({
+    where:{
+        ID_USER: {[Op.in]: notiIds}
+    },
+    attributes: ['avatar']
+})
+
+const notiData = notifi.map(user => {
+    const png = userAvatar.find(p => p.ID_USER === user.ID_USER);
+    return {
+        idNoti: user.ID_NOTI,
+        message: user.message,
+        ownerAvatar: png ? png.dataValues.avatar : 'https://res.cloudinary.com/dcqhaa1ez/image/upload/v1716977307/default.png',
+    };
+}); 
+
+res.status(200).json({Notification: notiData});
+
+};
+
+exports.deleteNot = async (req, res, id) => {
+  Noti.destroy({
+    where:{
+     ID_NOTI: id
+    } 
+ }).then((noti)=>{
+     res.status(200).json("Pomyślnie usunięto");
+ }).catch(err => {
+     res.status(500).send({ message: err.message });
+ }); 
+
+};

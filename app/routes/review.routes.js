@@ -15,8 +15,12 @@ module.exports = function(app) {
   app.post("/api/review/addGameReq",[authJwt.verifyToken], controller.addGameReq);
   app.post("/api/review/reportUser", [authJwt.verifyToken],controller.reportUser);
   app.post("/api/review/sendMessage", [authJwt.verifyToken],controller.sendMessage);
-  
+  app.post("/api/review/sendReviews", controller.sendReviews);
+
   app.get("/api/review/getReportUser", controller.getReportUser);
   app.get("/api/review/getRequestGame", controller.getRequestGame);
+  
+  app.delete("/api/review/deleteGameReq", controller.deleteGameReq);
+  app.delete("/api/review/deleteReport", controller.deleteReport);
   
 };

@@ -270,8 +270,98 @@
         }
       }
     },
-
-
+    "/api/review/sendReviews": {
+      "post": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Pobranie recenzji użytkownika z paginacją",
+        "description": "Pozwala na pobranie recenzji dla danego użytkownika na podstawie jego nazwy użytkownika z paginacją.",
+        "operationId": "sendReviews",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userName": {
+                    "type": "string",
+                    "example": "jan_kowalski",
+                    "description": "Nazwa użytkownika, dla którego chcemy pobrać recenzje."
+                  },
+                  "page": {
+                    "type": "integer",
+                    "example": 1,
+                    "description": "Numer strony wyników. Domyślnie 1."
+                  },
+                  "size": {
+                    "type": "integer",
+                    "example": 10,
+                    "description": "Liczba wyników na stronie. Domyślnie 10."
+                  }
+                },
+                "required": ["userName"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lista recenzji użytkownika została pomyślnie pobrana.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ID_REVIEW": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "ID_REVIEWER": {
+                        "type": "integer",
+                        "example": 2
+                      },
+                      "ID_ABOUT": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "stars": {
+                        "type": "integer",
+                        "example": 5
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Świetny użytkownik!"
+                      },
+                      "date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00.000Z"
+                      },
+                      "time": {
+                        "type": "string",
+                        "example": "12:34:56"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Nie znaleziono użytkownika."
+          },
+          "404": {
+            "description": "Nie znaleziono opinii dla tego użytkownika."
+          },
+          "500": {
+            "description": "Wewnętrzny błąd serwera."
+          }
+        }
+      }
+    },
     "/api/profile/getUserDetails": {
       "get": {
         "tags": [
@@ -321,7 +411,13 @@
                       "type": "integer",
                       "example": 1,
                       "description": "ID języka zgodnie z tabelą Languages"
-                    }
+                    },
+                    "averageRating": {
+                      "type": "number",
+                      "format": "float",
+                      "example": 4.5,
+                      "description": "Średnia ocena wystawiona użytkownikowi"
+                  }
                   }
                 }
               }
@@ -342,6 +438,91 @@
         }
       }
     },
+    "/api/profile/getUserById": {
+      "get": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Pobranie szczegółów użytkownika z id w urlu",
+        "description": "Pozwala użytkownikowi wyświetlenie profili innych użytkowników. Wymaga wysłania id w URLu",
+        "operationId": "getUserById",
+        "parameters": [
+            {
+              "name": "id",
+              "in": "query",
+              "description": "id użytkowinka ",
+              "required": true,
+              "explode": true,
+              "schema": {
+                "type": "string",
+                "default": "1"
+  
+              }
+            }],
+        "responses": {
+          "200": {
+            "description": "Szczegóły profilu użytkownika zostały pomyślnie pobrane",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                      "email": {
+                        "type": "string",
+                        "example": "jan_kowalski"
+                      },
+                      "username": {
+                        "type": "string",
+                        "example": "Johnny"
+                      },
+                      "about": {
+                        "type": "string",
+                        "example": "Pasjonat gier i programowania."
+                      },
+                      "country": {
+                        "type": "string",
+                        "example": "Polska"
+                      },
+                      "city": {
+                        "type": "string",
+                        "example": "Warszawa"
+                      },
+                      "contact": {
+                        "type": "string",
+                        "example": "jan@example.com"
+                      },
+                      "IDlanguage": {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "ID języka zgodnie z tabelą Languages"
+                      },
+                      "averageRating": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 4.5,
+                        "description": "Średnia ocena wystawiona użytkownikowi"
+                    },
+                    "400": {
+                      "description": "Nieprawidłowe żądanie - problem z danymi użytkownika."
+                    },
+                    "401": {
+                      "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+                    },
+                    "404": {
+                      "description": "Użytkownik nie znaleziony."
+                    },
+                    "500": {
+                      "description": "Wewnętrzny błąd serwera"
+                    }
+                  }
+                }
+              }
+            }
+          }
+      }
+    }
+    },
+  
     
     "/api/profile/changePassword": {
       "post": {
@@ -1307,7 +1488,7 @@
           "WnętrzeLobby"
         ],
         "summary": "Usuwanie gracza z lobby.",
-        "description": "Usuwa gracza z lobby na podstawie id gracza i id lobby.",
+        "description": "Usuwa gracza z lobby na podstawie username i id lobby.",
         "operationId": "deleteUserFromLobby",
         "parameters": [
           {
@@ -1323,14 +1504,14 @@
             }
           },
           {
-            "name": "userId",
+            "name": "username",
             "in": "query",
-            "description": "UserId",
+            "description": "Username",
             "required": true,
             "explode": true,
             "schema": {
-              "type": "integer",
-              "default": "1"
+              "type": "string",
+              "default": "Hedonist"
 
             }
           }
@@ -1422,67 +1603,6 @@
       }
     },
 
-    "/api/lobbyInside/addMessage": {
-      "post": {
-        "tags": [
-          "WnętrzeLobby"
-        ],
-        "summary": "Dodawanie wiadomości na chacie.",
-        "description": "Dodaje nową wiadomość do bazy danych.",
-        "operationId": "addMessage",
-        "responses": {
-          "200": {
-            "description": "Wiadomość została dodana do bazy danych.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "ID_USER": {
-                      "type": "integer",
-                      "example": 1
-                    },
-                    "ID_LOBBY": {
-                      "type": "integer",
-                      "example": 1
-                    },
-                    "Message": {
-                      "type": "string",
-                      "example": "Nie wiem co się staneło."
-                    },
-                    "Date": {
-                      "type": "date",
-                      "example": "2024-10-12"
-                    },
-                    "Time": {
-                      "type": "time",
-                      "example": "11:12:25"
-                    }
-                  }
-                }
-              }
-            }
-
-          },
- 
-          "403": {
-            "description": "Gracz nie istnieje."
-          },
-          "404": {
-            "description": "Lobby nie istnieje."
-          },
-          "405": {
-            "description": "Nie ma tego gracza w lobby."
-          },
-          "406": {
-            "description": "Wiadomość nie jest poprawna."
-          },
-          "500": {
-            "description": "Wewnętrzny błąd serwera"
-          }
-        }
-      }
-    },
     "/api/lobbyInside/latest100messages": {
       "post": {
         "tags": [
@@ -1555,92 +1675,101 @@
         }
       }
     },
+    
     "/api/admin/getUser": {
-      "get": {
-        "tags": [
-          "Admin"
-        ],
-        "summary": "Pobranie wszystkich statystyk użytkowników",
-        "description": "Zwraca wszystkich użytkowników.",
-        "operationId": "getUser",
-        "responses": {
-          "200": {
-            "description": "Statystyki użytkownika zostały pomyślnie pobrane",
-            "content": {
-              "application/json": {
-              }
-            }
-          },
-          "400": {
-            "description": "Nieprawidłowe żądanie - problem z żądaniem od klienta."
-          },
-          "403": {
-            "description": "Użytkownik nie znaleziony."
-          },
-          "500": {
-            "description": "Wewnętrzny błąd serwera"
-          }
+  "get": {
+    "tags": [
+      "Admin"
+    ],
+    "summary": "Pobranie listy użytkowników",
+    "description": "Pobranie listy użytkowników z opcjonalnym filtrem `isBanned` oraz paginacją",
+    "operationId": "fetchUsers",
+    "parameters": [
+      {
+        "name": "page",
+        "in": "query",
+        "required": false,
+        "description": "Numer strony",
+        "schema": {
+          "type": "integer",
+          "example": 1
+        }
+      },
+      {
+        "name": "size",
+        "in": "query",
+        "required": false,
+        "description": "Liczba wyników na stronę",
+        "schema": {
+          "type": "integer",
+          "example": 10
+        }
+      },
+      {
+        "name": "isBanned",
+        "in": "query",
+        "required": false,
+        "description": "Filtr użytkowników na podstawie statusu zbanowania",
+        "schema": {
+          "type": "boolean",
+          "example": false
         }
       }
-    },
-
-    "/api/admin/getBannedUser": {
-      "get": {
-        "tags": [
-          "Admin"
-        ],
-        "summary": "Pobranie zbanowanych statystyk użytkowników",
-        "description": "Zwraca zbanowanych użytkowników.",
-        "operationId": "getBannedUser",
-        "responses": {
-          "200": {
-            "description": "Statystyki użytkownika zostały pomyślnie pobrane",
-            "content": {
-              "application/json": {
+    ],
+    "responses": {
+      "200": {
+        "description": "Successful operation",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "users": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "ID_USER": {
+                        "type": "integer",
+                        "example": 1
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "user@example.com"
+                      },
+                      "username": {
+                        "type": "string",
+                        "example": "username"
+                      },
+                      "avatar": {
+                        "type": "string",
+                        "example": "/path/to/avatar.jpg"
+                      },
+                      "isBanned": {
+                        "type": "boolean",
+                        "example": false
+                      }
+                    }
+                  }
+                },
+                "totalPages": {
+                  "type": "integer",
+                  "example": 5
+                }
               }
             }
-          },
-          "400": {
-            "description": "Nieprawidłowe żądanie - problem z żądaniem od klienta."
-          },
-          "403": {
-            "description": "Użytkownik nie znaleziony."
-          },
-          "500": {
-            "description": "Wewnętrzny błąd serwera"
           }
         }
+      },
+      "400": {
+        "description": "Invalid input"
+      },
+      "500": {
+        "description": "Internal server error"
       }
-    },
-
-    "/api/admin/getNotBannedUser": {
-      "get": {
-        "tags": [
-          "Admin"
-        ],
-        "summary": "Pobranie nie zbanowanych statystyk użytkowników",
-        "description": "Zwraca nie zbanowanych użytkowników.",
-        "operationId": "getBannedUser",
-        "responses": {
-          "200": {
-            "description": "Statystyki użytkownika zostały pomyślnie pobrane",
-            "content": {
-              "application/json": {
-              }
-            }
-          },
-          "400": {
-            "description": "Nieprawidłowe żądanie - problem z żądaniem od klienta."
-          },
-          "403": {
-            "description": "Użytkownik nie znaleziony."
-          },
-          "500": {
-            "description": "Wewnętrzny błąd serwera"
-          }
-        }
-      }
-    },
+    }
+  }
+},
     
     "/api/admin/banUser": {
         "put": {
@@ -2132,7 +2261,122 @@
     }
 },
 
+  "/api/review/deleteGameReq": {
+  "delete": {
+    "tags": [
+      "Kontakt"
+    ],
+    "summary": "Usuwanie prośby o grę",
+    "description": "Usuwanie prośby o grę na podstawie ID prośby przekazanego w ciele żądania.",
+    "operationId": "deleteGameReqMiddle",
+    "requestBody": {
+      "description": "ID prośby do usunięcia",
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "request_id": {
+                "type": "integer",
+                "example": 123
+              }
+            },
+            "required": [
+              "request_id"
+            ]
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful operation",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Delete Game request."
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Invalid input, request ID is required"
+      },
+      "404": {
+        "description": "Request not found"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+},
 
+    "/api/review/deleteReport": {
+  "delete": {
+    "tags": [
+      "Kontakt"
+    ],
+    "summary": "Usuwanie zgłoszenia użytkownika",
+    "description": "Usuwanie zgłoszenia użytkownika na podstawie ID zgłoszenia przekazanego w ciele żądania.",
+    "operationId": "deleteReportMiddle",
+    "requestBody": {
+      "description": "ID zgłoszenia do usunięcia",
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "report_id": {
+                "type": "integer",
+                "example": 123
+              }
+            },
+            "required": [
+              "report_id"
+            ]
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Successful operation",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Delete User report."
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Invalid input, report ID is required"
+      },
+      "404": {
+        "description": "Report not found"
+      },
+      "500": {
+        "description": "Internal server error"
+      }
+    }
+  }
+},
+  
     "/api/mainGame/getGamePagination":{
         "get": {
           "tags": [
@@ -2441,6 +2685,47 @@
         }
       }
     },
+    "/api/profile/lastLobbies":{
+      "get": {
+        "tags": [
+          "Profil"
+        ],
+        "summary": "Pobranie danych o o 3 lobby, w których ostatnio wysłano wiadomość",
+        "description": "Pobranie danych o lobby - o 3 lobby, w których ostatnio wysłano wiadomość. Mają to być ostatnio aktywne",
+        "operationId": "ost3lobby",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Wyświetl lobby!",
+          "content": {
+            "application/json": {}
+          },
+          "required": false
+        },
+
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DisplayedLobbyGame"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "422": {
+            "description": "Validation exception"
+          }
+        }
+      }
+    },
 
     "/api/profile/usersGames":{
 
@@ -2506,95 +2791,89 @@
 
     
     "/api/profile/addGameToShelf": {
-
-      "post": {
-        "tags": [
-          "Profil"
-        ],
-
-        "summary": "Dodaj grę do półki użytkownika",
-        "description": "Umożliwia zalogowanemu użytkownikowi dodanie nowej gry do swojej półki.",
-        "operationId": "addGameToShelf",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-
-          "description": "Dane potrzebne do dodania gry do półki",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "ID_GAME": {
-                    "type": "integer",
-                    "example": 456,
-                    "description": "ID gry, która ma być dodana do półki"
-                  }
-                }
+  "post": {
+    "tags": [
+      "Profil"
+    ],
+    "summary": "Dodaj grę do półki użytkownika",
+    "description": "Umożliwia zalogowanemu użytkownikowi dodanie nowej gry do swojej półki.",
+    "operationId": "addGameToShelf",
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "requestBody": {
+      "description": "Dane potrzebne do dodania gry do półki",
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "GAME_NAME": {
+                "type": "string",
+                "example": "Cyberpunk 2077",
+                "description": "Nazwa gry, która ma być dodana do półki"
               }
             }
           }
-        },
-        "responses": {
-          "201": {
-            "description": "Gra została pomyślnie dodana do półki",
-
-            "content": {
-              "application/json": {
-                "schema": {
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "Gra została pomyślnie dodana do półki",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Gra została dodana do półki."
+                },
+                "shelfDetails": {
                   "type": "object",
                   "properties": {
-
-                    "message": {
-                      "type": "string",
-                      "example": "Gra została dodana do półki."
+                    "ID_SHELF": {
+                      "type": "integer",
+                      "example": 123,
+                      "description": "ID nowo utworzonej półki"
                     },
-                    "shelfDetails": {
-                      "type": "object",
-                      "properties": {
-                        "ID_SHELF": {
-                          "type": "integer",
-                          "example": 123,
-                          "description": "ID nowo utworzonej półki"
-                        },
-                        "ID_USER": {
-                          "type": "integer",
-                          "example": 789,
-                          "description": "ID użytkownika, który dodał grę"
-                        },
-                        "ID_GAME": {
-                          "type": "integer",
-                          "example": 456,
-                          "description": "ID gry dodanej do półki"
-                        }
-                      }
-
+                    "ID_USER": {
+                      "type": "integer",
+                      "example": 789,
+                      "description": "ID użytkownika, który dodał grę"
+                    },
+                    "ID_GAME": {
+                      "type": "integer",
+                      "example": 456,
+                      "description": "ID gry dodanej do półki"
                     }
                   }
                 }
               }
             }
-          },
-          "400": {
-            "description": "Nieprawidłowe żądanie - problem z przesłanymi danymi."
-          },
-          "403": {
-            "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
-          },
-          "404": {
-            "description": "Nie znaleziono żądanej gry."
-          },
-          "500": {
-            "description": "Wewnętrzny błąd serwera."
           }
         }
+      },
+      "400": {
+        "description": "Nieprawidłowe żądanie - problem z przesłanymi danymi."
+      },
+      "403": {
+        "description": "Nieautoryzowane - brak tokena lub token jest nieprawidłowy."
+      },
+      "404": {
+        "description": "Nie znaleziono żądanej gry."
+      },
+      "500": {
+        "description": "Wewnętrzny błąd serwera."
       }
+    }
+  }
+},
 
-    },
     
     "/api/profile/removeGameFromShelf": {
       "delete": {
@@ -2804,6 +3083,39 @@
           }
         }
       },
+      "DisplayedLobbyGame": {
+        "type": "object",
+        "properties": {
+          "ID_LOBBY": {
+            "type": "string",
+            "example": "1"
+          },
+          "Name": {
+            "type": "string",
+            "example": "Mid i Top do Clasha"
+          },
+          "Description": {
+            "type": "string",
+            "example": "Potrzebnych 2 graczy do najbliższego clasha"
+          },
+          "NeedUsers": {
+            "type": "string",
+            "example": "3"
+          },
+          "ownerAvatar": {
+            "type": "string",
+            "example": "/img/nickname"
+          },
+          "playerCount": {
+            "type": "string",
+            "example": "0"
+          },
+          "gameName": {
+            "type": "string",
+            "example": "League of Legends"
+          }
+        }
+      },
       "DisplayedLobby": {
         "type": "object",
         "properties": {
@@ -2834,6 +3146,10 @@
           "Pages": {
             "type": "string",
             "example": "12"
+          },
+          "gameName": {
+            "type": "string",
+            "example": "League of Legends"
           }
         }
       },

@@ -11,6 +11,6 @@ module.exports = function(app) {
     next();
   });
   
-  app.get("/api/mainGame/getGame", controller.getGame);
   app.get("/api/mainGame/getGamePagination", controller.getgamePagination);
+  app.get("/api/mainGame/getRecommendedGames", controller.getRecommendedGames);
 };
