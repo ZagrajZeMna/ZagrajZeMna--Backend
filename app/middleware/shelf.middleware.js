@@ -103,7 +103,7 @@ exports.getUserGame = async (req, res, userId, page, size) => {
                 [Op.in]: games
             }
         },
-        attributes: ['name','shortname','image']
+        attributes: ['name','shortname','image', 'ID_GAME']
     }).then((games)=>{
         res.json({Games: games, Pages: numberOfPages});
     }).catch(err => {
