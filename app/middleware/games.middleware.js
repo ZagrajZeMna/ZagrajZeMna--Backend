@@ -73,7 +73,7 @@ exports.getRecomendedGames = async (req, res) => {
             JOIN public.lobbies l ON g."ID_GAME" = l."ID_GAME"
             GROUP BY g."ID_GAME", g.name, g.image
             ORDER BY lobbyCount DESC
-            LIMIT 7;
+            LIMIT 5;
         `, {
             type: sequelize.QueryTypes.SELECT
         });
