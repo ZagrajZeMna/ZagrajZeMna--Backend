@@ -278,17 +278,17 @@
         "summary": "Pobranie recenzji użytkownika z paginacją",
         "description": "Pozwala na pobranie recenzji dla danego użytkownika na podstawie jego nazwy użytkownika z paginacją.",
         "operationId": "sendReviews",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "userName": {
-                    "type": "string",
-                    "example": "jan_kowalski",
-                    "description": "Nazwa użytkownika, dla którego chcemy pobrać recenzje."
-                  },
                   "page": {
                     "type": "integer",
                     "example": 1,
