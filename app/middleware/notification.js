@@ -205,22 +205,23 @@ if (notifi.length == 0) {
 const notiIds = notifi.map(user => user.ID_USER);  
 
 const userAvatar = await User.findAll({
-    where:{
-        ID_USER: {[Op.in]: notiIds}
-    },
-    attributes: ['avatar']
-})
-console.log(notifi);
+  where: {
+      ID_USER: { [Op.in]: notiIds }
+  },
+  attributes: ['ID_USER', 'avatar'] 
+});
+
 const notiData = notifi.map(user => {
-    const png = userAvatar.find(p => p.ID_USER === user.ID_USER);
-    return {
-        idNoti: user.ID_NOTI,
-        idLobby: user.ID_LOBBY,
-        message: user.message,
-        ownerAvatar: png ? png.dataValues.avatar : 'https://res.cloudinary.com/dcqhaa1ez/image/upload/v1716977307/default.png',
-        senderId: user.ID_USER,
-    };
-}); 
+  const png = userAvatar.find(p => p.ID_USER === user.ID_USER); 
+  return {
+      idNoti: user.ID_NOTI,
+      idLobby: user.ID_LOBBY,
+      message: user.message,
+      ownerAvatar: png ? png.avatar : 'https://res.cloudinary.com/dcqhaa1ez/image/upload/v1716977307/default.png',
+      senderId: user.ID_USER,
+  };
+});
+
 
 res.status(200).json({Notification: notiData});
 
