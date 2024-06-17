@@ -1,6 +1,7 @@
 const db = require("../models");
 const User = db.User;
 const Review = db.UserReview;
+const Op = db.Sequelize.Op;
 
 const getPagination = (page, size) => {
     const limit = size ? +size : 10;
@@ -78,17 +79,10 @@ exports.addReview = async (req, res, reviewerId, username, stars, description) =
    
 };
 
-exports.sendReviewsMiddle = async (req, res, userName, page, size) => {
+exports.sendReviewsMiddle = async (req, res, id_user, page, size) => {
     try{
         const { limit, offset } = getPagination(page, size);
-        
-        const user = await User.findOne({where: {username: String(userName)}});
-
-        if(!user){
-            return res.status(400).send({message: "Nie znaleziono użytkownika"});
-        }
-
-        const userId = user.ID_USER;
+        const userId = id_user;
 
         const reviews = await Review.findAll({where:{ID_ABOUT: userId}, limit: limit, offset: offset});
 
@@ -96,7 +90,39 @@ exports.sendReviewsMiddle = async (req, res, userName, page, size) => {
             return res.status(404).send({message: "Nie znaleziono opini dla tego użytkownika"});
         }
 
-        return res.status(200).send(reviews);
+        const reviewerIds = reviews.map(rev => rev.ID_REVIEWER);
+
+        const sender_data = await User.findAll({
+            where: {
+                ID_USER: {
+                    [Op.in]: reviewerIds
+                }
+            },
+            attributes: ['ID_USER','avatar','username'],
+        });
+
+        const allRevies = await Review.count({
+            where: {
+                ID_ABOUT: userId
+            },
+        });
+
+        const reviewData = reviews.map(rev => {
+            const reviewer_data = sender_data.find(p => p.ID_USER === rev.ID_REVIEWER);
+            return {
+                idReview: rev.ID_REVIEW,
+                idReviewer: rev.ID_REVIEWER,
+                description: rev.description,
+                idAbout: rev.ID_ABOUT,
+                date: rev.Date,
+                starts: rev.stars,
+                senderName: reviewer_data ? reviewer_data.dataValues.username : 'nie znaleziono',
+                senderAvatar: reviewer_data ? reviewer_data.dataValues.avatar : 'https://res.cloudinary.com/dcqhaa1ez/image/upload/v1716977307/default.png',
+            };
+        });
+
+        const numberOfPages = Math.ceil(allRevies / limit);
+        return res.status(200).send({raviews: reviewData, pages: numberOfPages});
     }catch(error){
         return res.status(500).send({message: error.message});
     }

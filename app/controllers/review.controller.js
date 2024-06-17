@@ -63,6 +63,13 @@ exports.deleteReport = async (req, res) => {
 
 //Funkcja która wysyła opinie o danym użytkowniku
 exports.sendReviews = async (req, res) => {
-    const { userName, page, size } = req.body;
-    reviewMiddleware.sendReviewsMiddle(req, res, userName, page, size);
+    const { page, size } = req.body;
+    const ID_USER = req.userId;
+    reviewMiddleware.sendReviewsMiddle(req, res, ID_USER, page, size);
 };
+
+exports.sendReviewsByUrl = async (req, res) =>{
+    const { id } = req.query;
+    const { page, size } = req.body;
+    reviewMiddleware.sendReviewsMiddle(req, res, id, page, size);
+}
