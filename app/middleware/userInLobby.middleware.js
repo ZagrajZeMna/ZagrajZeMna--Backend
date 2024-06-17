@@ -312,7 +312,7 @@ exports.getLastLobbiesTop3 = async (req, res, userId) => {
                 WHERE "ID_LOBBY" IN (${lobbyUserIDs})
                 GROUP BY "ID_LOBBY")
             GROUP BY "ID_LOBBY", "Date"
-            ORDER BY "Date", MAX("Time") DESC
+            ORDER BY "Date" DESC, MAX("Time") DESC
             LIMIT 3;`, {
             type: db.sequelize.QueryTypes.SELECT
         });
