@@ -250,7 +250,7 @@ const notiData = notifi.map(user => {
     return {
         idNoti: user.ID_NOTI,
         message: user.message,
-        ownerAvatar: png ? png.dataValues.avatar : 'https://res.cloudinary.com/dcqhaa1ez/image/upload/v1716977307/default.png',
+        ownerAvatar: png ? png.avatar : 'https://res.cloudinary.com/dcqhaa1ez/image/upload/v1716977307/default.png',
     };
 }); 
 
