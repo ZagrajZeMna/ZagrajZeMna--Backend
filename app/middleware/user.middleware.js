@@ -426,6 +426,24 @@ catch(error){
 };
 
 exports.register = async (req, res, jwt) => {
+  const checkEmail = User.findOne({
+    where:{
+      email: req.body.email
+    }
+  })
+  if (checkEmail){
+    res.status(500).send({message:"Email already taken"});
+  }
+
+  const checkUserName = User.findOne({
+    where:{
+      username: req.body.username
+    }
+  })
+
+  if(checkUserName){
+    res.status(500).send({message:"Username already taken"});
+  }
   const token = jwt.sign({email: req.body.email}, config.key.secret)
   // Save User to Database
   User.create({
