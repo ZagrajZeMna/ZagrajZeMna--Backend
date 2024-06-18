@@ -242,7 +242,7 @@ const userAvatar = await User.findAll({
     where:{
         ID_USER: {[Op.in]: notiIds}
     },
-    attributes: ['avatar']
+    attributes: ['ID_USER', 'avatar'] 
 })
 
 const notiData = notifi.map(user => {
