@@ -1,9 +1,9 @@
 //hosting
 module.exports = {
-  HOST: "dpg-cpbdm95ds78s73et8flg-a.frankfurt-postgres.render.com",
+  HOST: "dpg-cq0jar6ehbks73eccaig-a.frankfurt-postgres.render.com",
   USER: "zzmadmin",
-  PASSWORD: "nFVYkuwGNBlp3jujFOt68FnCQN60XO0D",
-  DB: "defaultdb_ted4",
+  PASSWORD: "bVWfy7e95Gf0aLRImyD8qBOfEZI2kkVU",
+  DB: "defaultdb_kifg",
   port: 5432,
   dialect: "postgres",
   ssl: true,
